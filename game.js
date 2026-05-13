@@ -1540,7 +1540,8 @@ function drawNinjuSlot(x, y, w, h, text, type) {
   const statusRule = isStatusButton ? statusButtonRule(type) : null;
   const active = unit && (isStatusButton ? ((unit.ninju?.type === type && (isUnitCastingNinju(unit) || isUnitInNinjuGap(unit))) || (isSteel ? isSteelDefenseActive(unit) : isHotBlood ? isHotBloodActive(unit) : false)) : isMoneyDart ? Boolean(unit.moneyDart) : false);
   const hasAttackSoul = !isAttackNinju || Math.floor((unit?.soulSteps || 0) / soulStepsPerLevel) >= 1;
-  const ready = !unit || (unit.alive && !isUnitDisabled(unit) && (isStatusButton ? statusRule.available !== false && unit.skill >= statusRule.cost && hasAttackSoul : isMoneyDart));
+  const hasRequiredSkill = !isStatusButton || isAttackNinju || unit.skill >= statusRule.cost;
+  const ready = !unit || (unit.alive && !isUnitDisabled(unit) && (isStatusButton ? statusRule.available !== false && hasRequiredSkill && hasAttackSoul : isMoneyDart));
   ctx.save();
   if (isAttackNinju && images.flashButton) {
     ctx.globalAlpha = ready ? 1 : 0.55;

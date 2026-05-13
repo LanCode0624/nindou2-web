@@ -8,13 +8,13 @@ const modeRuleProfiles = {
     },
     ninjutsu: {
       steel: {
-        cost: 7,
+        cost: 6,
         castDurationMs: 1500,
         durationMs: 12000,
         defenseMultiplier: 1.7,
       },
       hotBlood: {
-        cost: 7,
+        cost: 6,
         castDurationMs: 1500,
         durationMs: 12000,
         weaponDamageMultiplier: 2,
@@ -27,7 +27,7 @@ const modeRuleProfiles = {
       },
       kakki: {
         available: false,
-        cost: 5,
+        cost: 6,
         castDurationMs: 1500,
         healAmount: 100,
         effect: "selfHeal",
@@ -95,7 +95,7 @@ const modeRuleProfiles = {
       },
       kakki: {
         available: false,
-        cost: 5,
+        cost: 6,
         castDurationMs: 1500,
         healAmount: 100,
         effect: "selfHeal",

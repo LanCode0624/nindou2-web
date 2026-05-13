@@ -100,23 +100,24 @@ function useStatusNinju(type, label) {
     setMessage(`${unit.name}: cannot use ninjutsu yet.`);
     return;
   }
-  if (unit.skill < rule.cost) {
+  const isAttackNinju = isAttackNinjuType(type);
+  if (!isAttackNinju && unit.skill < rule.cost) {
     setMessage(`${label} needs ${rule.cost} skill.`);
     return;
   }
 
-  const attackNinjuLevel = isAttackNinjuType(type) ? consumeAttackNinjuSoulLevel(unit) : 0;
-  if (isAttackNinjuType(type) && attackNinjuLevel < 1) {
+  const attackNinjuLevel = isAttackNinju ? consumeAttackNinjuSoulLevel(unit) : 0;
+  if (isAttackNinju && attackNinjuLevel < 1) {
     setMessage(`${label} needs soul 1.`);
     return;
   }
 
-  unit.skill -= rule.cost;
+  if (!isAttackNinju) unit.skill -= rule.cost;
   const now = performance.now();
 
   if (unit.ninju && isStatusNinjuType(unit.ninju.type)) {
     unit.ninju.pendingType = type;
-    if (isAttackNinjuType(type)) unit.ninju.pendingAttackNinjuLevel = attackNinjuLevel;
+    if (isAttackNinju) unit.ninju.pendingAttackNinjuLevel = attackNinjuLevel;
     unit.ninju.queue = (unit.ninju.queue || 0) + 1;
     setMessage(`${unit.name} queued ${label}.`);
   } else {
