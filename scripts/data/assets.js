@@ -34,6 +34,7 @@ const soundSources = {
 };
 
 const images = {};
+const mapFolder = "assets/map/map/\u68EE\u679710";
 const sounds = Object.fromEntries(Object.entries(soundSources).map(([key, src]) => {
   const audio = new Audio(src);
   audio.preload = "auto";
@@ -47,8 +48,8 @@ const sounds = Object.fromEntries(Object.entries(soundSources).map(([key, src]) 
 });
 
 const imageSources = {
-  bg: "assets/map/map/森林10/bg.png",
-  arena: "assets/map/map/森林10/arena-base.png",
+  bg: `${mapFolder}/bg.png`,
+  arena: `${mapFolder}/arena-base.png`,
   blueDown: "assets/characters/idle/blue/down.png",
   blueLeft: "assets/characters/idle/blue/left.png",
   blueRight: "assets/characters/idle/blue/right.png",
@@ -57,14 +58,14 @@ const imageSources = {
   greyLeft: "assets/characters/idle/grey/left.png",
   greyRight: "assets/characters/idle/grey/right.png",
   greyUp: "assets/characters/idle/grey/up.png",
-  tree: "assets/map/map/森林10/tree.png",
-  hay: "assets/map/map/森林10/hay.png",
-  vase: "assets/map/map/森林10/vase.png",
-  barrel: "assets/map/map/森林10/barrel.png",
-  chest: "assets/map/map/森林10/chest.png",
-  flower: "assets/map/map/森林10/flower.png",
-  rock: "assets/map/map/森林10/rock.png",
-  stump: "assets/map/map/森林10/stump.png",
+  tree: `${mapFolder}/tree.png`,
+  hay: `${mapFolder}/hay.png`,
+  vase: `${mapFolder}/vase.png`,
+  barrel: `${mapFolder}/barrel.png`,
+  chest: `${mapFolder}/chest.png`,
+  flower: `${mapFolder}/flower.png`,
+  rock: `${mapFolder}/rock.png`,
+  stump: `${mapFolder}/stump.png`,
   flashButton: "assets/ninju/buttons/1.png",
   steelButton: "assets/ninju/buttons/2.png",
   moneyDartButton: "assets/ninju/buttons/3.png",
