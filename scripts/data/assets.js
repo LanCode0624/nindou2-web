@@ -119,9 +119,9 @@ const smallThunderSummonFrameSources = Array.from({ length: 25 }, (_, index) => 
 const smallThunderSummonFrames = [];
 const smallThunderDamagedFrameSources = Array.from({ length: 36 }, (_, index) => `assets/ninju/status/damaged/small_thunder/${index + 1}.png`);
 const smallThunderDamagedFrames = [];
-const smallFireSummonFrameSources = Array.from({ length: 23 }, (_, index) => `assets/ninju/status/summon/small_fire/${String(index + 1).padStart(2, "0")}.png`);
+const smallFireSummonFrameSources = Array.from({ length: 23 }, (_, index) => `assets/ninju/status/summon/small_fire/F/${String(index + 1).padStart(2, "0")}.png`);
 const smallFireSummonFrames = [];
-const smallFireDamagedFrameSources = Array.from({ length: 43 }, (_, index) => `assets/ninju/status/small_fire/${index + 1}.png`);
+const smallFireDamagedFrameSources = Array.from({ length: 43 }, (_, index) => `assets/ninju/status/small_fire/F/${index + 1}.png`);
 const smallFireDamagedFrames = [];
 const deathSummonFrameSources = Array.from({ length: 42 }, (_, index) => `assets/ninju/status/summon/death/${index + 1}.png`);
 const deathSummonFrames = [];
