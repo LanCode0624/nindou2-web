@@ -931,9 +931,11 @@ body:not(.room-mode) .room-screen {
 
 .ninju-slot-choice[data-ninju-type="flash"],
 .ninju-slot-choice[data-ninju-type="wildfire"],
+.ninju-slot-choice[data-ninju-type="death"],
 .ninju-slot-choice[data-ninju-type="freeze"],
 .ninju-option[data-ninju-type="flash"],
 .ninju-option[data-ninju-type="wildfire"],
+.ninju-option[data-ninju-type="death"],
 .ninju-option[data-ninju-type="freeze"] {
   background-image: url("assets/ninju/buttons/1.png");
 }
