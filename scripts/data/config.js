@@ -33,11 +33,11 @@ const flashHitChance = 0.6;
 const flashDamage = 50;
 const flashMissDisableMs = 1500;
 const flashHitDisableMs = 3500;
-const freezeHitDisableMs = 6000;
+const freezeHitDisableMs = 10000;
 
 const steelNinjuCost = 7;
 const steelCastDuration = 1500;
-const steelNinjuDuration = 12000;
+const steelNinjuDuration = 15000;
 const genkiHealAmount = 100;
 const kakkiHealAmount = 200;
 const shinkiHealAmount = 9999;
@@ -74,4 +74,3 @@ const startingAreas = {
   blue: { xMin: 2, xMax: 3, yMin: 3, yMax: 7 },
   grey: { xMin: 16, xMax: 17, yMin: 3, yMax: 7 },
 };
-

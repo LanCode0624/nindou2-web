@@ -11,13 +11,13 @@ const modeRuleProfiles = {
       steel: {
         cost: 6,
         castDurationMs: 1500,
-        durationMs: 12000,
+        durationMs: 15000,
         defenseMultiplier: 1.7,
       },
       hotBlood: {
         cost: 6,
         castDurationMs: 1500,
-        durationMs: 12000,
+        durationMs: 15000,
         weaponDamageMultiplier: 2,
       },
       genki: {
@@ -79,13 +79,13 @@ const modeRuleProfiles = {
       steel: {
         cost: 7,
         castDurationMs: 1500,
-        durationMs: 12000,
+        durationMs: 15000,
         defenseMultiplier: 2,
       },
       hotBlood: {
         cost: 7,
         castDurationMs: 1500,
-        durationMs: 12000,
+        durationMs: 15000,
         weaponDamageMultiplier: 2,
       },
       genki: {
