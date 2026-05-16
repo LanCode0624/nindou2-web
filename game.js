@@ -444,6 +444,7 @@ function setupControlSelects() {
     <option value="ai_beginner">初心者</option>
     <option value="ai_money_dart_master">錢鏢神人</option>
     <option value="ai_dart_only_master">尬鏢神人</option>
+    <option value="ai_god">AI神人</option>
   `;
   controlSelectEls.forEach((select) => {
     if (!select.innerHTML.trim()) {
@@ -454,7 +455,7 @@ function setupControlSelects() {
       select.value = current;
     }
     if (select.value === "ai") select.value = "ai_beginner";
-    if (select.value !== "player" && select.value !== "ai_beginner" && select.value !== "ai_money_dart_master" && select.value !== "ai_dart_only_master") select.value = "player";
+    if (select.value !== "player" && select.value !== "ai_beginner" && select.value !== "ai_money_dart_master" && select.value !== "ai_dart_only_master" && select.value !== "ai_god") select.value = "player";
   });
 }
 
@@ -512,6 +513,7 @@ function selectedControlMode(team, slot) {
   if (select?.value === "player") return "player";
   if (select?.value === "ai_money_dart_master") return "ai_money_dart_master";
   if (select?.value === "ai_dart_only_master") return "ai_dart_only_master";
+  if (select?.value === "ai_god") return "ai_god";
   return "ai_beginner";
 }
 
