@@ -311,3 +311,91 @@ AI 重要規則：
 - `assets/`
 - `assets/sounds/`
 - `scripts/data/assets.js`
+
+---
+
+## 13. 單元測試與 PowerShell 設定
+
+### Git 狀態
+
+- 已在專案根目錄建立 `.git`
+- 目前工作分支：`test/minimal-node-tests`
+- 初始提交：`f0d62a0 初始化專案並加入單元測試骨架`
+- 不要直接推送到 `main` / `master`
+
+### PowerShell npm.ps1 修正
+
+PowerShell 原本會擋住 `npm.ps1`，原因是 execution policy 全部為 `Undefined`，導致 `.ps1` shim 不能執行。
+
+已改用使用者層級設定修正：
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
+```
+
+目前確認：
+
+```powershell
+Get-ExecutionPolicy -Scope CurrentUser
+# RemoteSigned
+```
+
+修正後可直接執行：
+
+```powershell
+npm test
+```
+
+不需要再用 `npm.cmd test` 繞過。
+
+### 測試指令
+
+修改任何 JS 後至少執行：
+
+```powershell
+node --check .\game.js
+npm test
+```
+
+目前 `package.json` 有：
+
+```json
+{
+  "scripts": {
+    "check": "node --check game.js",
+    "test": "node --test"
+  }
+}
+```
+
+### 測試骨架
+
+測試使用 Node 內建 `node:test`，不額外引入測試框架。
+
+新增檔案：
+
+- `tests/helpers/script-loader.js`
+- `tests/rule-modes.test.js`
+- `tests/grid.test.js`
+- `tests/combat.test.js`
+
+`tests/helpers/script-loader.js` 使用 Node `vm` 載入瀏覽器用的全域 script，模擬 `<script>` 標籤依序載入的環境。這樣第一版測試不需要把現有程式改成 module。
+
+注意：`vm` context 回傳的物件原型不同，測試裡若要用 `deepEqual` 比對物件或陣列，先用 helper 的 `plain(value)` 轉成一般物件。
+
+### 第一批測試範圍
+
+目前單元測試共 10 個，涵蓋：
+
+- `scripts/data/rule-modes.js`：modified / original 規則模式切換
+- `scripts/systems/grid.js`：玩家座標與內部座標互轉、永久障礙、物件阻擋格
+- `scripts/systems/combat.js`：武器傷害、熱血倍率、鋼鐵減傷、`line2` 與 `ring8` 武器範圍
+
+已驗證通過：
+
+```powershell
+node --check .\game.js
+npm test
+```
+
+測試結果：10 pass / 0 fail。
