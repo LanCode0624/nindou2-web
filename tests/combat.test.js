@@ -57,3 +57,24 @@ test("ring8 武器會命中周圍八格", () => {
     ],
   );
 });
+
+test("line6 武器會命中正前方六格", () => {
+  const context = loadCombatRules();
+
+  assert.deepEqual(
+    plain(context.weaponAreaCells({ x: 5, y: 5, weaponKey: "weapon10" }, dirs.right)),
+    [
+      { x: 6, y: 5 }, { x: 7, y: 5 }, { x: 8, y: 5 },
+      { x: 9, y: 5 }, { x: 10, y: 5 }, { x: 11, y: 5 },
+    ],
+  );
+});
+
+test("NinjaS 武器會命中前方三格橫列", () => {
+  const context = loadCombatRules();
+
+  assert.deepEqual(
+    plain(context.weaponAreaCells({ x: 5, y: 5, weaponKey: "weapon44" }, dirs.up)),
+    [{ x: 4, y: 4 }, { x: 5, y: 4 }, { x: 6, y: 4 }],
+  );
+});

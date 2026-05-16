@@ -186,6 +186,16 @@ function weaponAreaCells(attacker, dir) {
       { x: x + dir.dx * 2, y: y + dir.dy * 2 },
     ].filter((cell) => inside(cell.x, cell.y));
   }
+  if (weapon.area === "line6") {
+    return [
+      { x: x + dir.dx, y: y + dir.dy },
+      { x: x + dir.dx * 2, y: y + dir.dy * 2 },
+      { x: x + dir.dx * 3, y: y + dir.dy * 3 },
+      { x: x + dir.dx * 4, y: y + dir.dy * 4 },
+      { x: x + dir.dx * 5, y: y + dir.dy * 5 },
+      { x: x + dir.dx * 6, y: y + dir.dy * 6 },
+    ].filter((cell) => inside(cell.x, cell.y));
+  }
   if (weapon.area === "fan") {
     const shapes = {
       up: [{ x: x - 1, y: y - 1 }, { x, y: y - 1 }, { x: x + 1, y: y - 1 }, { x: x - 1, y }, { x: x + 1, y }],
@@ -201,6 +211,15 @@ function weaponAreaCells(attacker, dir) {
       { x: x - 1, y },                         { x: x + 1, y },
       { x: x - 1, y: y + 1 }, { x, y: y + 1 }, { x: x + 1, y: y + 1 },
     ].filter((cell) => inside(cell.x, cell.y));
+  }
+  if (weapon.area === "NinjaS") {
+    const shapes = {
+      up: [{ x: x - 1, y: y - 1 }, { x, y: y - 1 }, { x: x + 1, y: y - 1 }],
+      down: [{ x: x - 1, y: y + 1 }, { x, y: y + 1 }, { x: x + 1, y: y + 1 }],
+      left: [{ x: x - 1, y: y - 1 }, { x: x - 1, y }, { x: x - 1, y: y + 1 }],
+      right: [{ x: x + 1, y: y - 1 }, { x: x + 1, y }, { x: x + 1, y: y + 1 }],
+    };
+    return (shapes[dir.name] || []).filter((cell) => inside(cell.x, cell.y));
   }
   const shapes = {
     up: [{ x: x - 1, y: y - 1 }, { x, y: y - 1 }, { x: x + 1, y: y - 1 }],
@@ -253,7 +272,11 @@ function slashSoundKeyForWeapon(weaponKey) {
     weapon3: "slash3",
     weapon4: "slash4",
     weapon6: "slash6",
+    weapon7: "slash7",
     weapon8: "slash8",
+    weapon10: "slash10",
+    weapon44: "slash44",
+    weapon106: "slash106",
   };
   return soundByWeapon[weaponKey] || soundByWeapon[defaultWeaponKey];
 }

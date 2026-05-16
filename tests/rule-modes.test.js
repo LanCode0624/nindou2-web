@@ -12,7 +12,7 @@ test("modified 模式使用調整後的武器與忍術數值", () => {
   assert.deepEqual(plain(context.steelRule()), {
     cost: 6,
     castDurationMs: 1500,
-    durationMs: 12000,
+    durationMs: 15000,
     defenseMultiplier: 1.7,
   });
   assert.equal(context.moneyDartRule().damage, 70);
