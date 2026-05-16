@@ -79,7 +79,7 @@ scripts/systems/ai.js
 - 下排分類順序：
   - 回復系：元氣、活氣、神氣
   - 輔助系：鋼鐵、熱血
-  - 攻擊系：閃光、野火、急凍
+  - 攻擊系：閃光、野火、死神、急凍
   - 特殊系：錢鏢
   - 變身系：預留
 
@@ -151,6 +151,20 @@ weapon8 -> assets/sounds/weapon/8.ogg
 - 範圍：`scripts/systems/combat.js -> weaponAreaCells()`
 - 音效：`scripts/data/assets.js -> slashX`
 
+目前已接入武器：
+
+| ID | 名稱 | area | 備註 |
+| --- | --- | --- | --- |
+| `weapon1` | 苦無 | `single` | 預設武器。 |
+| `weapon3` | 忍太刀 | `nodachi` | 使用既有 fallback 範圍。 |
+| `weapon4` | 伊賀密刀 | `line2` | modified 模式傷害另有覆蓋。 |
+| `weapon6` | 鐵扇不知火 | `fan` | modified 模式傷害另有覆蓋。 |
+| `weapon7` | 極冰鬼切丸 | `line2` | 從大力三搬入。 |
+| `weapon8` | 伊賀溜溜球 | `ring8` | modified / original 模式傷害另有覆蓋。 |
+| `weapon10` | 風魔手裏劍 | `line6` | 從大力三搬入，正前方 6 格。 |
+| `weapon44` | 滅魂之劍 | `NinjaS` | 從大力三搬入，前方橫列 3 格。 |
+| `weapon106` | 光劍 | `NinjaS` | 從大力三搬入，前方橫列 3 格。 |
+
 新增武器時要檢查：
 
 - 選單有沒有出現。
@@ -202,9 +216,17 @@ weapon8 -> assets/sounds/weapon/8.ogg
 
 目前攻擊系忍術：
 
-- `small_thunder`：閃光。
-- `small_fire`：野火。
-- `small_ice`：急凍。
+- 閃光。
+- 野火。
+- 死神。
+- 急凍。
+
+攻擊系忍術素材重點：
+
+- 野火：召喚素材必須使用 `assets/ninju/status/summon/small_fire/F/`，受擊素材必須使用 `assets/ninju/status/small_fire/F/`。
+- 死神：召喚素材使用 `assets/ninju/status/summon/death/`，受擊素材使用 `assets/ninju/status/damaged/death/`。
+- 不要讓野火改回 `small_fire` 根目錄；目前根目錄素材和死神會重疊。
+- 死神是獨立忍術 `death`，不要覆蓋或改名 `wildfire`。
 
 攻擊系忍術開發規則：
 
@@ -241,6 +263,7 @@ AI 主要位置：
 | ID | 名稱 | 行為 |
 | --- | --- | --- |
 | `ai_beginner` | 初心者 | 一般近戰 AI。 |
+| `ai_god` | AI神人 | 從大力三搬入，反應快、回技快、會積極拿錢鏢，profile 內保留 `hotBloodUseChance` / `wildfireUseChance`。 |
 | `ai_money_dart_master` | 錢鏢神人 | 會積極找直線位置丟錢鏢，也會近戰和上鋼鐵。 |
 | `ai_dart_only_master` | 尬鏢神人 | 幾乎只追著人丟錢鏢，不主動近戰，但卡住時會砍障礙物脫困。 |
 
@@ -259,6 +282,7 @@ AI 重要規則：
 - 尬鏢神人不主動近戰、不撞人。
 - 尬鏢神人被障礙物困住時，可以用武器砍障礙物脫困。
 - 所有 AI 被困時要快速砍草 / 障礙物，不要長時間左右抖動。
+- `ai_god` 目前照搬大力三的 profile；如果要讓它真的主動熱血或野火，需要再補 `tryAiNinjutsu()` 的使用邏輯。
 
 ---
 
@@ -269,6 +293,8 @@ AI 重要規則：
 - 不要讓攻擊系忍術消耗技。
 - 不要讓熱血影響衝撞或錢鏢。
 - 不要複製攻擊系忍術流程，優先共用 `attackNinjuConfigs`。
+- 不要把大力三的死神直接覆蓋到 `wildfire`；目前版本要保留野火，死神使用獨立 `death`。
+- 不要讓野火素材走 `assets/ninju/status/small_fire/` 根目錄，應走 `small_fire/F/` 子資料夾。
 - 不要用英文註解迴避中文亂碼問題，應該修正編碼或寫入方式。
 
 ---
@@ -319,7 +345,7 @@ AI 重要規則：
 ### Git 狀態
 
 - 已在專案根目錄建立 `.git`
-- 目前工作分支：`test/minimal-node-tests`
+- 開始新功能時要建立新分支，不要直接在 `main` / `master` 上實作。
 - 初始提交：`f0d62a0 初始化專案並加入單元測試骨架`
 - 不要直接推送到 `main` / `master`
 
@@ -385,11 +411,11 @@ npm test
 
 ### 第一批測試範圍
 
-目前單元測試共 10 個，涵蓋：
+目前單元測試共 12 個，涵蓋：
 
 - `scripts/data/rule-modes.js`：modified / original 規則模式切換
 - `scripts/systems/grid.js`：玩家座標與內部座標互轉、永久障礙、物件阻擋格
-- `scripts/systems/combat.js`：武器傷害、熱血倍率、鋼鐵減傷、`line2` 與 `ring8` 武器範圍
+- `scripts/systems/combat.js`：武器傷害、熱血倍率、鋼鐵減傷、`line2`、`ring8`、`line6` 與 `NinjaS` 武器範圍
 
 已驗證通過：
 
@@ -398,4 +424,4 @@ node --check .\game.js
 npm test
 ```
 
-測試結果：10 pass / 0 fail。
+測試結果：12 pass / 0 fail。
