@@ -56,6 +56,14 @@ const modeRuleProfiles = {
         missDisableMs: flashMissDisableMs,
         hitDisableMs: flashHitDisableMs,
       },
+      death: {
+        cost: 7,
+        castDurationMs: 1500,
+        hitChance: flashHitChance,
+        damage: flashDamage,
+        missDisableMs: flashMissDisableMs,
+        hitDisableMs: flashHitDisableMs,
+      },
       freeze: {
         cost: 7,
         castDurationMs: 1500,
@@ -118,6 +126,14 @@ const modeRuleProfiles = {
         hitDisableMs: flashHitDisableMs,
       },
       wildfire: {
+        cost: 7,
+        castDurationMs: 1500,
+        hitChance: flashHitChance,
+        damage: flashDamage,
+        missDisableMs: flashMissDisableMs,
+        hitDisableMs: flashHitDisableMs,
+      },
+      death: {
         cost: 7,
         castDurationMs: 1500,
         hitChance: flashHitChance,
@@ -200,6 +216,10 @@ function flashRule() {
 
 function wildfireRule() {
   return attackNinjuRule("wildfire");
+}
+
+function deathRule() {
+  return attackNinjuRule("death");
 }
 
 function freezeRule() {

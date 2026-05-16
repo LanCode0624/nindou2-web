@@ -56,7 +56,8 @@ const ninjuCatalog = [
   { type: "hotBlood", label: "熱血", group: "buff", editorRow: "support", editorOrder: 2 },
   { type: "flash", label: "閃光", group: "attack", editorRow: "attack", editorOrder: 1 },
   { type: "wildfire", label: "野火", group: "attack", editorRow: "attack", editorOrder: 2 },
-  { type: "freeze", label: "急凍", group: "attack", editorRow: "attack", editorOrder: 3 },
+  { type: "death", label: "死神", group: "attack", editorRow: "attack", editorOrder: 3 },
+  { type: "freeze", label: "急凍", group: "attack", editorRow: "attack", editorOrder: 4 },
   { type: "genki", label: "元氣", group: "heal", editorRow: "heal", editorOrder: 1 },
   { type: "kakki", label: "活氣", group: "heal", editorRow: "heal", editorOrder: 2 },
   { type: "shinki", label: "神氣", group: "heal", editorRow: "heal", editorOrder: 3 },
@@ -287,6 +288,8 @@ function loadImages() {
   const smallThunderDamagedImages = smallThunderDamagedFrameSources.map((src, index) => loadFrame(src, smallThunderDamagedFrames, index));
   const smallFireSummonImages = smallFireSummonFrameSources.map((src, index) => loadFrame(src, smallFireSummonFrames, index));
   const smallFireDamagedImages = smallFireDamagedFrameSources.map((src, index) => loadFrame(src, smallFireDamagedFrames, index));
+  const deathSummonImages = deathSummonFrameSources.map((src, index) => loadFrame(src, deathSummonFrames, index));
+  const deathDamagedImages = deathDamagedFrameSources.map((src, index) => loadFrame(src, deathDamagedFrames, index));
   const smallIceSummonImages = smallIceSummonFrameSources.map((src, index) => loadFrame(src, smallIceSummonFrames, index));
   const smallIceDamagedImages = smallIceDamagedFrameSources.map((src, index) => loadFrame(src, smallIceDamagedFrames, index));
   const smallIceBreakImages = smallIceBreakFrameSources.map((src, index) => loadFrame(src, smallIceBreakFrames, index));
@@ -294,6 +297,8 @@ function loadImages() {
   const faintedImages = faintedFrameSources.map((src, index) => loadFrame(src, faintedFrames, index));
   const damageSuccessSmallImages = damageSuccessSmallFrameSources.map((src, index) => loadFrame(src, damageSuccessSmallFrames, index));
   const damageSuccessMiddleImages = damageSuccessMiddleFrameSources.map((src, index) => loadFrame(src, damageSuccessMiddleFrames, index));
+  const damageSuccessBigImages = damageSuccessBigFrameSources.map((src, index) => loadFrame(src, damageSuccessBigFrames, index));
+  const damageSuccessNinjuSuccessImages = damageSuccessNinjuSuccessFrameSources.map((src, index) => loadFrame(src, damageSuccessNinjuSuccessFrames, index));
   const readyImages = Object.entries(moneyDartReadyFrameSources).flatMap(([team, sources]) =>
     sources.map((src, index) => loadFrame(src, moneyDartReadyFrames[team], index))
   );
@@ -332,7 +337,7 @@ function loadImages() {
   ));
   const chargeRedImages = chargeRedFrameSources.map((src, index) => loadFrame(src, chargeRedFrames, index));
   const chargeYellowImages = chargeYellowFrameSources.map((src, index) => loadFrame(src, chargeYellowFrames, index));
-  return Promise.all([...staticImages, ...ninjuImages, ...atkUpImages, ...regenHpSmallImages, ...regenHpLargeImages, ...smallThunderSummonImages, ...smallThunderDamagedImages, ...smallFireSummonImages, ...smallFireDamagedImages, ...smallIceSummonImages, ...smallIceDamagedImages, ...smallIceBreakImages, ...damageFailImages, ...faintedImages, ...damageSuccessSmallImages, ...damageSuccessMiddleImages, ...chargeRedImages, ...chargeYellowImages, ...readyImages, ...pickupImages, ...respawnPointerImages, ...dragArrowImages, ...movePrearriveImages, ...moveArriveImages, ...useNinjuImages, ...weaponImages, ...shootImages]);
+  return Promise.all([...staticImages, ...ninjuImages, ...atkUpImages, ...regenHpSmallImages, ...regenHpLargeImages, ...smallThunderSummonImages, ...smallThunderDamagedImages, ...smallFireSummonImages, ...smallFireDamagedImages, ...deathSummonImages, ...deathDamagedImages, ...smallIceSummonImages, ...smallIceDamagedImages, ...smallIceBreakImages, ...damageFailImages, ...faintedImages, ...damageSuccessSmallImages, ...damageSuccessMiddleImages, ...damageSuccessBigImages, ...damageSuccessNinjuSuccessImages, ...chargeRedImages, ...chargeYellowImages, ...readyImages, ...pickupImages, ...respawnPointerImages, ...dragArrowImages, ...movePrearriveImages, ...moveArriveImages, ...useNinjuImages, ...weaponImages, ...shootImages]);
 }
 
 // 載入單張動畫影格，成功後放到指定陣列位置。
@@ -1578,6 +1583,9 @@ function ninjuDamageFrames(type) {
   if (type === "flashHit") return faintedFrames;
   if (type === "flashHitHead") return damageSuccessSmallFrames;
   if (type === "wildfireMiddleHitHead") return damageSuccessMiddleFrames;
+  if (type === "deathMiddleHitHead") return damageSuccessMiddleFrames;
+  if (type === "deathBigHitHead") return damageSuccessBigFrames;
+  if (type === "deathNinjuSuccess") return damageSuccessNinjuSuccessFrames;
   return [];
 }
 
@@ -1585,6 +1593,7 @@ function ninjuDamageEffectPlacement(type) {
   if (type === "flashMiss") return { x: 0, y: 76, w: 87, h: 57 };
   if (type === "flashHitHead") return { x: 0, y: 78, w: 87, h: 57 };
   if (type === "wildfireMiddleHitHead") return { x: 0, y: 78, w: 87, h: 57 };
+  if (type === "deathMiddleHitHead" || type === "deathBigHitHead" || type === "deathNinjuSuccess") return { x: 0, y: 50, w: 65, h: 70 };
   if (type === "flashHit") return { x: 0, y: 35, w: 74, h: 74 };
   return { x: 0, y: 22, w: 138, h: 138 };
 }

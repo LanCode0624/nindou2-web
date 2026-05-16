@@ -25,8 +25,10 @@ const soundSources = {
   regenHpSmall: "assets/sounds/ninja/status/regen_hp_s.ogg",
   regenHpLarge: "assets/sounds/ninja/status/regen_hp_l.ogg",
   summonSmall: "assets/sounds/ninja/status/summon/summon_small.ogg",
+  summonDeath: "assets/sounds/ninja/status/summon/Death.ogg",
   smallThunder: "assets/sounds/ninja/status/damaged/small_thunder.ogg",
   smallFire: "assets/sounds/ninja/status/damaged/small_fire.ogg",
+  deathHit: "assets/sounds/ninja/status/damaged/Death1.ogg",
   smallIceHit: "assets/sounds/ninja/status/damaged/small_ice_hit.ogg",
   gameStarted: "assets/sounds/in_game/game_started.ogg",
   soulLevelUp: "assets/sounds/in_game/soul/1.ogg",
@@ -121,6 +123,10 @@ const smallFireSummonFrameSources = Array.from({ length: 23 }, (_, index) => `as
 const smallFireSummonFrames = [];
 const smallFireDamagedFrameSources = Array.from({ length: 43 }, (_, index) => `assets/ninju/status/small_fire/${index + 1}.png`);
 const smallFireDamagedFrames = [];
+const deathSummonFrameSources = Array.from({ length: 42 }, (_, index) => `assets/ninju/status/summon/death/${index + 1}.png`);
+const deathSummonFrames = [];
+const deathDamagedFrameSources = Array.from({ length: 41 }, (_, index) => `assets/ninju/status/damaged/death/Symbol ${5990004 + index}.png`);
+const deathDamagedFrames = [];
 const smallIceSummonFrameSources = Array.from({ length: 23 }, (_, index) => `assets/ninju/status/summon/small_ice/${String(index + 1).padStart(2, "0")}.png`);
 const smallIceSummonFrames = [];
 const smallIceDamagedFrameSources = Array.from({ length: 40 }, (_, index) => `assets/ninju/status/small_ice/${index + 1}.png`);
@@ -135,6 +141,10 @@ const damageSuccessSmallFrameSources = Array.from({ length: 10 }, (_, index) => 
 const damageSuccessSmallFrames = [];
 const damageSuccessMiddleFrameSources = Array.from({ length: 10 }, (_, index) => `assets/ninju/status/damage_success/middle/Symbol ${3090001 + index}.png`);
 const damageSuccessMiddleFrames = [];
+const damageSuccessBigFrameSources = Array.from({ length: 10 }, (_, index) => `assets/ninju/status/damage_success/big/${index + 1}.png`);
+const damageSuccessBigFrames = [];
+const damageSuccessNinjuSuccessFrameSources = Array.from({ length: 10 }, (_, index) => `assets/ninju/status/damage_success/norm/${index + 1}.png`);
+const damageSuccessNinjuSuccessFrames = [];
 const attackNinjuConfigs = {
   flash: {
     label: "\u9583\u5149",
@@ -154,6 +164,20 @@ const attackNinjuConfigs = {
     outcomes: [
       { chance: 0.3, damage: 50, headEffect: "flashHitHead" },
       { chance: 0.2, damage: 100, headEffect: "wildfireMiddleHitHead" },
+    ],
+  },
+  death: {
+    label: "\u6b7b\u795e",
+    rule: "deathRule",
+    summonFrames: deathSummonFrames,
+    hitFrames: deathDamagedFrames,
+    castSound: "summonDeath",
+    hitSound: "deathHit",
+    outcomes: [
+      { chance: 0.0, damage: 9999, headEffect: "flashHitHead" },
+      { chance: 0.0, damage: 9999, headEffect: "deathMiddleHitHead" },
+      { chance: 0.0, damage: 9999, headEffect: "deathBigHitHead" },
+      { chance: 0.08, damage: 9999, headEffect: "deathNinjuSuccess" },
     ],
   },
   freeze: {
