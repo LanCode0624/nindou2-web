@@ -10,6 +10,7 @@ const musicVolumeInput = document.querySelector("#musicVolume");
 const sfxVolumeInput = document.querySelector("#sfxVolume");
 const ruleModeToggle = document.querySelector("#ruleModeToggle");
 const ruleModeCheckbox = document.querySelector("#ruleModeCheckbox");
+const roomLangToggleBtn = document.querySelector("#roomLangToggleBtn");
 const teamEditBtn = document.querySelector("#teamEditBtn");
 const ninjuEditorEl = document.querySelector("#ninjuEditor");
 const ninjuEditorSlotsEl = document.querySelector("#ninjuEditorSlots");
@@ -2088,6 +2089,14 @@ function toggleRuleMode() {
   updateRuleModeUi();
 }
 
+function toggleRoomLangButtonLabel() {
+  if (!roomLangToggleBtn) return;
+  // 目前先切換按鈕文字，後續合併 ENG 版本時可直接接語系切換。
+  const nextLabel = roomLangToggleBtn.textContent.trim() === "ENG" ? "中文" : "ENG";
+  roomLangToggleBtn.textContent = nextLabel;
+  roomLangToggleBtn.setAttribute("aria-label", nextLabel);
+}
+
 function openNinjuEditor() {
   if (!ninjuEditorEl) return;
   editNinjuDraft = [...selectedNinjuLoadout];
@@ -2186,6 +2195,7 @@ if (ninjuEditorCancelBtn) ninjuEditorCancelBtn.addEventListener("click", closeNi
 if (ninjuEditorSaveBtn) ninjuEditorSaveBtn.addEventListener("click", saveNinjuEditor);
 if (musicVolumeInput) musicVolumeInput.addEventListener("input", applyVolumeControls);
 if (sfxVolumeInput) sfxVolumeInput.addEventListener("input", applyVolumeControls);
+if (roomLangToggleBtn) roomLangToggleBtn.addEventListener("click", toggleRoomLangButtonLabel);
 if (ruleModeToggle) ruleModeToggle.addEventListener("click", toggleRuleMode);
 window.addEventListener("keydown", startBgm, { once: true });
 
