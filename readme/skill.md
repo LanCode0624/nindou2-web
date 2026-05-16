@@ -68,6 +68,8 @@ scripts/systems/ai.js
   - 武器
 - 右上角 `X` 可以刪掉卡片，但 `slot 1` 不能刪。
 - 點「編輯」可以打開忍術配置畫面，自選這場要帶的 6 個忍術。
+- 房間上方有 `ENG` / `中文` 切換按鈕，目前先只切換按鈕文字；後續合併英文版時再接實際語系邏輯。
+- 房間文字按鈕共用 `style.css -> .room-text-button` 外觀；單一按鈕 class 只保留位置與尺寸，例如 `.team-edit-btn`、`.room-lang-toggle-btn`。
 
 忍術編輯介面規則：
 
@@ -296,6 +298,7 @@ AI 重要規則：
 - 不要把大力三的死神直接覆蓋到 `wildfire`；目前版本要保留野火，死神使用獨立 `death`。
 - 不要讓野火素材走 `assets/ninju/status/small_fire/` 根目錄，應走 `small_fire/F/` 子資料夾。
 - 不要用英文註解迴避中文亂碼問題，應該修正編碼或寫入方式。
+- `style.css` 內不要保留亂碼註解；看不出原意時直接移除，避免之後 patch 對不上。
 
 ---
 
@@ -313,6 +316,9 @@ AI 重要規則：
 - `style.css`
 - `game.js`
 - `game.js -> renderNinjuEditor()`
+- 語言按鈕入口：`index.html -> #roomLangToggleBtn`
+- 語言按鈕事件：`game.js -> toggleRoomLangButtonLabel()`
+- 房間文字按鈕外觀：`style.css -> .room-text-button`
 
 ### 想改武器數值
 
