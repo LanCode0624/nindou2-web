@@ -74,15 +74,15 @@ function useAttackNinju(type) {
 }
 
 function useGenkiNinju() {
-  useStatusNinju("genki", "\u5143\u6c23");
+  useStatusNinju("genki", localizedNinjuTypeLabel("genki"));
 }
 
 function useKakkiNinju() {
-  useStatusNinju("kakki", "\u6d3b\u6c23");
+  useStatusNinju("kakki", localizedNinjuTypeLabel("kakki"));
 }
 
 function useShinkiNinju() {
-  useStatusNinju("shinki", "\u795e\u6c23");
+  useStatusNinju("shinki", localizedNinjuTypeLabel("shinki"));
 }
 
 function useStatusNinju(type, label) {

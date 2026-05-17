@@ -180,6 +180,31 @@ const roomLocaleText = {
     reset: "重來",
     cancel: "取消",
     save: "儲存",
+    topHudName: "皇天不負工具人",
+    topHudLevel: "99段",
+    topHudRole: "夜遊神",
+    cellLabel: "座標",
+    hpBadge: "体",
+    skillBadge: "技",
+    weaponBadge: "武",
+    repBadge: "德",
+    goldBadge: "金",
+    itemBadge: "道",
+    ninjuBadge: "術",
+    countdown3: "三",
+    countdown2: "二",
+    countdown1: "一",
+    countdownStart: "開始！",
+    victory: "勝利",
+    defeat: "敗北",
+    gameTime: "遊戲時間",
+    resultHeaders: ["角色", "隊伍", "殺敵", "造成傷害", "承受傷害"],
+    panelSkill: "技能",
+    panelCell: "座標",
+    ninjuCasting: "施放中",
+    ninjuMovable: "可移動",
+    ninjuSkillCostPrefix: "技",
+    secondsSuffix: "秒",
   },
   en: {
     htmlLang: "en",
@@ -244,6 +269,31 @@ const roomLocaleText = {
     reset: "Reset",
     cancel: "Cancel",
     save: "Save",
+    topHudName: "Player",
+    topHudLevel: "Lv. 99",
+    topHudRole: "Night Rogue",
+    cellLabel: "Cell",
+    hpBadge: "HP",
+    skillBadge: "SP",
+    weaponBadge: "WPN",
+    repBadge: "REP",
+    goldBadge: "GOLD",
+    itemBadge: "ITEM",
+    ninjuBadge: "SKILL",
+    countdown3: "3",
+    countdown2: "2",
+    countdown1: "1",
+    countdownStart: "START!",
+    victory: "Victory",
+    defeat: "Defeat",
+    gameTime: "Game Time",
+    resultHeaders: ["Unit", "Team", "Kills", "Damage Dealt", "Damage Taken"],
+    panelSkill: "SKILL",
+    panelCell: "CELL",
+    ninjuCasting: "Casting",
+    ninjuMovable: "Move",
+    ninjuSkillCostPrefix: "SP",
+    secondsSuffix: "s",
   },
 };
 
@@ -616,10 +666,24 @@ function localizedNinjuLabel(ninju) {
   return ninju.enLabel || ninju.label;
 }
 
+function localizedNinjuTypeLabel(type) {
+  const ninju = ninjuByType[type];
+  if (!ninju) return type;
+  return localizedNinjuLabel(ninju);
+}
+
 function roomTeamLabel(team) {
   if (team === "blue") return "Blue";
   if (team === "grey") return "Grey";
   return team;
+}
+
+function localizedCountdownText(step) {
+  const text = roomLocale();
+  if (step === 3) return text.countdown3;
+  if (step === 2) return text.countdown2;
+  if (step === 1) return text.countdown1;
+  return text.countdownStart;
 }
 
 function formatRoomLevelText(team, slot) {
@@ -1988,20 +2052,21 @@ function drawCountdownOverlay(now) {
   ctx.save();
   ctx.fillStyle = "rgba(0, 0, 0, .18)";
   ctx.fillRect(grid.left, grid.top, grid.cols * grid.cell, grid.rows * grid.cell);
-  const shake = step.text === "\u958b\u59cb！" ? Math.sin(now / 35) * 8 : 0;
-  const scale = step.text === "\u958b\u59cb！" ? 1 + Math.sin(now / 70) * 0.06 : 1;
+  const startText = localizedCountdownText(0);
+  const shake = step.text === startText ? Math.sin(now / 35) * 8 : 0;
+  const scale = step.text === startText ? 1 + Math.sin(now / 70) * 0.06 : 1;
   ctx.translate(canvas.width / 2 + shake, grid.top + grid.rows * grid.cell / 2 - 16);
   ctx.scale(scale, scale);
-  drawOutlinedText(step.text, 0, 0, step.text === "\u958b\u59cb！" ? 76 : 96, step.color, "center");
+  drawOutlinedText(step.text, 0, 0, step.text === startText ? 76 : 96, step.color, "center");
   ctx.restore();
 }
 
 // 依倒數經過時間回傳目前要顯示的文字與顏色。
 function countdownStep(elapsed) {
-  if (elapsed < 500) return { text: "\u4e09", color: "#fff1a8" };
-  if (elapsed < 1000) return { text: "\u4e8c", color: "#fff1a8" };
-  if (elapsed < 1500) return { text: "\u4e00", color: "#fff1a8" };
-  if (elapsed < countdownTotalMs) return { text: "\u958b\u59cb！", color: "#ffea4d" };
+  if (elapsed < 500) return { text: localizedCountdownText(3), color: "#fff1a8" };
+  if (elapsed < 1000) return { text: localizedCountdownText(2), color: "#fff1a8" };
+  if (elapsed < 1500) return { text: localizedCountdownText(1), color: "#fff1a8" };
+  if (elapsed < countdownTotalMs) return { text: localizedCountdownText(0), color: "#ffea4d" };
   return null;
 }
 
@@ -2017,14 +2082,15 @@ function drawResultOverlay() {
   ctx.fillRect(142, 88, 676, 504);
   ctx.strokeRect(142, 88, 676, 504);
 
-  const title = state.result.winner === "blue" ? "勝利" : "敗北";
+  const text = roomLocale();
+  const title = state.result.winner === "blue" ? text.victory : text.defeat;
   drawOutlinedText(title, canvas.width / 2, 130, 48, state.result.winner === "blue" ? "#78ddff" : "#ff8d7d", "center");
-  drawOutlinedText(`遊戲時間 ${formatMatchTime(state.result.durationMs)}`, canvas.width / 2, 176, 22, "#f6f2d0", "center");
+  drawOutlinedText(`${text.gameTime} ${formatMatchTime(state.result.durationMs)}`, canvas.width / 2, 176, 22, "#f6f2d0", "center");
 
   ctx.font = "700 17px Microsoft JhengHei, sans-serif";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
-  drawResultRow(["角色", "隊伍", "殺敵", "造成傷害", "承受傷害"], 214, true);
+  drawResultRow(text.resultHeaders, 214, true);
   const rows = state.units.slice().sort((a, b) => a.team.localeCompare(b.team) || a.id - b.id);
   rows.forEach((unit, index) => {
     drawResultRow([
@@ -2100,18 +2166,19 @@ function drawSoulHud() {
 
 // 繪製上方玩家名稱、段數與段位文字。
 function drawTopHud() {
+  const text = roomLocale();
   ctx.save();
   ctx.fillStyle = "rgba(6, 47, 55, .5)"; // 上方藍底顏色/透明度：最後的 .7 是透明度，0 完全透明，1 完全不透明。
   ctx.fillRect(0, 0, canvas.width, 32); // 上方藍底位置/大小：第一個數字 X，第二個數字 Y，第四個數字高度；數字變大會往右/往下/變高。
   ctx.textBaseline = "middle";
   drawIconImage(images.blueIcon, 38, 5, 35, 25); // 左上人頭位置/大小：X=38 往右，Y=18 往下，W=42 寬度，H=31 高度。
-  drawOutlinedText("\u7687\u5929\u4e0d\u8ca0\u5de5\u5177\u4eba", 118, 18, 17, "#f4f3dd", "left"); // 上方玩家名稱位置/大小/顏色
-  drawOutlinedText("99段", 294, 18, 18, "#f4f3dd", "center"); // 上方段數位置/大小/顏色
-  drawOutlinedText("夜遊神", 372, 18, 18, "#f4f3dd", "center"); // 上方段位位置/大小/顏色
+  drawOutlinedText(text.topHudName, 118, 18, 17, "#f4f3dd", "left"); // 上方玩家名稱位置/大小/顏色
+  drawOutlinedText(text.topHudLevel, 294, 18, 18, "#f4f3dd", "center"); // 上方段數位置/大小/顏色
+  drawOutlinedText(text.topHudRole, 372, 18, 18, "#f4f3dd", "center"); // 上方段位位置/大小/顏色
   const unit = state.units.find((u) => u.id === playerUnitId);
   if (unit) {
     const coord = displayCellCoord(unit);
-    drawOutlinedText(`座標 [${coord.x},${coord.y}]`, grid.left + grid.cols * grid.cell - 10, 18, 13, "#d9f4ff", "right"); // 右上角目前角色座標位置/大小/顏色
+    drawOutlinedText(`${text.cellLabel} [${coord.x},${coord.y}]`, grid.left + grid.cols * grid.cell - 10, 18, 13, "#d9f4ff", "right"); // 右上角目前角色座標位置/大小/顏色
   }
   ctx.restore();
 }
@@ -2122,15 +2189,16 @@ function drawBottomPlayerHud() {
   const hpRatio = unit ? Math.max(0, unit.hp / (unit.maxHp || maxHp)) : 0;
   const skillRatio = unit ? Math.max(0, unit.skill / maxSkill) : 0;
   const hpText = unit ? `${Math.max(0, Math.round(unit.hp))}/${Math.round(unit.maxHp || maxHp)}` : `0/${Math.round(maxHp)}`;
+  const text = roomLocale();
 
   ctx.save();
-  drawHudBar(45, 574, 165, 30, hpRatio, "#a057be", "体", hpText); // 體條位置/大小/填滿顏色
-  drawHudBar(262, 574, 165, 30, skillRatio, "#38c2f2", "技"); // 技條位置/大小/填滿顏色
-  drawOutlinedText("武", 35, 654, 18, "#f0f0df", "center"); // 武字位置/大小/顏色 X:35(間隔15)
+  drawHudBar(45, 574, 165, 30, hpRatio, "#a057be", text.hpBadge, hpText); // 體條位置/大小/填滿顏色
+  drawHudBar(262, 574, 165, 30, skillRatio, "#38c2f2", text.skillBadge); // 技條位置/大小/填滿顏色
+  drawOutlinedText(text.weaponBadge, 35, 654, isRoomEnglish() ? 13 : 18, "#f0f0df", "center"); // 武字位置/大小/顏色 X:35(間隔15)
   drawMoneyBox(50, 642, "", 95); // 武器名稱框位置/寬度 X:50+100=150
-  drawOutlinedText("德", 175, 654, 18, "#f0f0df", "center"); // 德字位置/大小/顏色 X:180(30)
+  drawOutlinedText(text.repBadge, 175, 654, isRoomEnglish() ? 13 : 18, "#f0f0df", "center"); // 德字位置/大小/顏色 X:180(30)
   drawMoneyBox(190, 642, "0", 95); // 德數值框位置/寬度 195(15)
-  drawOutlinedText("金", 315, 654, 18, "#f0f0df", "center"); // 金字位置/大小/顏色
+  drawOutlinedText(text.goldBadge, 315, 654, isRoomEnglish() ? 12 : 18, "#f0f0df", "center"); // 金字位置/大小/顏色
   drawMoneyBox(330, 642, "0", 95); // 金數值框位置/寬度
   ctx.restore();
 }
@@ -2194,10 +2262,11 @@ function drawInventoryHud() {
   const startX = 510; // 道具格起始 X 位置
   const slotW = 38; // 道具格寬度
   const gap = 6; // 道具格間距
+  const text = roomLocale();
 
   ctx.save();
-  drawOutlinedText("道", 482, itemY + 14, 22, "#f0f0df", "center"); // 道字位置/大小/顏色
-  drawOutlinedText("術", 482, ninjuY + 15, 22, "#f0f0df", "center"); // 術字位置/大小/顏色
+  drawOutlinedText(text.itemBadge, 482, itemY + 14, isRoomEnglish() ? 12 : 22, "#f0f0df", "center"); // 道字位置/大小/顏色
+  drawOutlinedText(text.ninjuBadge, 482, ninjuY + 15, isRoomEnglish() ? 12 : 22, "#f0f0df", "center"); // 術字位置/大小/顏色
 
   for (let i = 0; i < 10; i++) {
     const x = startX + i * (slotW + gap); // 第 i 個道具格 X 位置
@@ -2308,13 +2377,13 @@ function currentNinjuButtonList() {
   return selectedNinjuLoadout.map((type, index) => {
     if (!type || !ninjuByType[type]) return null;
     const source = slots[index] || slots[0];
-    const ninju = ninjuByType[type] || { label: type };
+    const ninju = ninjuByType[type] || { label: type, enLabel: type };
     return {
       ...source,
       // Slot offset is intentional: user-tuned +0/+1/+2/+3/+4/+5 alignment.
       x: source.x + index,
       type,
-      label: ninju.label,
+      label: localizedNinjuLabel(ninju),
     };
   }).filter(Boolean);
 }
@@ -2390,6 +2459,7 @@ function drawOutlinedText(text, x, y, size, color, align = "left") {
 function drawNinjuBar() {
   const unit = selectedHudUnit();
   if (!unit) return;
+  const text = roomLocale();
   const active = isUnitCastingNinju(unit);
   const gap = isUnitInNinjuGap(unit);
   const steelBuff = isSteelDefenseActive(unit);
@@ -2400,8 +2470,8 @@ function drawNinjuBar() {
   ctx.fillStyle = "rgba(0,0,0,.55)";
   ctx.fillRect(814, 636, 62, 30);
   const buffUntil = Math.max(unit.steelUntil || 0, unit.hotBloodUntil || 0);
-  const text = active ? "施放中" : gap ? "可移動" : buff ? `${Math.ceil((buffUntil - performance.now()) / 1000)}秒` : `技 ${steelRule().cost}`;
-  drawOutlinedText(text, 845, 651, 14, "#f7f6d7", "center");
+  const displayText = active ? text.ninjuCasting : gap ? text.ninjuMovable : buff ? `${Math.ceil((buffUntil - performance.now()) / 1000)}${text.secondsSuffix}` : `${text.ninjuSkillCostPrefix} ${steelRule().cost}`;
+  drawOutlinedText(displayText, 845, 651, 14, "#f7f6d7", "center");
   ctx.restore();
 }
 
@@ -2572,11 +2642,12 @@ function pointerUp(event) {
 function updatePanel() {
   const unit = selectedHudUnit();
   if (!unit) return;
+  const text = roomLocale();
   const coord = displayCellCoord(unit);
   unitInfoEl.innerHTML = `
     <div>HP: ${Math.round(unit.hp)}/${unit.maxHp || maxHp}</div>
-    <div>SKILL: ${unit.skill.toFixed(1)} / ${maxSkill}</div>
-    <div>CELL: [${coord.x}, ${coord.y}]</div>
+    <div>${text.panelSkill}: ${unit.skill.toFixed(1)} / ${maxSkill}</div>
+    <div>${text.panelCell}: [${coord.x}, ${coord.y}]</div>
   `;
   skillFillEl.style.width = `${Math.min(100, unit.skill / maxSkill * 100)}%`;
 }
