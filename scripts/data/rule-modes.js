@@ -5,6 +5,7 @@ const modeRuleProfiles = {
     weapons: {
       weapon4: { damage: 40 }, // 伊賀密刀
       weapon6: { damage: 13 }, // 鐵扇不知火
+      weapon7: { damage: 70 }, // 極冰鬼切丸
       weapon8: { damage: 20 }, // 伊賀溜溜球
     },
     ninjutsu: {
