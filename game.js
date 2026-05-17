@@ -1378,6 +1378,7 @@ function drawHp(unit, x, y) {
   const W = 50, H = 8;
   const hpMax = unit.maxHp || maxHp;
   const ratio = Math.max(0, unit.hp / hpMax);
+  const hpText = `${Math.max(0, Math.round(unit.hp))}/${Math.round(hpMax)}`;
   // 底層背景圖
   if (images.barBackground) {
     ctx.drawImage(images.barBackground, x - W / 2, y, W, H);
@@ -1397,6 +1398,15 @@ function drawHp(unit, x, y) {
   ctx.strokeStyle = "rgba(255,255,255,0.25)";
   ctx.lineWidth = 0.6;
   ctx.strokeRect(x - W / 2 + 1, y + 1, W - 2, H - 2);
+  // 直接在頭上血條中央顯示具體血量，方便戰鬥中讀值。
+  ctx.font = "700 7px Microsoft JhengHei, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "rgba(0,0,0,0.85)";
+  ctx.strokeText(hpText, x, y + H / 2);
+  ctx.fillStyle = "#fff7d6";
+  ctx.fillText(hpText, x, y + H / 2);
   ctx.restore();
 }
 
@@ -1759,9 +1769,10 @@ function drawBottomPlayerHud() {
   const unit = selectedHudUnit();
   const hpRatio = unit ? Math.max(0, unit.hp / (unit.maxHp || maxHp)) : 0;
   const skillRatio = unit ? Math.max(0, unit.skill / maxSkill) : 0;
+  const hpText = unit ? `${Math.max(0, Math.round(unit.hp))}/${Math.round(unit.maxHp || maxHp)}` : `0/${Math.round(maxHp)}`;
 
   ctx.save();
-  drawHudBar(45, 574, 165, 30, hpRatio, "#a057be", "体"); // 體條位置/大小/填滿顏色
+  drawHudBar(45, 574, 165, 30, hpRatio, "#a057be", "体", hpText); // 體條位置/大小/填滿顏色
   drawHudBar(262, 574, 165, 30, skillRatio, "#38c2f2", "技"); // 技條位置/大小/填滿顏色
   drawOutlinedText("武", 35, 654, 18, "#f0f0df", "center"); // 武字位置/大小/顏色 X:35(間隔15)
   drawMoneyBox(50, 642, "", 95); // 武器名稱框位置/寬度 X:50+100=150
@@ -1773,7 +1784,7 @@ function drawBottomPlayerHud() {
 }
 
 // 繪製體力或技力條。
-function drawHudBar(x, y, w, h, ratio, color, label) {
+function drawHudBar(x, y, w, h, ratio, color, label, valueText = "") {
   ctx.save();
   ctx.fillStyle = "#26302c"; // 體/技條外框底色
   ctx.strokeStyle = "#d4a85e"; // 體/技條外框線顏色
@@ -1790,6 +1801,17 @@ function drawHudBar(x, y, w, h, ratio, color, label) {
   ctx.fill();
   ctx.stroke();
   drawOutlinedText(label, x - 10, y + h / 2 + 1, 19, "#e9f3dc", "center"); // 體/技字位置/大小/顏色
+  if (valueText) {
+    // 在 HUD 條中央顯示精確數值，避免只看比例條。
+    ctx.font = "700 15px Microsoft JhengHei, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "rgba(0,0,0,0.85)";
+    ctx.strokeText(valueText, x + w / 2, y + h / 2 + 1);
+    ctx.fillStyle = "#fff7d6";
+    ctx.fillText(valueText, x + w / 2, y + h / 2 + 1);
+  }
   ctx.restore();
 }
 
