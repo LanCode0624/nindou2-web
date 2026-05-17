@@ -686,6 +686,11 @@ function localizedCountdownText(step) {
   return text.countdownStart;
 }
 
+function localizedNinjuFontSize(size) {
+  if (!isRoomEnglish()) return size;
+  return Math.max(1, size - 3);
+}
+
 function formatRoomLevelText(team, slot) {
   const profile = roomLevelProfiles[`${team}-${slot}`];
   if (!profile) return "";
@@ -2324,32 +2329,32 @@ function drawNinjuSlot(x, y, w, h, text, type) {
     ctx.drawImage(images.flashButton, x, y, w, h);
     ctx.globalAlpha = 1;
     const textAt = applyOffset({ x: x + w / 2, y: y + h / 2 }, { x: -1, y: -1 }); // text offset: x positive moves right, y positive moves up.
-    drawNinjuButtonText(text, textAt.x, textAt.y, 16, "#232323f8", "center");
+    drawNinjuButtonText(text, textAt.x, textAt.y, localizedNinjuFontSize(16), "#232323f8", "center");
   } else if ((isSteel || isHotBlood) && images.steelButton) {
     ctx.globalAlpha = ready ? 1 : 0.55;
     ctx.drawImage(images.steelButton, x, y, w, h);
     ctx.globalAlpha = 1;
     const textAt = applyOffset({ x: x + w / 2, y: y + h / 2 }, { x: -1, y: -1 }); // 忍術字 offset：x 正值往右、y 正值往上。
-    drawNinjuButtonText(text, textAt.x, textAt.y, 16, "#232323f8", "center");
+    drawNinjuButtonText(text, textAt.x, textAt.y, localizedNinjuFontSize(16), "#232323f8", "center");
   } else if (isHeal && images.healButton) {
     ctx.globalAlpha = ready ? 1 : 0.55;
     ctx.drawImage(images.healButton, x, y, w, h);
     ctx.globalAlpha = 1;
     const textAt = applyOffset({ x: x + w / 2, y: y + h / 2 }, { x: -1, y: -1 }); // 忍術字 offset：x 正值往右、y 正值往上。
-    drawNinjuButtonText(text, textAt.x, textAt.y, 16, "#232323f8", "center");
+    drawNinjuButtonText(text, textAt.x, textAt.y, localizedNinjuFontSize(16), "#232323f8", "center");
   } else if (isMoneyDart && images.moneyDartButton) {
     ctx.globalAlpha = ready ? 1 : 0.55;
     ctx.drawImage(images.moneyDartButton, x, y, w, h);
     ctx.globalAlpha = 1;
     const textAt = applyOffset({ x: x + w / 2, y: y + h / 2 }, { x: -1, y: -1 }); // 忍術字 offset：x 正值往右、y 正值往上。
-    drawNinjuButtonText(text, textAt.x, textAt.y, 16, "#232323f8", "center");
+    drawNinjuButtonText(text, textAt.x, textAt.y, localizedNinjuFontSize(16), "#232323f8", "center");
   } else {
     ctx.fillStyle = text ? "#c78e42" : "#2d3d38";
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = "#77bec6";
     ctx.lineWidth = 2;
     ctx.strokeRect(x, y, w, h);
-    if (text) drawOutlinedText(text, x + w / 2, y + h / 2 + 1, 15, "#ffe6a6", "center");
+    if (text) drawOutlinedText(text, x + w / 2, y + h / 2 + 1, localizedNinjuFontSize(15), "#ffe6a6", "center");
   }
   if (active) {
     ctx.fillStyle = "rgba(255,255,255,.35)";
@@ -2920,6 +2925,7 @@ function renderNinjuEditor() {
     button.className = `ninju-slot-choice${i === editNinjuSlotIndex ? " selected" : ""}${type ? "" : " empty"}`;
     if (type) button.dataset.ninjuType = type;
     button.textContent = localizedNinjuLabel(ninju);
+    button.style.fontSize = `${localizedNinjuFontSize(18)}px`;
     button.addEventListener("click", () => {
       editNinjuDraft[i] = null;
       editNinjuSlotIndex = i;
@@ -2937,6 +2943,7 @@ function renderNinjuEditor() {
     button.dataset.editorRow = ninju.editorRow;
     button.style.setProperty("--editor-order", ninju.editorOrder);
     button.textContent = localizedNinjuLabel(ninju);
+    button.style.fontSize = `${localizedNinjuFontSize(18)}px`;
     button.addEventListener("click", () => {
       const existingIndex = editNinjuDraft.indexOf(ninju.type);
       if (existingIndex >= 0) editNinjuDraft[existingIndex] = null;
