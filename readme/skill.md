@@ -431,3 +431,78 @@ npm test
 ```
 
 測試結果：12 pass / 0 fail。
+
+---
+
+## 14. Codex PR 狀態排查與回復紀錄
+
+### 問題成因
+
+Codex 右側顯示「無法取得 Pull Request 狀態」時，這個專案曾確認過一個高風險情況：
+
+- 本機資料夾是獨立初始化的 Git repo
+- 當下沒有 `remote`
+- 本機歷史和 GitHub `LanCode0624/nindou2-web` 沒有共同祖先
+
+這種情況下，就算 `gh auth status` 正常，Codex 也可能因為找不到可對應的遠端分支 / PR 歷史而無法顯示 PR 狀態。
+
+### 當時做過的事
+
+排查時曾做過以下動作：
+
+- 補上 `origin -> https://github.com/LanCode0624/nindou2-web.git`
+- 從 `origin/main` 開暫時分支 `codex/clean-room-css-comments-linked`
+- 把房間 UI 相關 commit 重新掛到這條可比較分支
+- 推上 GitHub 並建立 PR #1
+
+這條路徑雖然能讓 Codex 重新讀到 PR，但它不是原本本機歷史，使用者也明確表示要保留電腦裡原本版本。
+
+### 出錯點
+
+PR #1 後來被合併到 `main`，導致 GitHub 主線短暫帶入一批不該進主線的房間 UI 變更。
+
+同時，本機資料夾若切到 `codex/clean-room-css-comments-linked`，畫面會看起來像「被改成舊版 / 別條線的版本」，因為那條分支是從 `origin/main` 重新接出的，不是使用者原本那條本地歷史。
+
+### 正確回復方式
+
+這次已驗證可行的回復流程：
+
+- 先把本機資料夾切回原本分支：`codex/clean-room-css-comments`
+- 刪掉暫時排查用分支：`codex/clean-room-css-comments-linked`
+- 針對 GitHub 已誤合併的 PR #1，再從 `origin/main` 開 `codex/revert-pr-1`
+- 對 merge commit `4e94b9a3` 執行 `git revert -m 1`
+- 推上 GitHub，建立 PR #2
+- 合併 PR #2，把 PR #1 的內容從 `main` 反轉掉
+
+### 之後再遇到同類問題時
+
+先檢查，不要直接把本機 repo 硬接到 GitHub 主線：
+
+```powershell
+git remote -v
+git branch --show-current
+git rev-parse --abbrev-ref --symbolic-full-name "@{u}"
+gh auth status
+git log --oneline --decorate --graph --all -n 20
+```
+
+判斷順序：
+
+- 有沒有 `remote`
+- 目前分支有沒有 upstream
+- `gh` 是否已登入
+- 本機歷史和目標 GitHub repo 是否有共同祖先
+
+如果沒有共同祖先：
+
+- 不要直接把目前工作資料夾改掛到 `origin/main` 後拿來當原分支
+- 不要假設「能開 PR」就代表「這是同一條歷史」
+- 最安全的做法是先保護使用者目前本地分支，再另外開暫時診斷分支
+
+### 本次關鍵分支 / PR
+
+- 使用者原本分支：`codex/clean-room-css-comments`
+- 暫時診斷分支：`codex/clean-room-css-comments-linked`
+- 反轉分支：`codex/revert-pr-1`
+- 誤合併 PR：#1
+- 反轉 PR：#2
