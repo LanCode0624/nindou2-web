@@ -107,6 +107,32 @@ scripts/systems/match.js      -> 勝負判定與結算
 game.js                       -> DOM、主迴圈、繪圖、輸入、房間 UI
 ```
 
+### 新增程式放置原則
+
+之後新增功能不要把程式幾乎都塞進 `game.js`。`game.js` 只負責 DOM 綁定、主迴圈、Canvas 繪圖、輸入處理、房間 UI 協調，以及呼叫其他模組。
+
+新增資料或規則時，優先放在資料層：
+
+- 遊戲常數與 fallback：`scripts/data/config.js`
+- 武器清單、武器視覺參數、武器素材路徑、武器音效 key：`scripts/data/weapons.js`
+- 忍術清單、忍術編輯排序、預設忍術配置：`scripts/data/ninjutsu-definitions.js`
+- 中英文字、武器英文名、房間文字、HUD 文字：`scripts/data/locales.js`
+- 圖片、音效、動畫影格來源：`scripts/data/assets.js`
+- 規則模式、傷害、冷卻、忍術效果覆蓋：`scripts/data/rule-modes.js`
+- 地圖物件初始配置：`scripts/data/map.js`
+
+新增行為或流程時，優先放在系統層：
+
+- 格子與座標：`scripts/systems/grid.js`
+- 狀態輔助：`scripts/systems/state-helpers.js`
+- 忍術施放與效果流程：`scripts/systems/ninjutsu.js`
+- 武器攻擊、命中、傷害、範圍：`scripts/systems/combat.js`
+- 移動、路徑、衝撞：`scripts/systems/movement.js`
+- AI 行為：`scripts/systems/ai.js`
+- 勝負與結算：`scripts/systems/match.js`
+
+只有當功能需要直接接 DOM、Canvas 畫圖、滑鼠鍵盤輸入或主迴圈協調時，才放進 `game.js`。如果新增內容會同時碰資料和行為，先把資料放 `scripts/data/*`，再讓 `scripts/systems/*` 或 `game.js` 透過函式讀取，不要在多個檔案重複維護同一份表。
+
 ### 主迴圈（game.js `draw()`）
 
 每幀大致順序：
