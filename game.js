@@ -53,9 +53,9 @@ const state = {
 };
 
 const ninjuCatalog = [
-  { type: "moneyDart", label: "錢鏢", enLabel: "Money Dart", group: "projectile", editorRow: "special", editorOrder: 1 },
+  { type: "moneyDart", label: "錢鏢", enLabel: "Dart", group: "projectile", editorRow: "special", editorOrder: 1 },
   { type: "steel", label: "鋼鐵", enLabel: "Steel", group: "buff", editorRow: "support", editorOrder: 1 },
-  { type: "hotBlood", label: "熱血", enLabel: "Hot Blood", group: "buff", editorRow: "support", editorOrder: 2 },
+  { type: "hotBlood", label: "熱血", enLabel: "Rage", group: "buff", editorRow: "support", editorOrder: 2 },
   { type: "flash", label: "閃光", enLabel: "Flash", group: "attack", editorRow: "attack", editorOrder: 1 },
   { type: "wildfire", label: "野火", enLabel: "Wildfire", group: "attack", editorRow: "attack", editorOrder: 2 },
   { type: "death", label: "死神", enLabel: "Death", group: "attack", editorRow: "attack", editorOrder: 3 },
