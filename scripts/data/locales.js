@@ -6,6 +6,8 @@ const roomWeaponEnglishLabels = {
   weapon7: "Extreme Ice Onikirimaru",
   weapon8: "Iga Yo-Yo",
   weapon10: "Fuuma Shuriken",
+  weapon19: "妖刀村正",
+  weapon20: "鐵扇青海波",
   weapon44: "Soulreaper Sword",
   weapon106: "Light Sword",
 };
@@ -43,9 +45,9 @@ const roomRuleModeLabels = {
     n3: "忍3",
   },
   en: {
-    original: "Nindou 2 Original",
-    modified: "Nindou 2 Modified",
-    n3: "Nindou 3",
+    original: "N2 Original",
+    modified: "N2 Modified",
+    n3: "N3",
   },
 };
 
@@ -143,7 +145,7 @@ const roomLocaleText = {
     htmlLang: "en",
     toggleTarget: "中文",
     roomScreen: "Room screen",
-    ruleMode: "Nindou 2 Original",
+    ruleMode: "N2 Original",
     modeLabel: "Mode",
     modeValue: "Rescue the Princess",
     leave: "Leave",

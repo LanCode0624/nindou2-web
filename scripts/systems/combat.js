@@ -1,5 +1,9 @@
 ﻿// ===== Combat =====
 function attack(attacker, target) {
+  if (isFireToadActive(attacker) || isFireToadTransforming(attacker)) {
+    setMessage(`${attacker.name}: Fire Toad cannot use weapons.`);
+    return;
+  }
   if (isUnitDisabled(attacker)) {
     setMessage(`${attacker.name}: cannot act now.`);
     return;
@@ -70,11 +74,16 @@ function damageObject(object, attacker) {
   if (object.hp <= 0) {
     object.alive = false;
     playBreakSound(object);
-    setMessage(`${object.type} destroyed.`);
+    const grantedItem = maybeGrantMapItem(object, attacker);
+    if (!grantedItem) setMessage(`${object.type} destroyed.`);
   }
 }
 
 function attackCell(attacker, cell) {
+  if (isFireToadActive(attacker) || isFireToadTransforming(attacker)) {
+    setMessage(`${attacker.name}: Fire Toad cannot use weapons.`);
+    return;
+  }
   if (isUnitDisabled(attacker)) {
     setMessage(`${attacker.name}: cannot act now.`);
     return;
@@ -125,6 +134,10 @@ function attackCell(attacker, cell) {
 }
 
 function attackAimedWeapon(attacker, targetCell) {
+  if (isFireToadActive(attacker) || isFireToadTransforming(attacker)) {
+    setMessage(`${attacker.name}: Fire Toad cannot use weapons.`);
+    return;
+  }
   if (isUnitDisabled(attacker)) {
     setMessage(`${attacker.name}: cannot act now.`);
     return;
@@ -196,6 +209,27 @@ function weaponAreaCells(attacker, dir) {
       { x: x + dir.dx * 6, y: y + dir.dy * 6 },
     ].filter((cell) => inside(cell.x, cell.y));
   }
+  if (weapon.area === "surround") {
+    return [
+      { x: x - 1, y: y - 1 }, { x, y: y - 1 }, { x: x + 1, y: y - 1 },
+      { x: x - 1, y },                         { x: x + 1, y },
+      { x: x - 1, y: y + 1 }, { x, y: y + 1 }, { x: x + 1, y: y + 1 },
+    ].filter((cell) => inside(cell.x, cell.y));
+  }
+  if (weapon.area === "wide331") {
+    const perpendicular = dir.dx !== 0 ? { x: 0, y: 1 } : { x: 1, y: 0 };
+    const cells = [];
+    for (const distance of [1, 2]) {
+      for (const side of [-1, 0, 1]) {
+        cells.push({
+          x: x + dir.dx * distance + perpendicular.x * side,
+          y: y + dir.dy * distance + perpendicular.y * side,
+        });
+      }
+    }
+    cells.push({ x: x + dir.dx * 3, y: y + dir.dy * 3 });
+    return cells.filter((cell) => inside(cell.x, cell.y));
+  }
   if (weapon.area === "fan") {
     const shapes = {
       up: [{ x: x - 1, y: y - 1 }, { x, y: y - 1 }, { x: x + 1, y: y - 1 }, { x: x - 1, y }, { x: x + 1, y }],
@@ -247,6 +281,8 @@ function weaponDirectionFromTarget(attacker, target) {
 }
 
 function weaponSlashAnchorCell(attacker, dir) {
+  const weapon = weaponDefinitionByKey[attacker.weaponKey] || weaponDefinitionByKey[defaultWeaponKey];
+  if (weapon.area === "surround") return { x: attacker.x, y: attacker.y };
   return { x: attacker.x + dir.dx, y: attacker.y + dir.dy };
 }
 

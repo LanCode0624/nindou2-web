@@ -335,7 +335,7 @@ weapon8 -> assets/sounds/weapon/8.ogg
 - 攻擊命中、被攻擊、撞人、死亡也會加魂
 - 魂最多 4 級
 - 攻擊系忍術需要至少魂 1
-- 攻擊系忍術目前只消耗魂，不消耗技
+- 攻擊系忍術需要至少魂 1，且會依 `statusNinjuRule(type).cost` 扣技
 
 魂量規則：
 
@@ -430,7 +430,7 @@ weapon8 -> assets/sounds/weapon/8.ogg
 
 ### 不要做的事
 
-- 不要讓攻擊系忍術消耗技
+- 攻擊系忍術的耗技要以 `scripts/data/config.js -> ninjutsuRuleProfiles` 為準，不要再寫死在流程裡
 - 不要讓熱血影響衝撞或錢鏢
 - 不要讓 AI 播玩家專用的 `useNinju`
 - 不要把 `death` 直接覆蓋到 `wildfire`
@@ -464,6 +464,8 @@ weapon8 -> assets/sounds/weapon/8.ogg
 
 - `game.js -> ninjuCatalog`
 - `scripts/data/config.js`
+- `scripts/data/config.js -> ninjutsuRuleProfiles`
+- `scripts/data/config.js -> attackNinjuOutcomeTables`
 - `scripts/data/rule-modes.js`
 - `scripts/systems/ninjutsu.js`
 - `scripts/data/assets.js`
@@ -523,3 +525,59 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 - 中文可直接寫在 JS / HTML / Markdown，不要轉成 `\uXXXX`
 - Windows PowerShell 編輯含中文檔案時，優先使用不會破壞 UTF-8 的寫法
 - 文件與註解都要能正常顯示中文
+
+---
+
+## 19. 2026-05-18 忍術資料層整理
+
+- 忍術主要數值現在集中在 `scripts/data/config.js -> ninjutsuRuleProfiles`
+- `modified` / `original` 兩套忍術規則都在 `ninjutsuRuleProfiles` 內，不要再把 cost / castDuration / damage 分散回 `rule-modes.js`
+- `scripts/data/rule-modes.js` 現在主要負責依模式回傳 `steelRule()`、`hotBloodRule()`、`healNinjuRule()`、`moneyDartRule()`、`attackNinjuRule()`
+- 攻擊系忍術結果表現在在 `scripts/data/config.js -> attackNinjuOutcomeTables`
+- `scripts/data/assets.js -> attackNinjuConfigs` 仍保留素材、音效、特效對應；數值不要優先改這裡
+- `scripts/systems/ninjutsu.js` 現在會對攻擊系忍術與錢鏢都檢查 `cost` 並扣技
+- `game.js -> drawNinjuSlot()` 會依目前規則判斷按鈕是否亮起，錢鏢也會看 `moneyDartRule().cost`
+- `scripts/systems/ai.js -> aiProfiles` 內的 `hotBloodUseChance`、`wildfireUseChance`、`moneyDartReadyChance`、`moneyDartThrowChance` 目前都已接上實際行為
+---
+
+## 20. 2026-05-18 新增忍術 UI 外觀規則
+
+新增忍術時除了補 `scripts/data/ninjutsu-definitions.js`、`scripts/data/assets.js`、`scripts/data/config.js`、`scripts/data/rule-modes.js`、`scripts/systems/ninjutsu.js`，也一定要同步改 `style.css` 的忍術編輯選單外觀。
+
+- 攻擊系忍術：`group: "attack"` / `editorRow: "attack"`。選忍術頁面在 `style.css` 讓 `.ninju-slot-choice[data-ninju-type="..."]` 和 `.ninju-option[data-ninju-type="..."]` 使用 `assets/ninju/buttons/1.png`；戰鬥 HUD 在 `game.js -> drawNinjuSlot()` 也要走閃光紅框分支。
+- 特殊系忍術：`group: "special"` / `editorRow: "special"`。選忍術頁面在 `style.css` 讓 `.ninju-slot-choice[data-ninju-type="..."]` 和 `.ninju-option[data-ninju-type="..."]` 使用 `assets/ninju/buttons/3.png`；戰鬥 HUD 在 `game.js -> drawNinjuSlot()` 也要走錢鏢藍框分支。
+- 變身系忍術：`group: "transform"` / `editorRow: "transform"`；火蛙目前使用 `assets/ninju/buttons/5.png`，並可透過 `style.css -> .ninju-editor-list` 的 `--fire-toad-offset-x` / `--fire-toad-offset-y` 微調選忍術畫面位置。
+- 狀態/輔助系忍術：沿用 `assets/ninju/buttons/2.png`。
+- 回復系忍術：沿用 `assets/ninju/buttons/4.png`。
+
+目前新增的 `angel`、`mouryo`、`butsu` 已歸攻擊系紅框；`seven` 已歸特殊系藍框。
+
+---
+
+## 21. 2026-05-18 道具系統 consumables
+
+目前道具系統是從 `C:\Users\lane6\Documents\Codex\eng` 移植的最小可用版本，先支援 `backup3`。
+
+- 道具素材：`assets/ninju/consumables/`
+- 道具圖示：`scripts/data/assets.js -> backup3Item`
+- 掉落設定：`scripts/data/config.js -> mapItemDropChance`、`mapItemDropTypes`、`mapGoldDropTypes`
+- 道具欄位置：`scripts/data/config.js -> itemSlotStartX`、`itemSlotY`、`itemSlotW`、`itemSlotH`、`itemSlotGap`
+- 單位資料：`game.js -> makeUnit()` 內有 `items`、`itemSlots`、`gold`
+- HUD 繪製：`game.js -> drawInventoryHud()`、`drawInventoryItemHud()`、`itemIconByType()`
+- 點擊使用：`game.js -> pointerDown()` 先檢查 `itemSlotRect(index)`，再呼叫 `useItemSlot(index)`
+- 背包增減：`game.js -> addInventoryItem()`、`removeInventoryItem()`
+- 掉落流程：`scripts/systems/combat.js -> damageObject()` 在物件破壞後呼叫 `maybeGrantMapItem(object, attacker)`
+
+目前 `backup3` 行為：
+
+- 取得：破壞 `mapItemDropTypes` 內的可破壞物件時，依 `mapItemDropChance` 機率加入道具欄。
+- 使用：點上排道具格，`useBackupItem()` 會把目前玩家的 `skill` 補到 `maxSkill`，並消耗 1 個 `backup3`。
+- 限制：火蛙變身中或變身狀態不能使用道具。
+
+之後新增 consumable 時要同步補：
+
+- `assets/ninju/consumables/<item>.png`
+- `scripts/data/assets.js` 的圖示 key
+- `game.js -> itemIconByType(type)`
+- `game.js -> useItemSlot(index)` 的分支
+- 實際效果函式，例如 `useBackupItem()`

@@ -8,75 +8,7 @@ const modeRuleProfiles = {
       weapon7: { damage: 70 }, // 極冰鬼切丸
       weapon8: { damage: 20 }, // 伊賀溜溜球
     },
-    ninjutsu: {
-      steel: {
-        cost: 6,
-        castDurationMs: 1500,
-        durationMs: 15000,
-        defenseMultiplier: 1.7,
-      },
-      hotBlood: {
-        cost: 6,
-        castDurationMs: 1500,
-        durationMs: 15000,
-        weaponDamageMultiplier: 2,
-      },
-      genki: {
-        cost: 2,
-        castDurationMs: 1500,
-        healAmount: 0,
-        effect: "steelNoDefense",
-      },
-      kakki: {
-        available: false,
-        cost: 6,
-        castDurationMs: 1500,
-        healAmount: 100,
-        effect: "selfHeal",
-      },
-      shinki: {
-        available: false,
-        cost: 10,
-        castDurationMs: 1500,
-        healAmount: 100,
-        effect: "teamHeal",
-      },
-      flash: {
-        cost: 7,
-        castDurationMs: 1500,
-        hitChance: 0.3,
-        damage: flashDamage,
-        missDisableMs: flashMissDisableMs,
-        hitDisableMs: flashHitDisableMs,
-      },
-      wildfire: {
-        cost: 7,
-        castDurationMs: 1500,
-        hitChance: flashHitChance,
-        damage: flashDamage,
-        missDisableMs: flashMissDisableMs,
-        hitDisableMs: flashHitDisableMs,
-      },
-      death: {
-        cost: 7,
-        castDurationMs: 1500,
-        hitChance: flashHitChance,
-        damage: flashDamage,
-        missDisableMs: flashMissDisableMs,
-        hitDisableMs: flashHitDisableMs,
-      },
-      freeze: {
-        cost: 7,
-        castDurationMs: 1500,
-        hitChance: 0.35,
-        damage: 50,
-        missDisableMs: flashMissDisableMs,
-        hitDisableMs: freezeHitDisableMs,
-      },
-      moneyDart: {
-        damage: 70,
-      },
-    },
+    ninjutsu: ninjutsuRuleProfiles.modified,
   },
   original: {
     weapons: {
@@ -84,76 +16,7 @@ const modeRuleProfiles = {
       weapon6: { damage: 25 }, // 鐵扇不知火
       weapon8: { damage: 50 }, // 伊賀溜溜球
     },
-    ninjutsu: {
-      steel: {
-        cost: 7,
-        castDurationMs: 1500,
-        durationMs: 15000,
-        defenseMultiplier: 2,
-      },
-      hotBlood: {
-        cost: 7,
-        castDurationMs: 1500,
-        durationMs: 15000,
-        weaponDamageMultiplier: 2,
-      },
-      genki: {
-        available: false,
-        cost: 3,
-        castDurationMs: 1500,
-        healAmount: 50,
-        effect: "selfHeal",
-      },
-      kakki: {
-        available: false,
-        cost: 6,
-        castDurationMs: 1500,
-        healAmount: 100,
-        effect: "selfHeal",
-      },
-      shinki: {
-        available: false,
-        cost: 10,
-        castDurationMs: 1500,
-        healAmount: 100,
-        effect: "teamHeal",
-      },
-      flash: {
-        cost: 7,
-        castDurationMs: 1500,
-        hitChance: flashHitChance,
-        damage: flashDamage,
-        missDisableMs: flashMissDisableMs,
-        hitDisableMs: flashHitDisableMs,
-      },
-      wildfire: {
-        cost: 7,
-        castDurationMs: 1500,
-        hitChance: flashHitChance,
-        damage: flashDamage,
-        missDisableMs: flashMissDisableMs,
-        hitDisableMs: flashHitDisableMs,
-      },
-      death: {
-        cost: 7,
-        castDurationMs: 1500,
-        hitChance: flashHitChance,
-        damage: flashDamage,
-        missDisableMs: flashMissDisableMs,
-        hitDisableMs: flashHitDisableMs,
-      },
-      freeze: {
-        cost: 7,
-        castDurationMs: 1500,
-        hitChance: 0.35,
-        damage: 50,
-        missDisableMs: flashMissDisableMs,
-        hitDisableMs: freezeHitDisableMs,
-      },
-      moneyDart: {
-        damage: 100,
-      },
-    },
+    ninjutsu: ninjutsuRuleProfiles.original,
   },
 };
 
@@ -179,43 +42,27 @@ function weaponDamageForMode(weaponKey, fallbackDamage) {
 }
 
 function steelRule() {
-  const fallback = {
-    cost: steelNinjuCost,
-    castDurationMs: steelCastDuration,
-    durationMs: steelNinjuDuration,
-    defenseMultiplier: steelDefenseMultiplier,
-  };
-  return { ...fallback, ...(currentRuleProfile().ninjutsu?.steel || {}) };
+  return currentRuleProfile().ninjutsu?.steel || {};
 }
 
 function hotBloodRule() {
-  const fallback = {
-    cost: steelNinjuCost,
-    castDurationMs: steelCastDuration,
-    durationMs: steelNinjuDuration,
-    weaponDamageMultiplier: 2,
-  };
-  return { ...fallback, ...(currentRuleProfile().ninjutsu?.hotBlood || {}) };
+  return currentRuleProfile().ninjutsu?.hotBlood || {};
 }
 
 function healNinjuRule(type) {
-  const fallbackAmounts = {
-    genki: genkiHealAmount,
-    kakki: kakkiHealAmount,
-    shinki: shinkiHealAmount,
-  };
-  const fallback = {
-    cost: 3,
-    castDurationMs: steelCastDuration,
-    healAmount: type === "genki" ? 50 : (fallbackAmounts[type] ?? genkiHealAmount),
-    effect: "selfHeal",
-  };
-  return { ...fallback, ...(currentRuleProfile().ninjutsu?.[type] || {}) };
+  return currentRuleProfile().ninjutsu?.[type] || {};
+}
+
+function specialNinjuRule(type) {
+  return currentRuleProfile().ninjutsu?.[type] || {};
+}
+
+function fireToadRule() {
+  return currentRuleProfile().ninjutsu?.fireToad || {};
 }
 
 function moneyDartRule() {
-  const fallback = { damage: moneyDartDamage };
-  return { ...fallback, ...(currentRuleProfile().ninjutsu?.moneyDart || {}) };
+  return currentRuleProfile().ninjutsu?.moneyDart || {};
 }
 
 function flashRule() {
@@ -235,13 +82,5 @@ function freezeRule() {
 }
 
 function attackNinjuRule(type) {
-  const fallback = {
-    cost: flashNinjuCost,
-    castDurationMs: flashCastDuration,
-    hitChance: flashHitChance,
-    damage: flashDamage,
-    missDisableMs: flashMissDisableMs,
-    hitDisableMs: flashHitDisableMs,
-  };
-  return { ...fallback, ...(currentRuleProfile().ninjutsu?.[type] || {}) };
+  return currentRuleProfile().ninjutsu?.[type] || {};
 }

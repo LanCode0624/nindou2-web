@@ -70,6 +70,32 @@ test("line6 武器會命中正前方六格", () => {
   );
 });
 
+test("weapon19 surround area hits all adjacent cells", () => {
+  const context = loadCombatRules();
+
+  assert.deepEqual(
+    plain(context.weaponAreaCells({ x: 5, y: 5, weaponKey: "weapon19" }, dirs.up)),
+    [
+      { x: 4, y: 4 }, { x: 5, y: 4 }, { x: 6, y: 4 },
+      { x: 4, y: 5 }, { x: 6, y: 5 },
+      { x: 4, y: 6 }, { x: 5, y: 6 }, { x: 6, y: 6 },
+    ],
+  );
+});
+
+test("weapon20 wide331 area hits a 3-3-1 shape", () => {
+  const context = loadCombatRules();
+
+  assert.deepEqual(
+    plain(context.weaponAreaCells({ x: 5, y: 5, weaponKey: "weapon20" }, dirs.right)),
+    [
+      { x: 6, y: 4 }, { x: 6, y: 5 }, { x: 6, y: 6 },
+      { x: 7, y: 4 }, { x: 7, y: 5 }, { x: 7, y: 6 },
+      { x: 8, y: 5 },
+    ],
+  );
+});
+
 test("NinjaS 武器會命中前方三格橫列", () => {
   const context = loadCombatRules();
 

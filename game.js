@@ -281,6 +281,11 @@ function loadImages() {
   const damageSuccessMiddleImages = damageSuccessMiddleFrameSources.map((src, index) => loadFrame(src, damageSuccessMiddleFrames, index));
   const damageSuccessBigImages = damageSuccessBigFrameSources.map((src, index) => loadFrame(src, damageSuccessBigFrames, index));
   const damageSuccessNinjuSuccessImages = damageSuccessNinjuSuccessFrameSources.map((src, index) => loadFrame(src, damageSuccessNinjuSuccessFrames, index));
+  const sevenNinjuImages = sevenNinjuFrameSources.map((src, index) => loadFrame(src, sevenNinjuFrames, index));
+  const angelNinjuImages = angelNinjuFrameSources.map((src, index) => loadFrame(src, angelNinjuFrames, index));
+  const butsuNinjuImages = butsuNinjuFrameSources.map((src, index) => loadFrame(src, butsuNinjuFrames, index));
+  const mouryoNinjuImages = mouryoNinjuFrameSources.map((src, index) => loadFrame(src, mouryoNinjuFrames, index));
+  const mouryoNinjuHitImages = mouryoNinjuHitFrameSources.map((src, index) => loadFrame(src, mouryoNinjuHitFrames, index));
   const readyImages = Object.entries(moneyDartReadyFrameSources).flatMap(([team, sources]) =>
     sources.map((src, index) => loadFrame(src, moneyDartReadyFrames[team], index))
   );
@@ -319,7 +324,14 @@ function loadImages() {
   ));
   const chargeRedImages = chargeRedFrameSources.map((src, index) => loadFrame(src, chargeRedFrames, index));
   const chargeYellowImages = chargeYellowFrameSources.map((src, index) => loadFrame(src, chargeYellowFrames, index));
-  return Promise.all([...staticImages, ...ninjuImages, ...atkUpImages, ...regenHpSmallImages, ...regenHpLargeImages, ...smallThunderSummonImages, ...smallThunderDamagedImages, ...smallFireSummonImages, ...smallFireDamagedImages, ...deathSummonImages, ...deathDamagedImages, ...smallIceSummonImages, ...smallIceDamagedImages, ...smallIceBreakImages, ...damageFailImages, ...faintedImages, ...damageSuccessSmallImages, ...damageSuccessMiddleImages, ...damageSuccessBigImages, ...damageSuccessNinjuSuccessImages, ...chargeRedImages, ...chargeYellowImages, ...readyImages, ...pickupImages, ...respawnPointerImages, ...dragArrowImages, ...movePrearriveImages, ...moveArriveImages, ...useNinjuImages, ...weaponImages, ...shootImages]);
+  const fireToadImages = Object.entries(fireToadFrameSources).flatMap(([team, directions]) => (
+    Object.entries(directions).flatMap(([direction, kinds]) => (
+      Object.entries(kinds).flatMap(([kind, sources]) => (
+        sources.map((src, index) => loadFrame(src, fireToadFrames[team][direction][kind], index))
+      ))
+    ))
+  ));
+  return Promise.all([...staticImages, ...ninjuImages, ...atkUpImages, ...regenHpSmallImages, ...regenHpLargeImages, ...smallThunderSummonImages, ...smallThunderDamagedImages, ...smallFireSummonImages, ...smallFireDamagedImages, ...deathSummonImages, ...deathDamagedImages, ...smallIceSummonImages, ...smallIceDamagedImages, ...smallIceBreakImages, ...damageFailImages, ...faintedImages, ...damageSuccessSmallImages, ...damageSuccessMiddleImages, ...damageSuccessBigImages, ...damageSuccessNinjuSuccessImages, ...sevenNinjuImages, ...angelNinjuImages, ...butsuNinjuImages, ...mouryoNinjuImages, ...mouryoNinjuHitImages, ...fireToadImages, ...chargeRedImages, ...chargeYellowImages, ...readyImages, ...pickupImages, ...respawnPointerImages, ...dragArrowImages, ...movePrearriveImages, ...moveArriveImages, ...useNinjuImages, ...weaponImages, ...shootImages]);
 }
 
 // 載入單張動畫影格，成功後放到指定陣列位置。
@@ -367,7 +379,7 @@ function resetGame() {
 // 建立一個角色資料物件，包含血量、技、AI 與統計資料。
 function makeUnit(id, name, team, x, y, weaponKey = defaultWeaponKey, controlMode = "ai_beginner", hpMax = maxHp) {
   const aiNextThink = controlMode === "player" ? 0 : performance.now() + 520 + Math.random() * 500;
-  return { id, name, team, x, y, hp: hpMax, maxHp: hpMax, skill: maxSkill, soulSteps: 0, facing: team === "blue" ? "right" : "left", alive: true, moveT: 1, fromX: x, fromY: y, moveTrail: null, hitFlash: 0, respawning: false, respawnTipUntil: 0, aiNextThink, aiActionAt: 0, aiPlanKey: "", ninju: null, steelUntil: 0, hotBloodUntil: 0, buffAuraType: "", disabledUntil: 0, invincibleUntil: 0, moneyDart: null, ninjuLockedUntil: 0, weaponKey, controlMode, weaponReadyAt: 0, kills: 0, damageDone: 0, damageTaken: 0 };
+  return { id, name, team, x, y, hp: hpMax, maxHp: hpMax, skill: maxSkill, soulSteps: 0, gold: 0, items: {}, itemSlots: [], facing: team === "blue" ? "right" : "left", alive: true, moveT: 1, fromX: x, fromY: y, moveTrail: null, hitFlash: 0, respawning: false, respawnTipUntil: 0, aiNextThink, aiActionAt: 0, aiPlanKey: "", ninju: null, steelUntil: 0, hotBloodUntil: 0, fireToadFacing: "", fireToadTransformUntil: 0, fireToadTransformStartedAt: 0, fireToadUntil: 0, fireToadStartedAt: 0, fireToadDurationMs: 0, buffAuraType: "", disabledUntil: 0, invincibleUntil: 0, moneyDart: null, ninjuLockedUntil: 0, weaponKey, controlMode, weaponReadyAt: 0, kills: 0, damageDone: 0, damageTaken: 0 };
 }
 
 // 依照兩隊起始範圍隨機產生本局角色位置。
@@ -941,11 +953,14 @@ function drawUnits() {
       ctx.restore();
     }
 
-    const useNinjuSprite = unitUseNinjuSprite(unit);
+    const fireToadSprite = fireToadUnitSprite(unit);
+    const useNinjuSprite = fireToadSprite ? null : unitUseNinjuSprite(unit);
     const sprite = useNinjuSprite || unitSprite(unit);
     // arrive 動畫播放期間隱藏靜態 sprite，由 drawMoveTrails 負責顯示殘影。
     const isMoving = unit.moveTrail && (performance.now() - unit.moveTrail.startedAt) < ARRIVE_TOTAL;
-    if (!activeMoneyDartCast(unit) && !isMoving && !unit.moneyDart && sprite) {
+    if (!activeMoneyDartCast(unit) && !isMoving && fireToadSprite) {
+      drawFireToadUnit(unit, fireToadSprite, p);
+    } else if (!activeMoneyDartCast(unit) && !isMoving && !unit.moneyDart && sprite) {
       const auraType = activeBuffAuraType(unit);
       if (auraType === "steel") drawSteelSpriteOutline(sprite, p, bob);
       if (auraType === "hotBlood") drawHotBloodSpriteOutline(sprite, p, bob);
@@ -1285,6 +1300,44 @@ function drawKunaiAttackFrame(frame, from, to, direction, weaponKey = defaultWea
   ctx.drawImage(frame, at.x, at.y, w, h);
 }
 
+function fireToadUnitSprite(unit) {
+  if (!isFireToadActive(unit) && !isFireToadTransforming(unit)) return null;
+  const teamKey = unit.team === "blue" ? "Blue" : "Grey";
+  const dirKey = fireToadDrawDirection(unit).replace(/^./, (letter) => letter.toUpperCase());
+  return images[`fireToad${teamKey}${dirKey}`] || images[`fireToad${teamKey}Down`];
+}
+
+function fireToadDrawDirection(unit) {
+  return unit.facing || unit.fireToadFacing || "down";
+}
+
+function fireToadAnimationFrame(unit) {
+  const now = performance.now();
+  const team = unit.team === "blue" ? "blue" : "grey";
+  const direction = fireToadDrawDirection(unit);
+  if (isFireToadTransforming(unit)) {
+    const frames = fireToadFrames[team]?.[direction]?.setoff?.filter(Boolean) || [];
+    if (!frames.length) return null;
+    const progress = Math.min(0.999, Math.max(0, (now - (unit.fireToadTransformStartedAt || now)) / fireToadRule().transformMs));
+    return frames[Math.floor(progress * frames.length)];
+  }
+  if (isFireToadActive(unit)) {
+    const frames = fireToadFrames[team]?.[direction]?.arrive?.filter(Boolean) || [];
+    if (!frames.length) return null;
+    const startedAt = unit.moveTrail?.startedAt || unit.fireToadStartedAt || now;
+    return frames[Math.floor(((now - startedAt) / 90) % frames.length)];
+  }
+  return null;
+}
+
+function drawFireToadUnit(unit, sprite, p) {
+  const frame = fireToadAnimationFrame(unit) || sprite;
+  const scale = 0.58;
+  const w = frame.width * scale;
+  const h = frame.height * scale;
+  ctx.drawImage(frame, p.x - w / 2, p.y - h + 26, w, h);
+}
+
 // 使用目前武器的手部組合圖繪製出招動畫；這組 offset 獨立於刀光位置，避免動到已校準的武器 offsets。
 function drawKunaiHandAttackFrame(frame, from, to, direction, weaponKey = defaultWeaponKey) {
   const scale = 1.55 * weaponHandScale(weaponKey); // 每把武器可個別調整 hand 大小。
@@ -1608,7 +1661,7 @@ function drawNinjuEffects(now) {
       if (frame) {
         ctx.save();
         ctx.globalAlpha = 0.85;
-        const size = attackNinjuConfigs[unit.ninju.type] ? 184 : 92;
+        const size = attackNinjuConfigs[unit.ninju.type]?.castSize || specialNinjuConfigs[unit.ninju.type]?.castSize || 92;
         ctx.drawImage(frame, p.x - size / 2, p.y - 22 - size / 2, size, size);
         ctx.restore();
       }
@@ -1619,6 +1672,7 @@ function drawNinjuEffects(now) {
 
 function ninjuCastFrames(type) {
   if (attackNinjuConfigs[type]) return attackNinjuConfigs[type].summonFrames;
+  if (specialNinjuConfigs[type]) return specialNinjuConfigs[type].summonFrames;
   if (type === "hotBlood") return atkUpFrames;
   if (type === "genki") return regenHpSmallFrames;
   if (type === "kakki" || type === "shinki") return regenHpLargeFrames;
@@ -1652,6 +1706,7 @@ function drawNinjuDamageEffects(now) {
 
 function ninjuDamageFrames(type) {
   if (attackNinjuConfigs[type]) return attackNinjuConfigs[type].hitFrames;
+  if (specialNinjuConfigs[type]) return specialNinjuConfigs[type].hitFrames;
   if (type === "freezeBreak") return smallIceBreakFrames;
   if (type === "flashMiss") return damageFailFrames;
   if (type === "flashHit") return faintedFrames;
@@ -1902,12 +1957,13 @@ function drawMoneyBox(x, y, text, w = 180) {
 
 // 繪製右下道具列、忍術列與存活人數。
 function drawInventoryHud() {
-  const itemY = 558; // 道具列 Y 位置
+  const itemY = itemSlotY; // 道具列 Y 位置
   const ninjuY = 600; // 忍術列 Y 位置
-  const startX = 510; // 道具格起始 X 位置
-  const slotW = 38; // 道具格寬度
-  const gap = 6; // 道具格間距
+  const startX = itemSlotStartX; // 道具格起始 X 位置
+  const slotW = itemSlotW; // 道具格寬度
+  const gap = itemSlotGap; // 道具格間距
   const text = roomLocale();
+  const unit = selectedHudUnit();
 
   ctx.save();
   drawOutlinedText(text.itemBadge, 482, itemY + 14, isRoomEnglish() ? 12 : 22, "#f0f0df", "center"); // 道字位置/大小/顏色
@@ -1915,7 +1971,9 @@ function drawInventoryHud() {
 
   for (let i = 0; i < 10; i++) {
     const x = startX + i * (slotW + gap); // 第 i 個道具格 X 位置
-    drawItemSlot(x, itemY, slotW, 34, false); // 道具格位置/大小
+    const itemType = unit?.itemSlots?.[i] || "";
+    drawItemSlot(x, itemY, slotW, itemSlotH, Boolean(itemType)); // 道具格位置/大小
+    drawInventoryItemHud(itemType, x, itemY, unit?.items?.[itemType] || 0);
   }
 
   const ninjuLabels = ["", "", "", "", "", ""];
@@ -1933,6 +1991,15 @@ function drawInventoryHud() {
   ctx.restore();
 }
 
+function itemSlotRect(index) {
+  return {
+    x: itemSlotStartX + index * (itemSlotW + itemSlotGap),
+    y: itemSlotY,
+    w: itemSlotW,
+    h: itemSlotH,
+  };
+}
+
 // 繪製單一空道具格。
 function drawItemSlot(x, y, w, h, filled) {
   ctx.save();
@@ -1946,22 +2013,123 @@ function drawItemSlot(x, y, w, h, filled) {
   ctx.restore();
 }
 
+function drawInventoryItemHud(type, x, y, count) {
+  if (!type || !count) return;
+  const img = itemIconByType(type);
+  ctx.save();
+  if (img) {
+    const size = 23;
+    const scale = Math.min(size / Math.max(1, img.width), size / Math.max(1, img.height));
+    const w = img.width * scale;
+    const h = img.height * scale;
+    ctx.drawImage(img, x + 19 - w / 2, y + 17 - h / 2, w, h);
+  }
+  drawOutlinedText(String(count), x + 31, y + 27, 12, "#fff4b8", "center");
+  ctx.restore();
+}
+
+function itemIconByType(type) {
+  if (type === "backup3") return images.backup3Item;
+  return null;
+}
+
+function addInventoryItem(unit, type, amount = 1) {
+  if (!unit) return false;
+  if (!unit.items) unit.items = {};
+  if (!unit.itemSlots) unit.itemSlots = [];
+  if (!unit.items[type]) {
+    if (unit.itemSlots.length >= 10) return false;
+    unit.itemSlots.push(type);
+  }
+  unit.items[type] = (unit.items[type] || 0) + amount;
+  return true;
+}
+
+function removeInventoryItem(unit, type, amount = 1) {
+  if (!unit?.items?.[type]) return false;
+  unit.items[type] = Math.max(0, unit.items[type] - amount);
+  if (unit.items[type] <= 0) {
+    delete unit.items[type];
+    unit.itemSlots = (unit.itemSlots || []).filter((slotType) => slotType !== type);
+  }
+  return true;
+}
+
+function addGold(unit, amount = 1) {
+  if (!unit) return false;
+  unit.gold = Math.max(0, Math.floor(Number(unit.gold) || 0) + amount);
+  return true;
+}
+
+function maybeGrantMapItem(object, unit) {
+  if (!object || !unit || !unit.alive) return false;
+  if (Math.random() > mapItemDropChance) return false;
+  if (mapGoldDropTypes.includes(object.type)) {
+    addGold(unit, 1);
+    setMessage(`${unit.name} found 1 gold.`);
+    return true;
+  }
+  if (!mapItemDropTypes.includes(object.type)) return false;
+  if (!addInventoryItem(unit, "backup3", 1)) return false;
+  playSound("takeDart");
+  setMessage(`${unit.name} found Backup.`);
+  return true;
+}
+
+function useBackupItem() {
+  const unit = selectedUnit();
+  if (!unit || !canControlUnit(unit) || !unit.alive) {
+    setMessage("Select a living player to use Backup.");
+    return;
+  }
+  if (isFireToadActive(unit) || isFireToadTransforming(unit)) {
+    setMessage(`${unit.name}: cannot use items as Fire Toad.`);
+    return;
+  }
+  const count = unit.items?.backup3 || 0;
+  if (count <= 0) {
+    setMessage(`${unit.name}: no Backup item.`);
+    return;
+  }
+  if (unit.skill >= maxSkill) {
+    setMessage(`${unit.name}: skill is already full.`);
+    return;
+  }
+  unit.skill = maxSkill;
+  removeInventoryItem(unit, "backup3", 1);
+  playSound("useNinju");
+  setMessage(`${unit.name} used Backup. Skill restored.`);
+}
+
+function useItemSlot(index) {
+  const unit = selectedUnit();
+  const itemType = unit?.itemSlots?.[index] || "";
+  if (itemType === "backup3") {
+    useBackupItem();
+    return;
+  }
+  setMessage("No item in that slot.");
+}
+
 // 繪製單一忍術按鈕或空忍術框。
 function drawNinjuSlot(x, y, w, h, text, type) {
   const unit = selectedHudUnit();
   const isSteel = type === true || type === "steel";
   const isHotBlood = type === "hotBlood";
   const isAttackNinju = Boolean(attackNinjuConfigs[type]);
+  const isSpecialNinju = Boolean(specialNinjuConfigs[type]);
+  const isFireToad = type === "fireToad";
   const isHeal = type === "genki" || type === "kakki" || type === "shinki";
   const isMoneyDart = type === "moneyDart";
-  const isStatusButton = isSteel || isHotBlood || isHeal || isAttackNinju;
+  const isStatusButton = isSteel || isHotBlood || isFireToad || isHeal || isAttackNinju || isSpecialNinju;
   const statusRule = isStatusButton ? statusButtonRule(type) : null;
-  const active = unit && (isStatusButton ? ((unit.ninju?.type === type && (isUnitCastingNinju(unit) || isUnitInNinjuGap(unit))) || (isSteel ? isSteelDefenseActive(unit) : isHotBlood ? isHotBloodActive(unit) : false)) : false);
-  const hasAttackSoul = !isAttackNinju || Math.floor((unit?.soulSteps || 0) / soulStepsPerLevel) >= 1;
+  const moneyDartCost = isMoneyDart ? moneyDartRule().cost : 0;
+  const active = unit && (isStatusButton ? ((unit.ninju?.type === type && (isUnitCastingNinju(unit) || isUnitInNinjuGap(unit))) || (isSteel ? isSteelDefenseActive(unit) : isHotBlood ? isHotBloodActive(unit) : isFireToad ? (isFireToadActive(unit) || isFireToadTransforming(unit)) : false)) : false);
+  const hasAttackSoul = !isAttackNinju || attackNinjuSoulLevel(unit) >= 1;
   const hasRequiredSkill = !isStatusButton || isAttackNinju || unit.skill >= statusRule.cost;
   // 錢鏢：拿標中、射後鎖定期間、移動動畫中 → 暗色不可用；否則亮色可用
   const moneyDartMoving = unit.moveTrail && (performance.now() - unit.moveTrail.startedAt) < ARRIVE_TOTAL;
-  const moneyDartReady = isMoneyDart && !unit.moneyDart && !activeMoneyDartCast(unit) && !moneyDartMoving && performance.now() >= (unit.ninjuLockedUntil || 0);
+  const moneyDartReady = isMoneyDart && unit.skill >= moneyDartCost && !unit.moneyDart && !activeMoneyDartCast(unit) && !moneyDartMoving && performance.now() >= (unit.ninjuLockedUntil || 0);
   const ready = !unit || (unit.alive && !isUnitDisabled(unit) && (isStatusButton ? statusRule.available !== false && hasRequiredSkill && hasAttackSoul : moneyDartReady));
   ctx.save();
   if (isAttackNinju && images.flashButton) {
@@ -1969,6 +2137,18 @@ function drawNinjuSlot(x, y, w, h, text, type) {
     ctx.drawImage(images.flashButton, x, y, w, h);
     ctx.globalAlpha = 1;
     const textAt = applyOffset({ x: x + w / 2, y: y + h / 2 }, { x: -1, y: -1 }); // text offset: x positive moves right, y positive moves up.
+    drawNinjuButtonText(text, textAt.x, textAt.y, localizedNinjuFontSize(16), "#232323f8", "center");
+  } else if (isSpecialNinju && images.moneyDartButton) {
+    ctx.globalAlpha = ready ? 1 : 0.55;
+    ctx.drawImage(images.moneyDartButton, x, y, w, h);
+    ctx.globalAlpha = 1;
+    const textAt = applyOffset({ x: x + w / 2, y: y + h / 2 }, { x: -1, y: -1 });
+    drawNinjuButtonText(text, textAt.x, textAt.y, localizedNinjuFontSize(16), "#232323f8", "center");
+  } else if (isFireToad && images.fireToadButton) {
+    ctx.globalAlpha = ready ? 1 : 0.55;
+    ctx.drawImage(images.fireToadButton, x, y, w, h);
+    ctx.globalAlpha = 1;
+    const textAt = applyOffset({ x: x + w / 2, y: y + h / 2 }, { x: -1, y: -1 });
     drawNinjuButtonText(text, textAt.x, textAt.y, localizedNinjuFontSize(16), "#232323f8", "center");
   } else if ((isSteel || isHotBlood) && images.steelButton) {
     ctx.globalAlpha = ready ? 1 : 0.55;
@@ -2000,7 +2180,7 @@ function drawNinjuSlot(x, y, w, h, text, type) {
     ctx.fillStyle = "rgba(255,255,255,.35)";
     ctx.fillRect(x, y, w, h);
   }
-  if ((isSteel || isHotBlood || isHeal || isAttackNinju) && unit && unit.ninju?.type === type && unit.ninju.queue > 0) {
+  if ((isSteel || isHotBlood || isFireToad || isHeal || isAttackNinju || isSpecialNinju) && unit && unit.ninju?.type === type && unit.ninju.queue > 0) {
     drawOutlinedText(`x${unit.ninju.queue + 1}`, x + w - 10, y + 8, 12, "#fff2a8", "center");
   }
   ctx.restore();
@@ -2040,10 +2220,21 @@ function currentNinjuSlotRects() {
 
 function statusButtonRule(type) {
   if (attackNinjuConfigs[type]) return attackNinjuRule(type);
+  if (specialNinjuConfigs[type]) return specialNinjuRule(type);
+  if (type === "fireToad" && typeof fireToadRule === "function") return fireToadRule();
   if (type === "hotBlood" && typeof hotBloodRule === "function") return hotBloodRule();
   if ((type === "genki" || type === "kakki" || type === "shinki") && typeof healNinjuRule === "function") return healNinjuRule(type);
   if (typeof steelRule === "function") return steelRule();
   return { cost: 7 };
+}
+
+function attackNinjuSoulLevel(unit) {
+  return Math.min(soulMaxLevel, Math.floor((unit?.soulSteps || 0) / soulStepsPerLevel));
+}
+
+function hasReadyAttackNinjuInLoadout(unit) {
+  if (!unit || attackNinjuSoulLevel(unit) < 1) return false;
+  return selectedNinjuLoadout.some((type) => Boolean(attackNinjuConfigs[type]));
 }
 
 // 繪製 blue/grey 存活人數的小圓點計數。
@@ -2109,15 +2300,37 @@ function drawNinjuBar() {
   const gap = isUnitInNinjuGap(unit);
   const steelBuff = isSteelDefenseActive(unit);
   const hotBloodBuff = isHotBloodActive(unit);
-  const buff = steelBuff || hotBloodBuff;
+  const fireToadBuff = isFireToadActive(unit) || isFireToadTransforming(unit);
+  const buff = steelBuff || hotBloodBuff || fireToadBuff;
+  const fallbackCost = hasReadyAttackNinjuInLoadout(unit) ? 0 : steelRule().cost;
   if (!active && !gap && !buff && (!unit.alive || unit.skill >= steelRule().cost)) return;
   ctx.save();
   ctx.fillStyle = "rgba(0,0,0,.55)";
   ctx.fillRect(814, 636, 62, 30);
-  const buffUntil = Math.max(unit.steelUntil || 0, unit.hotBloodUntil || 0);
-  const displayText = active ? text.ninjuCasting : gap ? text.ninjuMovable : buff ? `${Math.ceil((buffUntil - performance.now()) / 1000)}${text.secondsSuffix}` : `${text.ninjuSkillCostPrefix} ${steelRule().cost}`;
+  const buffUntil = Math.max(unit.steelUntil || 0, unit.hotBloodUntil || 0, unit.fireToadUntil || 0, unit.fireToadTransformUntil || 0);
+  const displayText = active ? text.ninjuCasting : gap ? text.ninjuMovable : buff ? `${Math.ceil((buffUntil - performance.now()) / 1000)}${text.secondsSuffix}` : `${text.ninjuSkillCostPrefix} ${fallbackCost}`;
   drawOutlinedText(displayText, 845, 651, 14, "#f7f6d7", "center");
   ctx.restore();
+}
+
+function drawInventoryItemHud(type, x, y, count) {
+  if (!type || !count) return;
+  const img = itemIconByType(type);
+  ctx.save();
+  if (img) {
+    const size = 23;
+    const scale = Math.min(size / Math.max(1, img.width), size / Math.max(1, img.height));
+    const w = img.width * scale;
+    const h = img.height * scale;
+    ctx.drawImage(img, x + 19 - w / 2, y + 17 - h / 2, w, h);
+  }
+  drawOutlinedText(String(count), x + 31, y + 27, 12, "#fff4b8", "center");
+  ctx.restore();
+}
+
+function itemIconByType(type) {
+  if (type === "backup3") return images.backup3Item;
+  return null;
 }
 
 // 依角色移動進度計算畫面上的平滑位置。
@@ -2185,6 +2398,12 @@ function pointerDown(event) {
   pointerMove(event);
   if (!isMatchActive()) return;
   const cell = eventCell(event);
+  for (let index = 0; index < 10; index++) {
+    if (pointInRect(state.pointer.x, state.pointer.y, itemSlotRect(index))) {
+      useItemSlot(index);
+      return;
+    }
+  }
   for (const button of currentNinjuButtonList()) {
     if (pointInRect(state.pointer.x, state.pointer.y, button)) {
       useNinjuByType(button.type);
@@ -2239,7 +2458,9 @@ function useNinjuByType(type) {
   if (type === "moneyDart") useMoneyDart();
   else if (type === "steel") useSteelNinju();
   else if (type === "hotBlood") useHotBloodNinju();
+  else if (type === "fireToad") useFireToadNinju();
   else if (attackNinjuConfigs[type]) useAttackNinju(type);
+  else if (specialNinjuConfigs[type]) useSpecialNinju(type);
   else if (type === "genki") useGenkiNinju();
   else if (type === "kakki") useKakkiNinju();
   else if (type === "shinki") useShinkiNinju();

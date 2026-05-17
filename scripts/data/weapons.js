@@ -8,6 +8,8 @@ const weaponDefinitions = [
   { key: "weapon7", label: "極冰鬼切丸", folder: "7極冰鬼切丸", frameCount: 22, cooldownMs: 1000, area: "line2", damage: 100 },
   { key: "weapon8", label: "伊賀溜溜球", folder: "8伊賀溜溜球", frameCount: 13, cooldownMs: 500, area: "ring8", damage: 20 },
   { key: "weapon10", label: "風魔手裏劍", folder: "10風魔手裏劍", frameCount: 13, cooldownMs: 500, area: "line6", damage: 25 },
+  { key: "weapon19", label: "妖刀村正", folder: "19Weapon19", frameCount: 13, cooldownMs: 500, area: "surround", damage: 80 },
+  { key: "weapon20", label: "鐵扇青海波", folder: "20Weapon20", frameCount: 10, cooldownMs: 300, area: "wide331", damage: 60 },
   { key: "weapon44", label: "滅魂之劍", folder: "44滅魂之劍", frameCount: 6, cooldownMs: 260, area: "NinjaS", damage: 25 },
   { key: "weapon106", label: "光劍", folder: "106光劍", frameCount: 8, cooldownMs: 330, area: "NinjaS", damage: 30 },
 ];
@@ -131,6 +133,40 @@ const weaponVisualProfiles = {
       left: (w) => ({ x: 80 - w, y: 45 }),
       up: (w) => ({ x: -w / 2 + 10, y: 70 }),
       down: (w) => ({ x: -w / 2, y: 80 }),
+    },
+  },
+  weapon19: {
+    soundKey: "slash19",
+    attackScale: 1.0,
+    handScale: 1.0,
+    attackOffset: {
+      right: (w, h) => ({ x: -58, y: h / 2 - 19 }),
+      left: (w, h) => ({ x: -w + 58, y: h / 2 - 19 }),
+      up: (w, h) => ({ x: -w / 2, y: h - 71 }),
+      down: (w) => ({ x: -w / 2, y: 69 }),
+    },
+    handOffset: {
+      right: () => ({ x: -74, y: 72 }),
+      left: (w) => ({ x: 74 - w, y: 72 }),
+      up: (w) => ({ x: -w / 2, y: 70 }),
+      down: (w) => ({ x: -w / 2, y: 71 }),
+    },
+  },
+  weapon20: {
+    soundKey: "slash20",
+    attackScale: 1.0,
+    handScale: 1.0,
+    attackOffset: {
+      right: (w, h) => ({ x: -62, y: h / 2 - 20 }),
+      left: (w, h) => ({ x: -w + 62, y: h / 2 - 20 }),
+      up: (w, h) => ({ x: -w / 2, y: h - 72 }),
+      down: (w) => ({ x: -w / 2, y: 70 }),
+    },
+    handOffset: {
+      right: () => ({ x: -78, y: 78 }),
+      left: (w) => ({ x: 78 - w, y: 78 }),
+      up: (w) => ({ x: -w / 2, y: 72 }),
+      down: (w) => ({ x: -w / 2, y: 72 }),
     },
   },
   weapon44: {

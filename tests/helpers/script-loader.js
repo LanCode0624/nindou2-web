@@ -23,6 +23,7 @@ function createGameContext(overrides = {}) {
     },
     ARRIVE_TOTAL: 325,
     attackNinjuConfigs: {},
+    specialNinjuConfigs: {},
     ...overrides,
   };
   return vm.createContext(context);

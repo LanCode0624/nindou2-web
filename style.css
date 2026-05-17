@@ -109,6 +109,10 @@ body:not(.room-mode) .room-screen {
   box-shadow: inset 0 0 0 1px rgba(182, 224, 255, .18);
 }
 
+html[lang="en"] .room-rule-select {
+  font-size: 19px;
+}
+
 .room-rule-select:focus {
   outline: none;
   border-color: #d8ef7b;
@@ -157,6 +161,11 @@ body:not(.room-mode) .room-screen {
 }
 
 .room-lang-toggle-btn {
+  --room-lang-offset-x: -750px;
+  --room-lang-offset-y: 0px;
+  position: relative;
+  left: var(--room-lang-offset-x);
+  top: var(--room-lang-offset-y);
   width: 78px;
   height: 44px;
   justify-self: end;
@@ -857,7 +866,7 @@ body:not(.room-mode) .room-screen {
   --ninju-list-offset-x: 45px; /* option list X offset: positive moves right. */
   --ninju-list-offset-y: 0px; /* option list Y offset: positive moves down. */
   display: grid;
-  grid-template-columns: repeat(6, 88px);
+  grid-template-columns: repeat(7, 88px);
   gap: 16px 12px; /* option list gap: first vertical, second horizontal. */
   align-items: center;
   transform: translate(var(--ninju-list-offset-x), var(--ninju-list-offset-y)); /* option list group offset. */
@@ -875,6 +884,8 @@ body:not(.room-mode) .room-screen {
   --special-row-offset-y: 75px; /* special row Y offset: positive moves down. */
   --transform-row-offset-x: 0px; /* transform row X offset: positive moves right. */
   --transform-row-offset-y: 0px; /* transform row Y offset: positive moves down. */
+  --fire-toad-offset-x: 0px; /* Fire Toad button X offset: positive moves right. */
+  --fire-toad-offset-y: 100px; /* Fire Toad button Y offset: positive moves down. */
   grid-template-rows: repeat(5, 30px);
   gap: var(--ninju-list-row-gap) 12px;
 }
@@ -908,6 +919,14 @@ body:not(.room-mode) .room-screen {
   transform: translate(var(--transform-row-offset-x), var(--transform-row-offset-y));
 }
 
+.ninju-slot-choice[data-ninju-type="fireToad"],
+.ninju-option[data-ninju-type="fireToad"] {
+  position: relative;
+  left: var(--fire-toad-offset-x);
+  top: var(--fire-toad-offset-y);
+  background-image: url("assets/ninju/buttons/5.png");
+}
+
 .ninju-slot-choice[data-ninju-type="moneyDart"],
 .ninju-option[data-ninju-type="moneyDart"] {
   background-image: url("assets/ninju/buttons/3.png");
@@ -917,11 +936,22 @@ body:not(.room-mode) .room-screen {
 .ninju-slot-choice[data-ninju-type="wildfire"],
 .ninju-slot-choice[data-ninju-type="death"],
 .ninju-slot-choice[data-ninju-type="freeze"],
+.ninju-slot-choice[data-ninju-type="angel"],
+.ninju-slot-choice[data-ninju-type="mouryo"],
+.ninju-slot-choice[data-ninju-type="butsu"],
 .ninju-option[data-ninju-type="flash"],
 .ninju-option[data-ninju-type="wildfire"],
 .ninju-option[data-ninju-type="death"],
-.ninju-option[data-ninju-type="freeze"] {
+.ninju-option[data-ninju-type="freeze"],
+.ninju-option[data-ninju-type="angel"],
+.ninju-option[data-ninju-type="mouryo"],
+.ninju-option[data-ninju-type="butsu"] {
   background-image: url("assets/ninju/buttons/1.png");
+}
+
+.ninju-slot-choice[data-ninju-type="seven"],
+.ninju-option[data-ninju-type="seven"] {
+  background-image: url("assets/ninju/buttons/3.png");
 }
 
 .ninju-option[data-ninju-type="moneyDart"] {

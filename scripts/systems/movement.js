@@ -5,7 +5,7 @@ function skillMove(unit, cell) {
     setMessage(`${unit.name}: cannot move while holding money dart.`);
     return;
   }
-  if (!weaponIsReady(unit)) {
+  if (!isFireToadActive(unit) && !weaponIsReady(unit)) {
     setMessage(`${unit.name}: cannot move while weapon is recovering.`);
     return;
   }
@@ -26,7 +26,7 @@ function skillMove(unit, cell) {
     setMessage("Move must be horizontal or vertical.");
     return;
   }
-  const maxDistance = Math.floor(unit.skill);
+  const maxDistance = isFireToadActive(unit) ? grid.cols + grid.rows : Math.floor(unit.skill);
   if (maxDistance < 1) {
     setMessage(`Not enough skill. Need 1, have ${unit.skill.toFixed(1)}.`);
     return;
@@ -43,8 +43,10 @@ function skillMove(unit, cell) {
   }
   const cost = Math.max(1, manhattan(unit, cell));
 
-  unit.skill -= cost;
-  gainSoul(unit, cost);
+  if (!isFireToadActive(unit)) {
+    unit.skill -= cost;
+    gainSoul(unit, cost);
+  }
   moveUnit(unit, cell.x, cell.y);
   if (path.hitEnemies.length > 0) {
     for (const enemy of path.hitEnemies) {
@@ -80,6 +82,7 @@ function moveUnit(unit, x, y) {
     unit.ninju.chainMoves -= 1;
   }
   playSound("move");
+  if (isFireToadActive(unit)) unit.skill = maxSkill;
 }
 
 function cancelDragIfPressed(unit) {
@@ -90,6 +93,17 @@ function cancelDragIfPressed(unit) {
 }
 
 function collideWithEnemy(mover, enemy) {
+  if (isFireToadActive(mover)) {
+    enemy.hp = 0;
+    enemy.alive = false;
+    enemy.moneyDart = null;
+    cancelDragIfPressed(enemy);
+    mover.kills += 1;
+    playSound("death");
+    setMessage(`${mover.name} crushed ${enemy.name}.`);
+    checkVictory();
+    return;
+  }
   if (isUnitInvincible(enemy)) {
     setMessage(`${enemy.name} is invincible.`);
     return;

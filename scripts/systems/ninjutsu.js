@@ -1,10 +1,29 @@
 // ===== Ninjutsu System =====
 function updateNinju(now) {
   for (const unit of state.units) {
+    if (unit.fireToadTransformUntil) {
+      unit.skill = maxSkill;
+      if (now < unit.fireToadTransformUntil) continue;
+      unit.fireToadTransformUntil = 0;
+      unit.fireToadUntil = now + (unit.fireToadDurationMs || fireToadRule().durationMs);
+      unit.fireToadStartedAt = now;
+      playSound("fireToadChid");
+      if (canControlUnit(unit)) setMessage(`${unit.name}: ${localizedNinjuTypeLabel("fireToad")}!`);
+    } else if (isFireToadActive(unit)) {
+      unit.skill = maxSkill;
+    } else if (unit.fireToadUntil && now >= unit.fireToadUntil) {
+      endFireToad(unit);
+      if (canControlUnit(unit)) setMessage(`${unit.name}: ${localizedNinjuTypeLabel("fireToad")} ended.`);
+    }
     if (!unit.ninju) continue;
 
     if (unit.ninju.phase === "active") {
       if (now - unit.ninju.startedAt < unit.ninju.duration) continue;
+      if (unit.ninju.type === "fireToad") {
+        unit.ninju = null;
+        startFireToadTransform(unit, now);
+        continue;
+      }
       refreshStatusNinju(unit, unit.ninju.type, now);
       const queuedType = unit.ninju.pendingType || unit.ninju.type;
 
@@ -73,6 +92,69 @@ function useAttackNinju(type) {
   useStatusNinju(type, config?.label || type);
 }
 
+function useSpecialNinju(type) {
+  const config = specialNinjuConfigs[type];
+  useStatusNinju(type, config?.label || type);
+}
+
+function useFireToadNinju() {
+  const unit = selectedUnit();
+  if (!unit || !canControlUnit(unit)) return;
+  if (isUnitDisabled(unit)) {
+    setMessage(`${unit.name}: cannot act now.`);
+    return;
+  }
+  if (unit.moneyDart) {
+    setMessage(`${unit.name}: cannot use ${localizedNinjuTypeLabel("fireToad")} while holding money dart.`);
+    return;
+  }
+  if (isFireToadActive(unit) || isFireToadTransforming(unit)) {
+    setMessage(`${unit.name}: already transformed.`);
+    return;
+  }
+  if (isUnitCastingNinju(unit) || isUnitInNinjuGap(unit)) {
+    setMessage(`${unit.name}: cannot use ${localizedNinjuTypeLabel("fireToad")} while another ninjutsu is casting.`);
+    return;
+  }
+  const rule = fireToadRule();
+  if (unit.skill < rule.cost) {
+    setMessage(`${localizedNinjuTypeLabel("fireToad")} needs ${rule.cost} skill.`);
+    return;
+  }
+  unit.skill -= rule.cost;
+  const now = performance.now();
+  unit.ninju = { type: "fireToad", phase: "active", startedAt: now, duration: rule.castDurationMs, queue: 0 };
+  unit.moneyDart = null;
+  playSound("useNinju");
+  playStatusEnergyUpSequence();
+  clearDragState();
+  setMessage(`${unit.name} used ${localizedNinjuTypeLabel("fireToad")}.`);
+}
+
+function startFireToadTransform(unit, now = performance.now()) {
+  const rule = fireToadRule();
+  unit.fireToadTransformUntil = now + rule.transformMs;
+  unit.fireToadTransformStartedAt = now;
+  unit.fireToadDurationMs = rule.durationMs;
+  unit.fireToadUntil = 0;
+  unit.fireToadStartedAt = 0;
+  unit.fireToadFacing = unit.facing || "down";
+  unit.moneyDart = null;
+  clearDragState();
+  setMessage(`${unit.name} is transforming into ${localizedNinjuTypeLabel("fireToad")}.`);
+}
+
+function endFireToad(unit) {
+  if (!unit) return;
+  unit.fireToadTransformUntil = 0;
+  unit.fireToadTransformStartedAt = 0;
+  unit.fireToadUntil = 0;
+  unit.fireToadStartedAt = 0;
+  unit.fireToadFacing = "";
+  unit.fireToadDurationMs = 0;
+  unit.skill = maxSkill * 0.2;
+}
+
 function useGenkiNinju() {
   useStatusNinju("genki", localizedNinjuTypeLabel("genki"));
 }
@@ -103,7 +185,8 @@ function useStatusNinju(type, label) {
     return;
   }
   const isAttackNinju = isAttackNinjuType(type);
-  if (!isAttackNinju && unit.skill < rule.cost) {
+  const skillCost = isAttackNinju ? 0 : rule.cost;
+  if (unit.skill < skillCost) {
     setMessage(`${label} needs ${rule.cost} skill.`);
     return;
   }
@@ -114,7 +197,7 @@ function useStatusNinju(type, label) {
     return;
   }
 
-  if (!isAttackNinju) unit.skill -= rule.cost;
+  unit.skill -= skillCost;
   const now = performance.now();
 
   if (unit.ninju && isStatusNinjuType(unit.ninju.type)) {
@@ -134,8 +217,13 @@ function useStatusNinju(type, label) {
 function useMoneyDart() {
   const unit = selectedUnit();
   if (!unit || !canControlUnit(unit)) return;
+  const rule = moneyDartRule();
   if (isUnitDisabled(unit)) {
     setMessage(`${unit.name}: cannot act now.`);
+    return;
+  }
+  if (unit.skill < rule.cost) {
+    setMessage(`${localizedNinjuTypeLabel("moneyDart")} needs ${rule.cost} skill.`);
     return;
   }
   if (unit.moneyDart) {
@@ -150,6 +238,7 @@ function useMoneyDart() {
     setMessage(`${unit.name}: cannot use ninjutsu yet.`);
     return;
   }
+  unit.skill -= rule.cost;
   if (isUnitCastingNinju(unit)) {
     if (unit.ninju.pendingMoneyDart) {
       setMessage(`${unit.name}: money dart is already queued.`);
@@ -175,9 +264,10 @@ function useMoneyDart() {
 }
 
 function startMoneyDart(unit, now = performance.now(), playActivationSound = true) {
+  const rule = moneyDartRule();
   if (isUnitDisabled(unit)) return;
   if (unit.moneyDart) return;
-  unit.moneyDart = { startedAt: now, invincibleUntil: now + moneyDartReadyMs };
+  unit.moneyDart = { startedAt: now, invincibleUntil: now + rule.readyMs };
   if (playActivationSound) playSound("takeDart");
   if (canControlUnit(unit)) clearDragState();
   setMessage(`${unit.name}: money dart ready. Choose up, down, left, or right.`);
@@ -224,7 +314,7 @@ function throwMoneyDart(unit, targetCell) {
     hitUnitId: null,
     ownerName: unit.name,
     startedAt: now,
-    duration: Math.max(160, shot.distance * grid.cell / moneyDartSpeed * 1000),
+    duration: Math.max(160, shot.distance * grid.cell / moneyDartRule().speed * 1000),
   });
   state.moneyDartCasts.push({
     unitId: unit.id,
@@ -233,7 +323,7 @@ function throwMoneyDart(unit, targetCell) {
     startedAt: now,
     duration: 300,
   });
-  unit.ninjuLockedUntil = now + moneyDartPostThrowNinjuLockMs;
+  unit.ninjuLockedUntil = now + moneyDartRule().postThrowNinjuLockMs;
   setMessage(`${unit.name} threw money dart.`);
 }
 
@@ -273,7 +363,7 @@ function canUnitMoveNow(unit) {
 }
 
 function isUnitInvincible(unit) {
-  return isUnitCastingNinju(unit) || isUnitInNinjuGap(unit) || isMoneyDartInvincible(unit) || isFlashInvincible(unit);
+  return isFireToadTransforming(unit) || isUnitCastingNinju(unit) || isUnitInNinjuGap(unit) || isMoneyDartInvincible(unit) || isFlashInvincible(unit);
 }
 
 function isUnitDisabled(unit) {
@@ -300,9 +390,21 @@ function isHotBloodActive(unit) {
   return Boolean(unit && unit.hotBloodUntil && performance.now() < unit.hotBloodUntil);
 }
 
+function isFireToadActive(unit) {
+  return Boolean(unit && unit.fireToadUntil && performance.now() < unit.fireToadUntil);
+}
+
+function isFireToadTransforming(unit) {
+  return Boolean(unit && unit.fireToadTransformUntil && performance.now() < unit.fireToadTransformUntil);
+}
+
 function refreshStatusNinju(unit, type, now = performance.now()) {
   if (isAttackNinjuType(type)) {
     triggerAttackNinju(unit, type, unit.ninju?.attackNinjuLevel || 0, now);
+    return;
+  }
+  if (isSpecialNinjuType(type)) {
+    triggerSpecialNinju(unit, type, now);
     return;
   }
   if (isHealNinjuType(type)) {
@@ -378,6 +480,16 @@ function attackNinjuTargets(caster, attackNinjuLevel) {
     .slice(0, count);
 }
 
+function triggerSpecialNinju(caster, type, now = performance.now()) {
+  const config = specialNinjuConfigs[type];
+  const rule = specialNinjuRule(type);
+  const target = attackNinjuTargets(caster, 1)[0];
+  if (!target) return;
+  if (config?.hitSound) playSound(config.hitSound);
+  if (typeof addNinjuDamageEffect === "function") addNinjuDamageEffect(type, target, now, 1500);
+  if (rule.damage) damageUnit(target, rule.damage, `${caster.name} hit ${target.name} with ${config?.label || type}`, true, caster);
+}
+
 function consumeAttackNinjuSoulLevel(unit) {
   const level = Math.min(soulMaxLevel, Math.floor((unit.soulSteps || 0) / soulStepsPerLevel));
   if (level > 0) unit.soulSteps = 0;
@@ -386,16 +498,22 @@ function consumeAttackNinjuSoulLevel(unit) {
 
 function statusNinjuRule(type) {
   if (isAttackNinjuType(type)) return attackNinjuRule(type);
+  if (isSpecialNinjuType(type)) return specialNinjuRule(type);
+  if (type === "fireToad") return fireToadRule();
   if (isHealNinjuType(type)) return healNinjuRule(type);
   return type === "hotBlood" ? hotBloodRule() : steelRule();
 }
 
 function isStatusNinjuType(type) {
-  return type === "steel" || type === "hotBlood" || isAttackNinjuType(type) || isHealNinjuType(type);
+  return type === "steel" || type === "hotBlood" || type === "fireToad" || isAttackNinjuType(type) || isSpecialNinjuType(type) || isHealNinjuType(type);
 }
 
 function isAttackNinjuType(type) {
   return Boolean(attackNinjuConfigs[type]);
+}
+
+function isSpecialNinjuType(type) {
+  return Boolean(specialNinjuConfigs[type]);
 }
 
 function isHealNinjuType(type) {
@@ -419,6 +537,11 @@ function playStatusEnergyUpSequence() {
 function playStatusNinjuSound(type) {
   if (isAttackNinjuType(type)) {
     const sound = attackNinjuConfigs[type]?.castSound;
+    if (sound) playSound(sound);
+    return;
+  }
+  if (isSpecialNinjuType(type)) {
+    const sound = specialNinjuConfigs[type]?.castSound;
     if (sound) playSound(sound);
     return;
   }

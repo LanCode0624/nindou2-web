@@ -360,6 +360,9 @@ function tryAiNinjutsu(unit, profile, now) {
       return true;
     }
     if (Math.random() < profile.moneyDartReadyChance && aiCanStartMoneyDartAfterLineDelay(unit, now)) {
+      const dart = moneyDartRule();
+      if (unit.skill < dart.cost) return false;
+      unit.skill -= dart.cost;
       unit.moneyDartLineSince = 0;
       startMoneyDart(unit, now, true);
       return true;
@@ -375,13 +378,35 @@ function tryAiNinjutsu(unit, profile, now) {
     return true;
   }
 
+  if (tryAiStartNinju(unit, "hotBlood", profile.hotBloodUseChance, now)) return true;
+  if (tryAiStartNinju(unit, "wildfire", profile.wildfireUseChance, now)) return true;
+
   // 只有有直線可命中的敵人時才準備錢鏢，避免拿了就亂丟。
   if (Math.random() < profile.moneyDartReadyChance && (!isMoneyDartFocusedAi(unit) ? aiMoneyDartAimCell(unit) : aiCanStartMoneyDartAfterLineDelay(unit, now))) {
+    const dart = moneyDartRule();
+    if (unit.skill < dart.cost) return false;
+    unit.skill -= dart.cost;
     if (isMoneyDartFocusedAi(unit)) unit.moneyDartLineSince = 0;
     startMoneyDart(unit, now, true);
     return true;
   }
   return false;
+}
+
+function tryAiStartNinju(unit, type, chance = 0, now = performance.now()) {
+  if (!chance || Math.random() >= chance) return false;
+  if (type === "hotBlood" && isHotBloodActive(unit)) return false;
+  const rule = statusNinjuRule(type);
+  if (rule.available === false) return false;
+  const isAttackNinju = isAttackNinjuType(type);
+  const skillCost = isAttackNinju ? 0 : rule.cost;
+  if (unit.skill < skillCost) return false;
+  const attackNinjuLevel = isAttackNinju ? consumeAttackNinjuSoulLevel(unit) : 0;
+  if (isAttackNinju && attackNinjuLevel < 1) return false;
+  unit.skill -= skillCost;
+  unit.ninju = { type, phase: "active", startedAt: now, duration: rule.castDurationMs, queue: 0, attackNinjuLevel };
+  playStatusNinjuSound(type);
+  return true;
 }
 
 function aiCanStartMoneyDartAfterLineDelay(unit, now) {
@@ -396,7 +421,8 @@ function aiCanStartMoneyDartAfterLineDelay(unit, now) {
 function tryAiThrowMoneyDart(unit, profile, now) {
   if (!unit.moneyDart || now < unit.moneyDart.invincibleUntil || isUnitCastingNinju(unit)) return false;
 
-  // 手持錢鏢後，AI 一旦可丟就立刻丟，不再等機率。
+  if (Math.random() >= (profile.moneyDartThrowChance ?? 1)) return false;
+
   const aimCell = aiMoneyDartAimCell(unit);
   if (!aimCell) {
     // 目標不在直線時取消手持，回到移動找線。
