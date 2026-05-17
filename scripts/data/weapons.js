@@ -13,6 +13,198 @@ const weaponDefinitions = [
 ];
 const weaponDefinitionByKey = Object.fromEntries(weaponDefinitions.map((weapon) => [weapon.key, weapon]));
 
+const weaponVisualProfiles = {
+  weapon1: {
+    soundKey: "slash1",
+    attackScale: 1.0,
+    handScale: 1.0,
+    attackOffset: {
+      right: (w, h) => ({ x: -40, y: h / 2 }),
+      left: (w, h) => ({ x: -w + 40, y: h / 2 }),
+      up: (w, h) => ({ x: -w / 2, y: h - 20 }),
+      down: (w) => ({ x: -w / 2, y: 50 }),
+    },
+    handOffset: {
+      right: () => ({ x: -35, y: 39 }),
+      left: (w) => ({ x: 35 - w, y: 39 }),
+      up: (w) => ({ x: -w / 2, y: 20 }),
+      down: (w) => ({ x: -w / 2, y: 50 }),
+    },
+  },
+  weapon3: {
+    soundKey: "slash3",
+    attackScale: 1.0,
+    handScale: 1.0,
+    attackOffset: {
+      right: (w, h) => ({ x: -w + 75, y: h / 2 - 44 }),
+      left: (w, h) => ({ x: -w + 125, y: h / 2 - 44 }),
+      up: (w, h) => ({ x: -w / 2, y: h - 120 }),
+      down: (w) => ({ x: -w / 2, y: 40 }),
+    },
+    handOffset: {
+      right: (w, h) => ({ x: -w + 30, y: h / 2 + 5 }),
+      left: (w, h) => ({ x: -w + 75, y: h / 2 + 5 }),
+      up: (w, h) => ({ x: -w / 2, y: h - 55 }),
+      down: (w) => ({ x: -w / 2, y: 72 }),
+    },
+  },
+  weapon4: {
+    soundKey: "slash4",
+    attackScale: 0.5,
+    handScale: 1.0,
+    attackOffset: {
+      right: (w, h) => ({ x: -50, y: h / 2 - 20 }),
+      left: (w, h) => ({ x: -70, y: h / 2 - 20 }),
+      up: (w, h) => ({ x: -w / 2, y: h - 115 }),
+      down: (w) => ({ x: -w / 2, y: 52 }),
+    },
+    handOffset: {
+      right: () => ({ x: -80, y: 60 }),
+      left: () => ({ x: -50, y: 60 }),
+      up: (w) => ({ x: -w / 2, y: 85 }),
+      down: (w) => ({ x: -w / 2 - 5, y: 80 }),
+    },
+  },
+  weapon6: {
+    soundKey: "slash6",
+    attackScale: 0.8,
+    handScale: 0.72,
+    attackOffset: {
+      right: (w, h) => ({ x: -56, y: h / 2 - 16 }),
+      left: (w, h) => ({ x: -w + 56, y: h / 2 - 16 }),
+      up: (w, h) => ({ x: -w / 2, y: h - 70 }),
+      down: (w) => ({ x: -w / 2, y: 80 }),
+    },
+    handOffset: {
+      right: () => ({ x: -80, y: 90 }),
+      left: (w) => ({ x: 80 - w, y: 90 }),
+      up: (w) => ({ x: -w / 2 + 10, y: 70 }),
+      down: (w) => ({ x: -w / 2, y: 80 }),
+    },
+  },
+  weapon7: {
+    soundKey: "slash7",
+    attackScale: 0.8,
+    handScale: 0.8,
+    attackOffset: {
+      right: (w, h) => ({ x: -50, y: h / 2 - 20 }),
+      left: (w, h) => ({ x: -70, y: h / 2 - 20 }),
+      up: (w, h) => ({ x: -w / 2, y: h - 115 }),
+      down: (w) => ({ x: -w / 2, y: 52 }),
+    },
+    handOffset: {
+      right: () => ({ x: -80, y: 60 }),
+      left: () => ({ x: -50, y: 60 }),
+      up: (w) => ({ x: -w / 2, y: 85 }),
+      down: (w) => ({ x: -w / 2 - 5, y: 80 }),
+    },
+  },
+  weapon8: {
+    soundKey: "slash8",
+    attackScale: 0.8,
+    handScale: 0.78,
+    attackOffset: {
+      right: (w, h) => ({ x: -150, y: h / 2 }),
+      left: (w, h) => ({ x: -65, y: h / 2 }),
+      up: (w, h) => ({ x: -w / 2, y: h - 150 }),
+      down: (w) => ({ x: -w / 2, y: 150 }),
+    },
+    handOffset: {
+      right: () => ({ x: -78, y: 88 }),
+      left: (w) => ({ x: 78 - w, y: 88 }),
+      up: (w) => ({ x: -w / 2 + 8, y: 76 }),
+      down: (w) => ({ x: -w / 2 + 8, y: 93 }),
+    },
+  },
+  weapon10: {
+    soundKey: "slash10",
+    attackScale: 0.8,
+    handScale: 0.8,
+    attackOffset: {
+      right: (w, h) => ({ x: 0, y: h / 2 }),
+      left: (w, h) => ({ x: -w, y: h / 2 }),
+      up: (w, h) => ({ x: -w + 25, y: h - 20 }),
+      down: (w) => ({ x: -w / 2, y: 0 }),
+    },
+    handOffset: {
+      right: () => ({ x: -80, y: 45 }),
+      left: (w) => ({ x: 80 - w, y: 45 }),
+      up: (w) => ({ x: -w / 2 + 10, y: 70 }),
+      down: (w) => ({ x: -w / 2, y: 80 }),
+    },
+  },
+  weapon44: {
+    soundKey: "slash44",
+    attackScale: 0.8,
+    handScale: 0.8,
+    attackOffset: {
+      right: (w, h) => ({ x: -w + 55, y: h / 2 }),
+      left: (w, h) => ({ x: -w + 200, y: h / 2 }),
+      up: (w, h) => ({ x: -w + 75, y: h - 175 }),
+      down: (w) => ({ x: -w + 100, y: 215 }),
+    },
+    handOffset: {
+      right: (w, h) => ({ x: -w + 30, y: h / 2 + 5 }),
+      left: (w, h) => ({ x: -w + 175, y: h / 2 + 5 }),
+      up: (w, h) => ({ x: -w / 2, y: h - 175 }),
+      down: (w) => ({ x: -w / 2, y: 200 }),
+    },
+  },
+  weapon106: {
+    soundKey: "slash106",
+    attackScale: 1.0,
+    handScale: 0.8,
+    attackOffset: {
+      right: (w, h) => ({ x: -w + 35, y: h / 2 }),
+      left: (w, h) => ({ x: -w + 115, y: h / 2 }),
+      up: (w, h) => ({ x: -w + 100, y: h - 85 }),
+      down: (w) => ({ x: -w + 90, y: 100 }),
+    },
+    handOffset: {
+      right: (w, h) => ({ x: -w + 30, y: h / 2 + 5 }),
+      left: (w, h) => ({ x: -w + 75, y: h / 2 + 5 }),
+      up: (w, h) => ({ x: -w / 2, y: h - 65 }),
+      down: (w) => ({ x: -w / 2, y: 65 }),
+    },
+  },
+};
+
+function weaponVisualProfile(weaponKey) {
+  return weaponVisualProfiles[weaponKey] || weaponVisualProfiles[defaultWeaponKey];
+}
+
+function weaponDefinitionForKey(weaponKey) {
+  return weaponDefinitionByKey[weaponKey] || weaponDefinitionByKey[defaultWeaponKey];
+}
+
+function weaponSoundKey(weaponKey) {
+  return weaponVisualProfile(weaponKey).soundKey;
+}
+
+function weaponFrameSource(weapon, direction, kind, index) {
+  return `assets/weapon/${weapon.folder}/${direction}_${kind}/${index + 1}.png`;
+}
+
+function weaponAttackScale(weaponKey) {
+  return weaponVisualProfile(weaponKey).attackScale ?? 1;
+}
+
+function weaponHandScale(weaponKey) {
+  return weaponVisualProfile(weaponKey).handScale ?? 1;
+}
+
+function weaponAttackOffset(weaponKey, direction, w, h) {
+  const profile = weaponVisualProfile(weaponKey);
+  const offset = profile.attackOffset?.[direction] || weaponVisualProfiles[defaultWeaponKey].attackOffset?.[direction];
+  return offset ? offset(w, h) : { x: -w / 2, y: h / 2 };
+}
+
+function weaponHandOffset(weaponKey, direction, w, h) {
+  const profile = weaponVisualProfile(weaponKey);
+  const offset = profile.handOffset?.[direction] || weaponVisualProfiles[defaultWeaponKey].handOffset?.[direction];
+  return offset ? offset(w, h) : { x: -w / 2, y: h / 2 };
+}
+
 // 武器揮砍動畫總時長直接跟武器冷卻同步，避免出手視覺和實際節奏脫鉤。
 function weaponAttackAnimationDurationMs(weaponKey) {
   const weapon = weaponDefinitionByKey[weaponKey] || weaponDefinitionByKey[defaultWeaponKey];

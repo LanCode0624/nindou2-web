@@ -267,18 +267,7 @@ function weaponHitInDirection(attacker, dir) {
 }
 
 function slashSoundKeyForWeapon(weaponKey) {
-  const soundByWeapon = {
-    weapon1: "slash1",
-    weapon3: "slash3",
-    weapon4: "slash4",
-    weapon6: "slash6",
-    weapon7: "slash7",
-    weapon8: "slash8",
-    weapon10: "slash10",
-    weapon44: "slash44",
-    weapon106: "slash106",
-  };
-  return soundByWeapon[weaponKey] || soundByWeapon[defaultWeaponKey];
+  return weaponSoundKey(weaponKey || defaultWeaponKey);
 }
 
 function playSlash(attacker, target) {

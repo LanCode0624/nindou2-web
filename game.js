@@ -562,7 +562,7 @@ function loadImages() {
     ["right", "left", "up", "down"].flatMap((direction) => (
       ["hand", "attack"].flatMap((kind) => (
         Array.from({ length: weapon.frameCount }, (_, index) => {
-          const src = `assets/weapon/${weapon.folder}/${direction}_${kind}/${index + 1}.png`;
+          const src = weaponFrameSource(weapon, direction, kind, index);
           return loadFrame(src, weaponFrames[weapon.key][kind][direction], index);
         })
       ))
@@ -1522,18 +1522,7 @@ function drawAttacks() {
 
 // 使用目前武器的方向攻擊組合圖繪製揮砍。
 function drawKunaiAttackFrame(frame, from, to, direction, weaponKey = defaultWeaponKey) {
-  const attackScaleByWeapon = {
-    weapon1: 1.0,
-    weapon3: 1.0,
-    weapon4: 0.5,
-    weapon6: 0.8,
-    weapon7: 0.8,
-    weapon8: 0.8,
-    weapon10: 0.8,
-    weapon44: 0.8,
-    weapon106: 1.0,
-  };
-  const scale = 1.55 * (attackScaleByWeapon[weaponKey] || 1); // 每把武器可個別調整 attack 大小。
+  const scale = 1.55 * weaponAttackScale(weaponKey); // 每把武器可個別調整 attack 大小。
   const w = frame.width * scale; // 實際繪製寬度。
   const h = frame.height * scale; // 實際繪製高度。
   const dx = Math.sign(to.x - from.x); // 動畫方向 X：右 1、左 -1、上下 0。
@@ -1542,82 +1531,14 @@ function drawKunaiAttackFrame(frame, from, to, direction, weaponKey = defaultWea
     x: from.x + dx * 34, // 從角色中心往攻擊方向推一點，作為武器動畫基準點。
     y: from.y + dy * 31, // 角色圖的視覺中心比格子中心高，所以先往上修。
   };
-  const offsetsByWeapon = {
-    weapon1: {
-      right: { x: -40, y: h / 2 }, // 苦無右砍動畫位置；y 正值代表往上。
-      left: { x: -w +40 , y: h / 2 }, // 苦無左砍動畫位置。
-      up: { x: -w / 2, y: h - 20 }, // 苦無上砍動畫位置（已轉成 y 正值往上規則）。
-      down: { x: -w / 2, y: 50 }, // 苦無下砍動畫位置。
-    },
-    weapon3: {
-      right: { x: -w + 75, y: h / 2 - 44 }, // 忍太刀右砍動畫位置；y 正值代表往上。
-      left: { x: -w + 125, y: h / 2 - 44 }, // 忍太刀左砍動畫位置；這組已校準，優先不要動。
-      up: { x: -w / 2, y: h - 120 }, // 忍太刀上砍動畫位置；忍太刀上砍圖很高，所以 Y 需要往下補。
-      down: { x: -w / 2, y: 40 }, // 忍太刀下砍動畫位置；目前這個方向視覺已校準，優先不要動。
-    },
-    weapon4: {
-      right: { x: -50, y: h / 2 - 20 }, // 伊賀密刀右砍動畫位置（y 正值往上）。
-      left: { x: -70, y: h / 2 - 20 }, // 伊賀密刀左砍動畫位置（基準值，可再微調）。
-      up: { x: -w / 2, y: h -115 }, // 伊賀密刀上砍動畫位置（基準值，可再微調）。
-      down: { x: -w / 2, y: 52 }, // 伊賀密刀下砍動畫位置（基準值，可再微調）。
-    },
-    weapon6: {
-      right: { x: -56, y: h / 2 - 16 }, // 鐵扇不知火右砍動畫位置（先依你目前調法推估）。
-      left: { x: -w + 56, y: h / 2 - 16 }, // 鐵扇不知火左砍動畫位置（可再微調）。
-      up: { x: -w / 2, y: h - 70 }, // 鐵扇不知火上砍動畫位置（可再微調）。
-      down: { x: -w / 2, y: 80 }, // 鐵扇不知火下砍動畫位置（可再微調）。
-    },
-    weapon7: {
-      right: { x: -50, y: h / 2 - 20 }, // 極冰鬼切丸右砍動畫位置。
-      left: { x: -70, y: h / 2 - 20 }, // 極冰鬼切丸左砍動畫位置。
-      up: { x: -w / 2, y: h - 115 }, // 極冰鬼切丸上砍動畫位置。
-      down: { x: -w / 2, y: 52 }, // 極冰鬼切丸下砍動畫位置。
-    },
-    weapon8: {
-      right: { x: -150, y: h / 2 }, // 伊賀溜溜球右砍動畫位置。
-      left: { x: -65, y: h / 2 }, // 伊賀溜溜球左砍動畫位置。
-      up: { x: -w / 2, y: h - 150 }, // 伊賀溜溜球上砍動畫位置。
-      down: { x: -w / 2, y: 150 }, // 伊賀溜溜球下砍動畫位置。
-    },
-    weapon10: {
-      right: { x: 0, y: h / 2 }, // 風魔手裏劍右砍動畫位置。
-      left: { x: -w, y: h / 2 }, // 風魔手裏劍左砍動畫位置。
-      up: { x: -w + 25, y: h - 20 }, // 風魔手裏劍上砍動畫位置。
-      down: { x: -w / 2, y: 0 }, // 風魔手裏劍下砍動畫位置。
-    },
-    weapon44: {
-      right: { x: -w + 55, y: h / 2 }, // 滅魂之劍右砍動畫位置。
-      left: { x: -w + 200, y: h / 2 }, // 滅魂之劍左砍動畫位置。
-      up: { x: -w + 75, y: h - 175 }, // 滅魂之劍上砍動畫位置。
-      down: { x: -w + 100, y: 215 }, // 滅魂之劍下砍動畫位置。
-    },
-    weapon106: {
-      right: { x: -w + 35, y: h / 2 }, // 光劍右砍動畫位置。
-      left: { x: -w + 115, y: h / 2 }, // 光劍左砍動畫位置。
-      up: { x: -w + 100, y: h - 85 }, // 光劍上砍動畫位置。
-      down: { x: -w + 90, y: 100 }, // 光劍下砍動畫位置。
-    },
-  };
-  const offsets = offsetsByWeapon[weaponKey] || offsetsByWeapon[defaultWeaponKey];
-  const offset = offsets[direction] || { x: -w / 2, y: h / 2 }; // 防呆：方向異常時置中畫。
+  const offset = weaponAttackOffset(weaponKey, direction, w, h); // 防呆：方向異常時置中畫。
   const at = applyOffset(anchor, offset);
   ctx.drawImage(frame, at.x, at.y, w, h);
 }
 
 // 使用目前武器的手部組合圖繪製出招動畫；這組 offset 獨立於刀光位置，避免動到已校準的武器 offsets。
 function drawKunaiHandAttackFrame(frame, from, to, direction, weaponKey = defaultWeaponKey) {
-  const handScaleByWeapon = {
-    weapon1: 1.0,
-    weapon3: 1.0,
-    weapon4: 1.0,
-    weapon6: 0.72,
-    weapon7: 0.8,
-    weapon8: 0.78,
-    weapon10: 0.8,
-    weapon44: 0.8,
-    weapon106: 0.8,
-  };
-  const scale = 1.55 * (handScaleByWeapon[weaponKey] || 1); // 每把武器可個別調整 hand 大小。
+  const scale = 1.55 * weaponHandScale(weaponKey); // 每把武器可個別調整 hand 大小。
   const w = frame.width * scale; // 手部動畫實際繪製寬度。
   const h = frame.height * scale; // 手部動畫實際繪製高度。
   const dx = Math.sign(to.x - from.x); // 動畫方向 X：右 1、左 -1、上下 0。
@@ -1626,64 +1547,7 @@ function drawKunaiHandAttackFrame(frame, from, to, direction, weaponKey = defaul
     x: from.x + dx * 34, // 和刀光使用同一個方向錨點，確保手和刀同步。
     y: from.y + dy * 31,
   };
-  const offsetsByWeapon = {
-    weapon1: {
-      right: { x: -35, y: 39 }, // 苦無右手出招位置；之後只調 weapon1 這組，不影響忍太刀。
-      left: { x: 35 - w, y: 39 }, // 苦無左手出招位置。
-      up: { x: -w / 2, y: 20 }, // 苦無上手出招位置。
-      down: { x: -w / 2, y: 50 }, // 苦無下手出招位置。
-    },
-    weapon3: {
-      right: { x: -w + 30 , y: h / 2 + 5 }, // 忍太刀右手出招位置；只影響 right_hand，不影響 right_attack。
-      left: { x: -w + 75 , y: h / 2 + 5 }, // 忍太刀左手出招位置；這組已校準，優先不要動。
-      up: { x: -w / 2, y: h - 55 }, // 忍太刀上手出招位置；只影響 up_hand，不影響 up_attack。
-      down: { x: -w / 2, y: 72 }, // 忍太刀下手出招位置；配合目前下砍刀光。
-    },
-    weapon4: {
-      right: { x: -80, y: 60 }, // 伊賀密刀右手出招位置（基準值，可再微調）。
-      left: { x: -50, y: 60 }, // 伊賀密刀左手出招位置（基準值，可再微調）。
-      up: { x: -w / 2, y: 85 }, // 伊賀密刀上手出招位置（基準值，可再微調）。
-      down: { x: -w / 2 -5, y: 80 }, // 伊賀密刀下手出招位置（基準值，可再微調）。
-    },
-    weapon6: {
-      right: { x: -80, y: 90 }, // 鐵扇不知火右手出招位置（先依你目前調法推估）。
-      left: { x: 80 - w, y: 90 }, // 鐵扇不知火左手出招位置（可再微調）。
-      up: { x: -w / 2 +10,  y: 70 }, // 鐵扇不知火上手出招位置（可再微調）。
-      down: { x: -w / 2, y: 80 }, // 鐵扇不知火下手出招位置（可再微調）。
-    },
-    weapon7: {
-      right: { x: -80, y: 60 }, // 極冰鬼切丸右手出招位置。
-      left: { x: -50, y: 60 }, // 極冰鬼切丸左手出招位置。
-      up: { x: -w / 2, y: 85 }, // 極冰鬼切丸上手出招位置。
-      down: { x: -w / 2 - 5, y: 80 }, // 極冰鬼切丸下手出招位置。
-    },
-    weapon8: {
-      right: { x: -78, y: 88 }, // 伊賀溜溜球右手出招位置。
-      left: { x: 78 - w, y: 88 }, // 伊賀溜溜球左手出招位置。
-      up: { x: -w / 2 + 8, y: 76 }, // 伊賀溜溜球上手出招位置。
-      down: { x: -w / 2 + 8, y: 93 }, // 伊賀溜溜球下手出招位置。
-    },
-    weapon10: {
-      right: { x: -80, y: 45 }, // 風魔手裏劍右手出招位置。
-      left: { x: 80 - w, y: 45 }, // 風魔手裏劍左手出招位置。
-      up: { x: -w / 2 + 10, y: 70 }, // 風魔手裏劍上手出招位置。
-      down: { x: -w / 2, y: 80 }, // 風魔手裏劍下手出招位置。
-    },
-    weapon44: {
-      right: { x: -w + 30, y: h / 2 + 5 }, // 滅魂之劍右手出招位置。
-      left: { x: -w + 175, y: h / 2 + 5 }, // 滅魂之劍左手出招位置。
-      up: { x: -w / 2, y: h - 175 }, // 滅魂之劍上手出招位置。
-      down: { x: -w / 2, y: 200 }, // 滅魂之劍下手出招位置。
-    },
-    weapon106: {
-      right: { x: -w + 30, y: h / 2 + 5 }, // 光劍右手出招位置。
-      left: { x: -w + 75, y: h / 2 + 5 }, // 光劍左手出招位置。
-      up: { x: -w / 2, y: h - 65 }, // 光劍上手出招位置。
-      down: { x: -w / 2, y: 65 }, // 光劍下手出招位置。
-    },
-  };
-  const offsets = offsetsByWeapon[weaponKey] || offsetsByWeapon[defaultWeaponKey];
-  const offset = offsets[direction] || { x: -w / 2, y: h / 2 };
+  const offset = weaponHandOffset(weaponKey, direction, w, h);
   const at = applyOffset(anchor, offset);
   ctx.drawImage(frame, at.x, at.y, w, h);
 }
