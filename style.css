@@ -92,52 +92,27 @@ body:not(.room-mode) .room-screen {
   align-items: center;
 }
 
-.room-rule-toggle {
+.room-rule-select {
   min-width: 0;
   height: 40px;
-  border: 0;
-  padding: 0 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  padding: 0 14px;
   justify-self: start;
-  background: transparent;
+  border: 2px solid #6ea0b2;
+  background: linear-gradient(180deg, rgba(8, 38, 56, .96), rgba(5, 23, 39, .96));
   color: #f2f6e8;
   font-size: 22px;
   font-weight: 900;
   text-shadow: 1px 1px 2px #0b1732;
-}
-
-.room-rule-toggle img {
-  width: 27px;
-  height: 27px;
-  display: block;
-}
-
-.room-rule-checkbox {
-  position: relative;
-  width: 27px;
-  height: 27px;
-  flex: 0 0 27px;
-}
-
-.room-rule-checkbox-base,
-.room-rule-checkbox-check {
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-
-.room-rule-checkbox-check {
-  opacity: 0;
-}
-
-.room-rule-toggle.checked .room-rule-checkbox-check {
-  opacity: 1;
-}
-
-.room-rule-toggle span {
   line-height: 1;
+  appearance: none;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px rgba(182, 224, 255, .18);
+}
+
+.room-rule-select:focus {
+  outline: none;
+  border-color: #d8ef7b;
+  box-shadow: 0 0 0 2px rgba(216, 239, 123, .22);
 }
 
 .room-title-cell span {

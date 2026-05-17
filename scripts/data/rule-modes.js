@@ -158,12 +158,19 @@ const modeRuleProfiles = {
 };
 
 function currentRuleModeKey() {
+  if (typeof state !== "undefined" && typeof state?.ruleModeKey === "string") {
+    if (state.ruleModeKey === "modified") return "modified";
+    if (state.ruleModeKey === "n3") return "n3";
+    return "original";
+  }
   if (typeof state !== "undefined" && state?.useOriginalMode) return "original";
   return "modified";
 }
 
 function currentRuleProfile() {
-  return modeRuleProfiles[currentRuleModeKey()] || modeRuleProfiles.modified;
+  const modeKey = currentRuleModeKey();
+  if (modeKey === "n3") return modeRuleProfiles.original;
+  return modeRuleProfiles[modeKey] || modeRuleProfiles.modified;
 }
 
 function weaponDamageForMode(weaponKey, fallbackDamage) {

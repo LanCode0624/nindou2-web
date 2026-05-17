@@ -12,13 +12,11 @@
       <section id="roomScreen" class="room-screen" aria-label="房間畫面">
         <div class="room-frame">
           <header class="room-topbar">
-            <button id="ruleModeToggle" type="button" class="room-rule-toggle" aria-pressed="false" aria-label="忍2原版">
-              <span class="room-rule-checkbox">
-                <img class="room-rule-checkbox-base" src="assets/room/waiting_room/checkbox.png" alt="">
-                <img id="ruleModeCheckbox" class="room-rule-checkbox-check" src="assets/room/waiting_room/checkbox_checked.png" alt="">
-              </span>
-              <span>忍2原版</span>
-            </button>
+            <select id="ruleModeSelect" class="room-rule-select" aria-label="忍2原版">
+              <option value="original" selected>忍2原版</option>
+              <option value="modified">忍2修改</option>
+              <option value="n3">忍3</option>
+            </select>
             <div class="room-title-cell"><span>模式</span><strong>絕命指令</strong></div>
             <button id="roomLangToggleBtn" type="button" class="room-text-button room-lang-toggle-btn" aria-label="ENG">ENG</button>
             <button type="button" class="room-leave-btn" aria-label="離開"></button>

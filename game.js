@@ -8,8 +8,7 @@ const resetBtn = document.querySelector("#resetBtn");
 const battleStartBtn = document.querySelector("#battleStartBtn");
 const musicVolumeInput = document.querySelector("#musicVolume");
 const sfxVolumeInput = document.querySelector("#sfxVolume");
-const ruleModeToggle = document.querySelector("#ruleModeToggle");
-const ruleModeCheckbox = document.querySelector("#ruleModeCheckbox");
+const ruleModeSelect = document.querySelector("#ruleModeSelect");
 const roomLangToggleBtn = document.querySelector("#roomLangToggleBtn");
 const teamEditBtn = document.querySelector("#teamEditBtn");
 const ninjuEditorEl = document.querySelector("#ninjuEditor");
@@ -49,7 +48,7 @@ const state = {
   projectiles: [],
   ninjuDamageEffects: [],
   moneyDartCasts: [],
-  useOriginalMode: false,
+  ruleModeKey: "original",
 };
 
 const ninjuCatalog = [
@@ -114,6 +113,19 @@ const roomLevelProfiles = {
   "grey-2": { level: 22, rankZh: "中忍", rankEn: "Chunin" },
   "grey-3": { level: 18, rankZh: "中忍", rankEn: "Chunin" },
   "grey-4": { level: 23, rankZh: "上忍", rankEn: "Jonin" },
+};
+
+const roomRuleModeLabels = {
+  zh: {
+    original: "忍2原版",
+    modified: "忍2修改",
+    n3: "忍3",
+  },
+  en: {
+    original: "Nindou 2 Original",
+    modified: "Nindou 2 Modified",
+    n3: "Nindou 3",
+  },
 };
 
 const roomLocaleText = {
@@ -686,6 +698,11 @@ function localizedCountdownText(step) {
   return text.countdownStart;
 }
 
+function localizedRuleModeLabel(modeKey) {
+  const labels = roomRuleModeLabels[isRoomEnglish() ? "en" : "zh"];
+  return labels[modeKey] || labels.original;
+}
+
 function localizedNinjuFontSize(size) {
   if (!isRoomEnglish()) return size;
   return Math.max(1, size - 3);
@@ -727,11 +744,7 @@ function applyRoomLanguage() {
 
   document.documentElement.lang = text.htmlLang;
   if (roomScreenEl) roomScreenEl.setAttribute("aria-label", text.roomScreen);
-  if (ruleModeToggle) {
-    ruleModeToggle.setAttribute("aria-label", text.ruleMode);
-    const labelSpan = ruleModeToggle.querySelector("span:last-child");
-    if (labelSpan) labelSpan.textContent = text.ruleMode;
-  }
+  setupRuleModeSelect();
   if (roomTitleLabelEl) roomTitleLabelEl.textContent = text.modeLabel;
   if (roomTitleValueEl) roomTitleValueEl.textContent = text.modeValue;
   if (roomLangToggleBtn) {
@@ -1831,6 +1844,20 @@ function drawHp(unit, x, y) {
   ctx.restore();
 }
 
+function setupRuleModeSelect() {
+  if (!ruleModeSelect) return;
+  const optionsHtml = `
+    <option value="original">${localizedRuleModeLabel("original")}</option>
+    <option value="modified">${localizedRuleModeLabel("modified")}</option>
+    <option value="n3">${localizedRuleModeLabel("n3")}</option>
+  `;
+  const current = state.ruleModeKey || "original";
+  ruleModeSelect.innerHTML = optionsHtml;
+  ruleModeSelect.value = current;
+  if (ruleModeSelect.value !== current) ruleModeSelect.value = "original";
+  ruleModeSelect.setAttribute("aria-label", localizedRuleModeLabel(ruleModeSelect.value));
+}
+
 // 繪製角色名稱標籤（name_bar 背景 + 居中文字）。
 function drawUnitName(unit, x, y) {
   ctx.save();
@@ -2838,10 +2865,10 @@ function returnToRoomFromResult() {
 }
 
 function updateRuleModeUi() {
-  if (!ruleModeToggle || !ruleModeCheckbox) return;
-  const checked = state.useOriginalMode;
-  ruleModeToggle.setAttribute("aria-pressed", checked ? "true" : "false");
-  ruleModeToggle.classList.toggle("checked", checked);
+  if (!ruleModeSelect) return;
+  ruleModeSelect.value = state.ruleModeKey || "original";
+  if (ruleModeSelect.value !== (state.ruleModeKey || "original")) ruleModeSelect.value = "original";
+  ruleModeSelect.setAttribute("aria-label", localizedRuleModeLabel(ruleModeSelect.value));
 }
 
 function startRestartHold(event) {
@@ -2866,8 +2893,8 @@ function updateRestartHold(now) {
   returnToRoom();
 }
 
-function toggleRuleMode() {
-  state.useOriginalMode = !state.useOriginalMode;
+function setRuleMode(modeKey) {
+  state.ruleModeKey = modeKey === "modified" || modeKey === "n3" ? modeKey : "original";
   updateRuleModeUi();
 }
 
@@ -2965,6 +2992,7 @@ window.addEventListener("keydown", startRestartHold);
 window.addEventListener("keyup", stopRestartHold);
 resetBtn.addEventListener("click", resetGame);
 resetBtn.addEventListener("click", startBgm);
+setupRuleModeSelect();
 setupWeaponSelects();
 setupControlSelects();
 setupHpInputs();
@@ -2977,7 +3005,7 @@ if (ninjuEditorSaveBtn) ninjuEditorSaveBtn.addEventListener("click", saveNinjuEd
 if (musicVolumeInput) musicVolumeInput.addEventListener("input", applyVolumeControls);
 if (sfxVolumeInput) sfxVolumeInput.addEventListener("input", applyVolumeControls);
 if (roomLangToggleBtn) roomLangToggleBtn.addEventListener("click", toggleRoomLanguage);
-if (ruleModeToggle) ruleModeToggle.addEventListener("click", toggleRuleMode);
+if (ruleModeSelect) ruleModeSelect.addEventListener("change", (event) => setRuleMode(event.target.value));
 window.addEventListener("keydown", startBgm, { once: true });
 
 applyRoomLanguage();

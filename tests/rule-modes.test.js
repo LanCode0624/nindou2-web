@@ -29,3 +29,13 @@ test("original 模式使用原版覆蓋數值", () => {
   assert.equal(context.steelRule().defenseMultiplier, 2);
   assert.equal(context.moneyDartRule().damage, 100);
 });
+
+test("n3 模式目前暫時沿用原版規則", () => {
+  const context = loadCoreRules({ state: { ruleModeKey: "n3" } });
+
+  assert.equal(context.currentRuleModeKey(), "n3");
+  assert.equal(context.weaponDamageForMode("weapon4", 999), 50);
+  assert.equal(context.weaponDamageForMode("weapon6", 999), 25);
+  assert.equal(context.steelRule().cost, 7);
+  assert.equal(context.moneyDartRule().damage, 100);
+});
