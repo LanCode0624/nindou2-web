@@ -72,6 +72,8 @@ npm test
 ```text
 scripts/data/config.js
 scripts/data/weapons.js
+scripts/data/ninjutsu-definitions.js
+scripts/data/locales.js
 scripts/data/assets.js
 scripts/data/rule-modes.js
 scripts/systems/grid.js
@@ -90,6 +92,8 @@ game.js
 ```text
 scripts/data/config.js        -> 遊戲常數（grid、maxHp、maxSkill、倒數時間等）
 scripts/data/weapons.js       -> weaponDefinitions、武器動畫時長工具
+scripts/data/ninjutsu-definitions.js -> 忍術清單、忍術編輯排序、預設忍術配置
+scripts/data/locales.js       -> 房間、戰鬥 HUD、忍術、武器英文與中英切換文字
 scripts/data/assets.js        -> 圖片、音效、動畫影格來源
 scripts/data/rule-modes.js    -> 規則模式與各種查詢函式
 scripts/systems/grid.js       -> 格子與座標換算
@@ -321,8 +325,8 @@ weapon8 -> assets/sounds/weapon/8.ogg
 
 相關位置：
 
-- 忍術清單：`game.js -> ninjuCatalog`
-- 預設忍術：`game.js -> defaultNinjuLoadout`
+- 忍術清單：`scripts/data/ninjutsu-definitions.js -> ninjuCatalog`
+- 預設忍術：`scripts/data/ninjutsu-definitions.js -> defaultNinjuLoadout`
 - 忍術按鈕：`game.js -> drawNinjuSlot()`
 - 忍術規則：`scripts/data/rule-modes.js`
 - 忍術常數：`scripts/data/config.js`
