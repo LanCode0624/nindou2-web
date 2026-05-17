@@ -12,6 +12,32 @@ const weaponDefinitions = [
   { key: "weapon106", label: "光劍", folder: "106光劍", frameCount: 8, cooldownMs: 330, area: "NinjaS", damage: 30 },
 ];
 const weaponDefinitionByKey = Object.fromEntries(weaponDefinitions.map((weapon) => [weapon.key, weapon]));
+
+// 武器揮砍動畫總時長直接跟武器冷卻同步，避免出手視覺和實際節奏脫鉤。
+function weaponAttackAnimationDurationMs(weaponKey) {
+  const weapon = weaponDefinitionByKey[weaponKey] || weaponDefinitionByKey[defaultWeaponKey];
+  return weapon?.cooldownMs || weaponCooldownMs;
+}
+
+// 方便驗證每把武器每一格大約播放多久，之後調整素材張數時可直接對表檢查。
+function weaponAttackFrameDurationMs(weaponKey) {
+  const weapon = weaponDefinitionByKey[weaponKey] || weaponDefinitionByKey[defaultWeaponKey];
+  const frameCount = Math.max(1, weapon?.frameCount || 1);
+  return weaponAttackAnimationDurationMs(weaponKey) / frameCount;
+}
+
+// 提供簡單可讀的驗證報表，方便在瀏覽器 console 或測試裡直接檢查全部武器。
+function buildWeaponAttackAnimationReport() {
+  return weaponDefinitions.map((weapon) => ({
+    key: weapon.key,
+    label: weapon.label,
+    frameCount: weapon.frameCount,
+    cooldownMs: weapon.cooldownMs,
+    animationDurationMs: weaponAttackAnimationDurationMs(weapon.key),
+    frameDurationMs: Number(weaponAttackFrameDurationMs(weapon.key).toFixed(2)),
+  }));
+}
+
 const weaponFrames = Object.fromEntries(weaponDefinitions.map((weapon) => [
   weapon.key,
   {

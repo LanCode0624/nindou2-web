@@ -292,7 +292,7 @@ function playSlash(attacker, target) {
     direction,
     weaponKey: attacker.weaponKey || defaultWeaponKey,
     startedAt: performance.now(),
-    duration: weapon?.cooldownMs || weaponCooldownMs,
+    duration: weaponAttackAnimationDurationMs(weapon?.key || attacker.weaponKey || defaultWeaponKey),
     side: attacker.id % 2 === 0 ? -1 : 1,
   });
 }
