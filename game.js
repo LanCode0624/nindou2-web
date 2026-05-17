@@ -26,6 +26,7 @@ const hpInputEls = Array.from(document.querySelectorAll(".room-hp-input"));
 // ===== Runtime State =====
 const state = {
   inRoom: true,
+  roomLang: "zh",
   units: [],
   selectedId: 1,
   pointer: { x: 0, y: 0, cell: null },
@@ -52,16 +53,16 @@ const state = {
 };
 
 const ninjuCatalog = [
-  { type: "moneyDart", label: "錢鏢", group: "projectile", editorRow: "special", editorOrder: 1 },
-  { type: "steel", label: "鋼鐵", group: "buff", editorRow: "support", editorOrder: 1 },
-  { type: "hotBlood", label: "熱血", group: "buff", editorRow: "support", editorOrder: 2 },
-  { type: "flash", label: "閃光", group: "attack", editorRow: "attack", editorOrder: 1 },
-  { type: "wildfire", label: "野火", group: "attack", editorRow: "attack", editorOrder: 2 },
-  { type: "death", label: "死神", group: "attack", editorRow: "attack", editorOrder: 3 },
-  { type: "freeze", label: "急凍", group: "attack", editorRow: "attack", editorOrder: 4 },
-  { type: "genki", label: "元氣", group: "heal", editorRow: "heal", editorOrder: 1 },
-  { type: "kakki", label: "活氣", group: "heal", editorRow: "heal", editorOrder: 2 },
-  { type: "shinki", label: "神氣", group: "heal", editorRow: "heal", editorOrder: 3 },
+  { type: "moneyDart", label: "錢鏢", enLabel: "Money Dart", group: "projectile", editorRow: "special", editorOrder: 1 },
+  { type: "steel", label: "鋼鐵", enLabel: "Steel", group: "buff", editorRow: "support", editorOrder: 1 },
+  { type: "hotBlood", label: "熱血", enLabel: "Hot Blood", group: "buff", editorRow: "support", editorOrder: 2 },
+  { type: "flash", label: "閃光", enLabel: "Flash", group: "attack", editorRow: "attack", editorOrder: 1 },
+  { type: "wildfire", label: "野火", enLabel: "Wildfire", group: "attack", editorRow: "attack", editorOrder: 2 },
+  { type: "death", label: "死神", enLabel: "Death", group: "attack", editorRow: "attack", editorOrder: 3 },
+  { type: "freeze", label: "急凍", enLabel: "Freeze", group: "attack", editorRow: "attack", editorOrder: 4 },
+  { type: "genki", label: "元氣", enLabel: "Genki", group: "heal", editorRow: "heal", editorOrder: 1 },
+  { type: "kakki", label: "活氣", enLabel: "Kakki", group: "heal", editorRow: "heal", editorOrder: 2 },
+  { type: "shinki", label: "神氣", enLabel: "Shinki", group: "heal", editorRow: "heal", editorOrder: 3 },
 ];
 const ninjuByType = Object.fromEntries(ninjuCatalog.map((ninju) => [ninju.type, ninju]));
 const ninjuEditorRowOrder = { heal: 1, support: 2, attack: 3, special: 4, transform: 5 };
@@ -76,6 +77,175 @@ let editNinjuDraft = [...selectedNinjuLoadout];
 let editNinjuSlotIndex = 0;
 let restartHoldStartedAt = 0;
 let restartHoldTriggered = false;
+
+const roomWeaponEnglishLabels = {
+  weapon1: "Kunai",
+  weapon3: "Nodachi",
+  weapon4: "Iga Hidden Blade",
+  weapon6: "Shiranui Iron Fan",
+  weapon7: "Extreme Ice Onikirimaru",
+  weapon8: "Iga Yo-Yo",
+  weapon10: "Fuuma Shuriken",
+  weapon44: "Soulreaper Sword",
+  weapon106: "Light Sword",
+};
+
+const roomControlModeLabels = {
+  zh: {
+    player: "玩家",
+    ai_beginner: "初心者",
+    ai_money_dart_master: "錢鏢神人",
+    ai_dart_only_master: "尬鏢神人",
+    ai_god: "AI神人",
+  },
+  en: {
+    player: "Player",
+    ai_beginner: "Beginner AI",
+    ai_money_dart_master: "Money Dart Master",
+    ai_dart_only_master: "Dart-only Master",
+    ai_god: "God AI",
+  },
+};
+
+const roomLevelProfiles = {
+  "blue-2": { level: 99, rankZh: "疾風大將", rankEn: "Gale General" },
+  "blue-3": { level: 99, rankZh: "下忍", rankEn: "Genin" },
+  "blue-4": { level: 20, rankZh: "初心者", rankEn: "Beginner" },
+  "grey-2": { level: 22, rankZh: "中忍", rankEn: "Chunin" },
+  "grey-3": { level: 18, rankZh: "中忍", rankEn: "Chunin" },
+  "grey-4": { level: 23, rankZh: "上忍", rankEn: "Jonin" },
+};
+
+const roomLocaleText = {
+  zh: {
+    htmlLang: "zh-Hant",
+    toggleTarget: "ENG",
+    roomScreen: "房間畫面",
+    ruleMode: "忍2原版",
+    modeLabel: "模式",
+    modeValue: "絕命指令",
+    leave: "離開",
+    teams: "隊伍",
+    edit: "編輯",
+    editNinjutsu: "編輯",
+    blueTeam: "青組",
+    greyTeam: "灰組",
+    playerCards: "玩家卡片",
+    remove: "刪除",
+    add: "新增",
+    roomHost: "室長",
+    notReady: "未準備",
+    hp: "血量",
+    control: "控制",
+    weapon: "武器",
+    startBattle: "戰鬥開始",
+    chat: "聊天",
+    general: "一般",
+    send: "送",
+    modePanel: "模式",
+    randomMode: "隨機忍二系列",
+    editSettings: "編輯設定",
+    gameSettings: "遊戲設定",
+    volume: "音量",
+    music: "音樂",
+    sfx: "音效",
+    ninjuEditor: "忍術編輯",
+    emptySlot: "空",
+    nickname: "暱稱",
+    change: "更改",
+    level: "段數",
+    role: "職業",
+    guild: "所屬公會",
+    guildName: "管理團隊",
+    roleName: "夜遊神",
+    wins: "勝績",
+    losses: "敗績",
+    gold: "金",
+    rep: "德",
+    editCategories: "編輯分類",
+    ninjuTab: "忍術",
+    weaponTab: "武器",
+    eyesTab: "眼睛",
+    itemsTab: "道具",
+    ninjuSeries: "忍術系別",
+    healSeries: "回復系",
+    supportSeries: "輔助系",
+    attackSeries: "攻擊系",
+    specialSeries: "特殊系",
+    transformSeries: "變身系",
+    chooseNinju: "請從已習得的忍術中挑選六個以便在戰鬥中使用",
+    ninjuInfo: "忍術介紹",
+    selectedNinju: "已選忍術",
+    availableNinju: "可選忍術",
+    reset: "重來",
+    cancel: "取消",
+    save: "儲存",
+  },
+  en: {
+    htmlLang: "en",
+    toggleTarget: "中文",
+    roomScreen: "Room screen",
+    ruleMode: "Nindou 2 Original",
+    modeLabel: "Mode",
+    modeValue: "Rescue the Princess",
+    leave: "Leave",
+    teams: "Teams",
+    edit: "Edit",
+    editNinjutsu: "Edit ninjutsu",
+    blueTeam: "Blue Team",
+    greyTeam: "Grey Team",
+    playerCards: "Player cards",
+    remove: "Remove",
+    add: "Add",
+    roomHost: "Room host",
+    notReady: "Not ready",
+    hp: "HP",
+    control: "Control",
+    weapon: "Weapon",
+    startBattle: "Start battle",
+    chat: "Chat",
+    general: "General",
+    send: "Send",
+    modePanel: "Mode",
+    randomMode: "Random Nindou 2 Series",
+    editSettings: "Edit Settings",
+    gameSettings: "Game Settings",
+    volume: "Volume",
+    music: "Music",
+    sfx: "SFX",
+    ninjuEditor: "Ninjutsu editor",
+    emptySlot: "Empty",
+    nickname: "Name",
+    change: "Change",
+    level: "Level",
+    role: "Role",
+    guild: "Guild",
+    guildName: "Management Team",
+    roleName: "Night Rogue",
+    wins: "Wins",
+    losses: "Losses",
+    gold: "Gold",
+    rep: "Rep",
+    editCategories: "Edit categories",
+    ninjuTab: "Ninju",
+    weaponTab: "Weapon",
+    eyesTab: "Eyes",
+    itemsTab: "Items",
+    ninjuSeries: "Ninjutsu series",
+    healSeries: "Heal",
+    supportSeries: "Support",
+    attackSeries: "Attack",
+    specialSeries: "Special",
+    transformSeries: "Transform",
+    chooseNinju: "Choose six ninjutsu to use in battle",
+    ninjuInfo: "Info",
+    selectedNinju: "Selected ninjutsu",
+    availableNinju: "Available ninjutsu",
+    reset: "Reset",
+    cancel: "Cancel",
+    save: "Save",
+  },
+};
 
 // 眼睛貼圖位置（相對角色中心）。X 正值往右，Y 正值往上。
 // 你可以直接調這裡微調外觀。
@@ -423,11 +593,193 @@ function buildStartingUnits() {
   return units;
 }
 
+function roomLocale() {
+  return roomLocaleText[state.roomLang === "en" ? "en" : "zh"];
+}
+
+function isRoomEnglish() {
+  return state.roomLang === "en";
+}
+
+function localizedWeaponLabel(weapon) {
+  if (!isRoomEnglish()) return weapon.label;
+  return roomWeaponEnglishLabels[weapon.key] || weapon.label;
+}
+
+function localizedControlModeLabel(mode) {
+  const labels = roomControlModeLabels[isRoomEnglish() ? "en" : "zh"];
+  return labels[mode] || mode;
+}
+
+function localizedNinjuLabel(ninju) {
+  if (!isRoomEnglish()) return ninju.label;
+  return ninju.enLabel || ninju.label;
+}
+
+function roomTeamLabel(team) {
+  if (team === "blue") return "Blue";
+  if (team === "grey") return "Grey";
+  return team;
+}
+
+function formatRoomLevelText(team, slot) {
+  const profile = roomLevelProfiles[`${team}-${slot}`];
+  if (!profile) return "";
+  if (isRoomEnglish()) return `Lv. ${profile.level} Role: ${profile.rankEn}`;
+  return `${profile.level}段　身份: ${profile.rankZh}`;
+}
+
+function applyRoomLanguage() {
+  const text = roomLocale();
+  const roomScreenEl = document.querySelector("#roomScreen");
+  const roomTitleLabelEl = document.querySelector(".room-title-cell span");
+  const roomTitleValueEl = document.querySelector(".room-title-cell strong");
+  const roomLeaveBtn = document.querySelector(".room-leave-btn");
+  const teamTabsEl = document.querySelector(".team-tabs");
+  const teamTabBlueEl = document.querySelector(".team-tab-blue");
+  const teamTabGreyEl = document.querySelector(".team-tab-grey");
+  const playerGridEl = document.querySelector(".player-grid");
+  const battleStartImgEl = battleStartBtn?.querySelector("img");
+  const chatPanelEl = document.querySelector(".chat-panel");
+  const chatChannelEl = document.querySelector(".chat-input span");
+  const chatSendBtn = document.querySelector(".chat-input button");
+  const modePanelEl = document.querySelector(".mode-panel");
+  const modeTitleEl = document.querySelector(".mode-title");
+  const modeSideAEl = document.querySelector(".mode-side.side-a");
+  const modeSideBEl = document.querySelector(".mode-side.side-b");
+  const volumePanelEl = document.querySelector(".room-volume-panel");
+  const volumeLabels = Array.from(document.querySelectorAll(".room-volume-control span"));
+  const ninjuProfileRows = Array.from(document.querySelectorAll(".ninju-editor-stats > div"));
+  const ninjuScoreRows = Array.from(document.querySelectorAll(".ninju-editor-score > div"));
+  const ninjuTabButtons = Array.from(document.querySelectorAll(".ninju-editor-tabs button"));
+  const ninjuSeriesEls = Array.from(document.querySelectorAll(".ninju-editor-series span"));
+  const ninjuTitleSpanEl = document.querySelector(".ninju-editor-title span");
+  const ninjuInfoBtn = document.querySelector(".ninju-editor-title button");
+
+  document.documentElement.lang = text.htmlLang;
+  if (roomScreenEl) roomScreenEl.setAttribute("aria-label", text.roomScreen);
+  if (ruleModeToggle) {
+    ruleModeToggle.setAttribute("aria-label", text.ruleMode);
+    const labelSpan = ruleModeToggle.querySelector("span:last-child");
+    if (labelSpan) labelSpan.textContent = text.ruleMode;
+  }
+  if (roomTitleLabelEl) roomTitleLabelEl.textContent = text.modeLabel;
+  if (roomTitleValueEl) roomTitleValueEl.textContent = text.modeValue;
+  if (roomLangToggleBtn) {
+    roomLangToggleBtn.textContent = text.toggleTarget;
+    roomLangToggleBtn.setAttribute("aria-label", text.toggleTarget);
+  }
+  if (roomLeaveBtn) roomLeaveBtn.setAttribute("aria-label", text.leave);
+  if (teamTabsEl) teamTabsEl.setAttribute("aria-label", text.teams);
+  if (teamEditBtn) {
+    teamEditBtn.textContent = text.edit;
+    teamEditBtn.setAttribute("aria-label", text.editNinjutsu);
+  }
+  if (teamTabBlueEl) teamTabBlueEl.textContent = text.blueTeam;
+  if (teamTabGreyEl) teamTabGreyEl.textContent = text.greyTeam;
+  if (playerGridEl) playerGridEl.setAttribute("aria-label", text.playerCards);
+  if (battleStartBtn) battleStartBtn.setAttribute("aria-label", text.startBattle);
+  if (battleStartImgEl) battleStartImgEl.alt = text.startBattle;
+  if (chatPanelEl) chatPanelEl.setAttribute("aria-label", text.chat);
+  if (chatChannelEl) chatChannelEl.textContent = text.general;
+  if (chatSendBtn) chatSendBtn.textContent = text.send;
+  if (modePanelEl) modePanelEl.setAttribute("aria-label", text.modePanel);
+  if (modeTitleEl) modeTitleEl.textContent = text.randomMode;
+  if (modeSideAEl) modeSideAEl.textContent = text.editSettings;
+  if (modeSideBEl) modeSideBEl.textContent = text.gameSettings;
+  if (volumePanelEl) volumePanelEl.setAttribute("aria-label", text.volume);
+  if (volumeLabels[0]) volumeLabels[0].textContent = text.music;
+  if (volumeLabels[1]) volumeLabels[1].textContent = text.sfx;
+  if (ninjuEditorEl) ninjuEditorEl.setAttribute("aria-label", text.ninjuEditor);
+  if (ninjuProfileRows[0]) {
+    const spans = ninjuProfileRows[0].querySelectorAll("span");
+    const button = ninjuProfileRows[0].querySelector("button");
+    if (spans[0]) spans[0].textContent = text.nickname;
+    if (button) button.textContent = text.change;
+  }
+  if (ninjuProfileRows[1]) {
+    const spans = ninjuProfileRows[1].querySelectorAll("span");
+    const strongs = ninjuProfileRows[1].querySelectorAll("strong");
+    if (spans[0]) spans[0].textContent = text.level;
+    if (spans[1]) spans[1].textContent = text.role;
+    if (strongs[1]) strongs[1].textContent = text.roleName;
+  }
+  if (ninjuProfileRows[2]) {
+    const span = ninjuProfileRows[2].querySelector("span");
+    const strong = ninjuProfileRows[2].querySelector("strong");
+    if (span) span.textContent = text.guild;
+    if (strong) strong.textContent = text.guildName;
+  }
+  if (ninjuScoreRows[0]) {
+    const spans = ninjuScoreRows[0].querySelectorAll("span");
+    if (spans[0]) spans[0].textContent = text.wins;
+    if (spans[1]) spans[1].textContent = text.losses;
+  }
+  if (ninjuScoreRows[1]) {
+    const span = ninjuScoreRows[1].querySelector("span");
+    if (span) span.textContent = text.gold;
+  }
+  if (ninjuScoreRows[2]) {
+    const span = ninjuScoreRows[2].querySelector("span");
+    if (span) span.textContent = text.rep;
+  }
+  const ninjuTabsEl = document.querySelector(".ninju-editor-tabs");
+  if (ninjuTabsEl) ninjuTabsEl.setAttribute("aria-label", text.editCategories);
+  if (ninjuTabButtons[0]) ninjuTabButtons[0].textContent = text.ninjuTab;
+  if (ninjuTabButtons[1]) ninjuTabButtons[1].textContent = text.weaponTab;
+  if (ninjuTabButtons[2]) ninjuTabButtons[2].textContent = text.eyesTab;
+  if (ninjuTabButtons[3]) ninjuTabButtons[3].textContent = text.itemsTab;
+  const ninjuSeriesWrapEl = document.querySelector(".ninju-editor-series");
+  if (ninjuSeriesWrapEl) ninjuSeriesWrapEl.setAttribute("aria-label", text.ninjuSeries);
+  if (ninjuSeriesEls[0]) ninjuSeriesEls[0].textContent = text.healSeries;
+  if (ninjuSeriesEls[1]) ninjuSeriesEls[1].textContent = text.supportSeries;
+  if (ninjuSeriesEls[2]) ninjuSeriesEls[2].textContent = text.attackSeries;
+  if (ninjuSeriesEls[3]) ninjuSeriesEls[3].textContent = text.specialSeries;
+  if (ninjuSeriesEls[4]) ninjuSeriesEls[4].textContent = text.transformSeries;
+  if (ninjuTitleSpanEl) ninjuTitleSpanEl.textContent = text.chooseNinju;
+  if (ninjuInfoBtn) ninjuInfoBtn.textContent = text.ninjuInfo;
+  if (ninjuEditorSlotsEl) ninjuEditorSlotsEl.setAttribute("aria-label", text.selectedNinju);
+  if (ninjuEditorListEl) ninjuEditorListEl.setAttribute("aria-label", text.availableNinju);
+  if (ninjuEditorResetBtn) ninjuEditorResetBtn.textContent = text.reset;
+  if (ninjuEditorCancelBtn) ninjuEditorCancelBtn.textContent = text.cancel;
+  if (ninjuEditorSaveBtn) ninjuEditorSaveBtn.textContent = text.save;
+
+  setupWeaponSelects();
+  setupControlSelects();
+
+  roomCardEls.forEach((card) => {
+    const team = card.dataset.team;
+    const slot = Number(card.dataset.slot);
+    const addBtn = card.querySelector(".room-slot-add");
+    const removeBtn = card.querySelector(".room-slot-remove");
+    const levelEl = card.querySelector(".room-level");
+    const ownerEl = card.querySelector(".room-owner");
+    const readyEl = card.querySelector(".room-ready");
+    const hpInputEl = card.querySelector(".room-hp-input");
+    const controlEl = card.querySelector(".room-control-select");
+    const weaponEl = card.querySelector(".room-weapon-select");
+
+    if (addBtn) {
+      addBtn.textContent = text.add;
+      addBtn.setAttribute("aria-label", text.add);
+    }
+    if (removeBtn) removeBtn.setAttribute("aria-label", text.remove);
+    if (levelEl) levelEl.textContent = formatRoomLevelText(team, slot);
+    if (ownerEl) ownerEl.alt = text.roomHost;
+    if (readyEl) readyEl.alt = text.notReady;
+    if (hpInputEl) hpInputEl.setAttribute("aria-label", `${roomTeamLabel(team)} ${slot} ${text.hp}`);
+    if (controlEl) controlEl.setAttribute("aria-label", `${roomTeamLabel(team)} ${slot} ${text.control}`);
+    if (weaponEl) weaponEl.setAttribute("aria-label", `${roomTeamLabel(team)} ${slot} ${text.weapon}`);
+  });
+
+  if (!ninjuEditorEl?.hidden) renderNinjuEditor();
+}
+
 // 房間武器下拉選單的預設內容；第一個 select 寫在 HTML，其餘空 select 由這裡補齊，避免維護十份 option。
 function setupWeaponSelects() {
   if (weaponSelectEls.length === 0) return;
   const optionsHtml = weaponDefinitions.map((weapon) => (
-    `<option value="${weapon.key}"${weapon.key === defaultWeaponKey ? " selected" : ""}>${weapon.label}</option>`
+    `<option value="${weapon.key}"${weapon.key === defaultWeaponKey ? " selected" : ""}>${localizedWeaponLabel(weapon)}</option>`
   )).join("");
   weaponSelectEls.forEach((select) => {
     const previousValue = select.value || defaultWeaponKey;
@@ -441,11 +793,11 @@ function setupWeaponSelects() {
 function setupControlSelects() {
   if (controlSelectEls.length === 0) return;
   const optionsHtml = `
-    <option value="player" selected>玩家</option>
-    <option value="ai_beginner">初心者</option>
-    <option value="ai_money_dart_master">錢鏢神人</option>
-    <option value="ai_dart_only_master">尬鏢神人</option>
-    <option value="ai_god">AI神人</option>
+    <option value="player" selected>${localizedControlModeLabel("player")}</option>
+    <option value="ai_beginner">${localizedControlModeLabel("ai_beginner")}</option>
+    <option value="ai_money_dart_master">${localizedControlModeLabel("ai_money_dart_master")}</option>
+    <option value="ai_dart_only_master">${localizedControlModeLabel("ai_dart_only_master")}</option>
+    <option value="ai_god">${localizedControlModeLabel("ai_god")}</option>
   `;
   controlSelectEls.forEach((select) => {
     if (!select.innerHTML.trim()) {
@@ -489,7 +841,7 @@ function setupRoomSlots() {
       addBtn.addEventListener("click", () => {
         card.classList.add("active-slot");
         if (nameEl) nameEl.textContent = `${team}${slot}`;
-        if (levelEl) levelEl.textContent = "";
+        if (levelEl) levelEl.textContent = formatRoomLevelText(team, slot);
         if (controlEl) controlEl.value = "ai_beginner";
       });
     }
@@ -2443,12 +2795,9 @@ function toggleRuleMode() {
   updateRuleModeUi();
 }
 
-function toggleRoomLangButtonLabel() {
-  if (!roomLangToggleBtn) return;
-  // 目前先切換按鈕文字，後續合併 ENG 版本時可直接接語系切換。
-  const nextLabel = roomLangToggleBtn.textContent.trim() === "ENG" ? "中文" : "ENG";
-  roomLangToggleBtn.textContent = nextLabel;
-  roomLangToggleBtn.setAttribute("aria-label", nextLabel);
+function toggleRoomLanguage() {
+  state.roomLang = state.roomLang === "en" ? "zh" : "en";
+  applyRoomLanguage();
 }
 
 function openNinjuEditor() {
@@ -2494,12 +2843,12 @@ function renderNinjuEditor() {
   ninjuEditorSlotsEl.innerHTML = "";
   for (let i = 0; i < 6; i++) {
     const type = editNinjuDraft[i];
-    const ninju = ninjuByType[type] || { label: "空" };
+    const ninju = ninjuByType[type] || { label: roomLocale().emptySlot, enLabel: roomLocale().emptySlot };
     const button = document.createElement("button");
     button.type = "button";
     button.className = `ninju-slot-choice${i === editNinjuSlotIndex ? " selected" : ""}${type ? "" : " empty"}`;
     if (type) button.dataset.ninjuType = type;
-    button.textContent = ninju.label;
+    button.textContent = localizedNinjuLabel(ninju);
     button.addEventListener("click", () => {
       editNinjuDraft[i] = null;
       editNinjuSlotIndex = i;
@@ -2516,7 +2865,7 @@ function renderNinjuEditor() {
     button.dataset.ninjuType = ninju.type;
     button.dataset.editorRow = ninju.editorRow;
     button.style.setProperty("--editor-order", ninju.editorOrder);
-    button.textContent = ninju.label;
+    button.textContent = localizedNinjuLabel(ninju);
     button.addEventListener("click", () => {
       const existingIndex = editNinjuDraft.indexOf(ninju.type);
       if (existingIndex >= 0) editNinjuDraft[existingIndex] = null;
@@ -2549,9 +2898,11 @@ if (ninjuEditorCancelBtn) ninjuEditorCancelBtn.addEventListener("click", closeNi
 if (ninjuEditorSaveBtn) ninjuEditorSaveBtn.addEventListener("click", saveNinjuEditor);
 if (musicVolumeInput) musicVolumeInput.addEventListener("input", applyVolumeControls);
 if (sfxVolumeInput) sfxVolumeInput.addEventListener("input", applyVolumeControls);
-if (roomLangToggleBtn) roomLangToggleBtn.addEventListener("click", toggleRoomLangButtonLabel);
+if (roomLangToggleBtn) roomLangToggleBtn.addEventListener("click", toggleRoomLanguage);
 if (ruleModeToggle) ruleModeToggle.addEventListener("click", toggleRuleMode);
 window.addEventListener("keydown", startBgm, { once: true });
+
+applyRoomLanguage();
 
 loadImages().then(() => {
   updateRuleModeUi();
