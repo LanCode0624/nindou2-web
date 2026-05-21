@@ -25,5 +25,5 @@ function finishMatch(winner) {
     state.endSoundInstance = playSound(winner === "blue" ? "win" : "lose");
     state.endSoundPlayed = true;
   }
-  setMessage(winner === "blue" ? "Victory." : "Defeat.");
+  setMessage(winner === "blue" ? "勝利。" : "敗北。");
 }

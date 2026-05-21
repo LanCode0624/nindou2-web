@@ -366,7 +366,7 @@ function aiMoveUnit(unit, cell) {
   if (targetUnit) {
     collideWithEnemy(unit, targetUnit);
   } else {
-    setMessage(`${unit.name} moved.`);
+    setMessage(`${unit.name} 已移動。`);
   }
   return true;
 }

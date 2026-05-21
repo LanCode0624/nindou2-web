@@ -2,58 +2,56 @@
 function skillMove(unit, cell) {
   if (!cell) return;
   if (unit.moneyDart) {
-    setMessage(`${unit.name}: cannot move while holding money dart.`);
+    setMessage(`${unit.name}：拿著錢鏢時不能移動。`);
     return;
   }
-  if (!isFireToadActive(unit) && !weaponIsReady(unit)) {
-    setMessage(`${unit.name}: cannot move while weapon is recovering.`);
+  if (!weaponIsReady(unit)) {
+    setMessage(`${unit.name}：武器冷卻中不能移動。`);
     return;
   }
   if (isUnitDisabled(unit)) {
-    setMessage(`${unit.name}: cannot act now.`);
+    setMessage(`${unit.name}：目前無法行動。`);
     return;
   }
   if (!canUnitMoveNow(unit)) {
-    setMessage(`${unit.name}: cannot move while using ninjutsu.`);
+    setMessage(`${unit.name}：施放忍術時不能移動。`);
     return;
   }
   if (unit.moveTrail && (performance.now() - unit.moveTrail.startedAt) < ARRIVE_TOTAL) {
-    setMessage(`${unit.name}: cannot move while moving.`);
+    setMessage(`${unit.name}：移動中不能再次移動。`);
     return;
   }
   const wanted = cell;
   if (!isStraightMove(unit, wanted)) {
-    setMessage("Move must be horizontal or vertical.");
+    setMessage("移動只能走橫向或直向。");
     return;
   }
-  const maxDistance = isFireToadActive(unit) ? grid.cols + grid.rows : Math.floor(unit.skill);
+  const maxDistance = Math.floor(unit.skill);
   if (maxDistance < 1) {
-    setMessage(`Not enough skill. Need 1, have ${unit.skill.toFixed(1)}.`);
+    setMessage(`技量不足，至少需要 1，目前只有 ${unit.skill.toFixed(1)}。`);
     return;
   }
   const path = movePath(unit, wanted, maxDistance);
   cell = path ? path.cell : null;
   if (!cell) {
-    setMessage("Path is blocked.");
+    setMessage("路徑被擋住了。");
     return;
   }
   if (cell.x === unit.x && cell.y === unit.y) {
-    setMessage("Move cancelled.");
+    setMessage("已取消移動。");
     return;
   }
   const cost = Math.max(1, manhattan(unit, cell));
 
-  if (!isFireToadActive(unit)) {
-    unit.skill -= cost;
-    gainSoul(unit, cost);
-  }
+  unit.skill -= cost;
+  gainSoul(unit, cost);
   moveUnit(unit, cell.x, cell.y);
   if (path.hitEnemies.length > 0) {
     for (const enemy of path.hitEnemies) {
       collideWithEnemy(unit, enemy);
     }
   } else {
-    setMessage(`${unit.name} spent ${cost} skill to move.`);
+    setMessage(`${unit.name} 消耗 ${cost} 技進行移動。`);
   }
 }
 
@@ -82,7 +80,6 @@ function moveUnit(unit, x, y) {
     unit.ninju.chainMoves -= 1;
   }
   playSound("move");
-  if (isFireToadActive(unit)) unit.skill = maxSkill;
 }
 
 function cancelDragIfPressed(unit) {
@@ -93,40 +90,29 @@ function cancelDragIfPressed(unit) {
 }
 
 function collideWithEnemy(mover, enemy) {
-  if (isFireToadActive(mover)) {
-    enemy.hp = 0;
-    enemy.alive = false;
-    enemy.moneyDart = null;
-    if (typeof clearCloneDecoysForCaster === "function") clearCloneDecoysForCaster(enemy.id);
-    cancelDragIfPressed(enemy);
-    mover.kills += 1;
-    playSound("death");
-    setMessage(`${mover.name} crushed ${enemy.name}.`);
-    checkVictory();
-    return;
-  }
   if (isUnitInvincible(enemy)) {
-    setMessage(`${enemy.name} is invincible.`);
+    setMessage(`${enemy.name} 目前無敵。`);
     return;
   }
   const damage = defendedDamage(enemy, collisionDamage);
   enemy.hp = Math.max(0, enemy.hp - damage);
   recordDamage(mover, enemy, damage, { skipSoulGain: true });
   gainSoul(mover, soulCombatGainSteps);
+  enemy.facing = "down";
   enemy.hitFlash = 0.65;
   enemy.alive = false;
   enemy.moneyDart = null;
   if (typeof clearCloneDecoysForCaster === "function") clearCloneDecoysForCaster(enemy.id);
   cancelDragIfPressed(enemy);
   playSound("runOver");
-  setMessage(`${mover.name} ran into ${enemy.name}. ${enemy.name} took ${formatDamage(damage)}.`);
+  setMessage(`${mover.name} 撞上 ${enemy.name}，${enemy.name} 受到 ${formatDamage(damage)} 傷害。`);
 
   if (enemy.hp <= 0) {
     enemy.respawning = false;
     gainSoul(enemy, soulDeathGainSteps);
     mover.kills += 1;
     playSound("death");
-    setMessage(`${enemy.name} defeated.`);
+    setMessage(`${enemy.name} 被擊倒。`);
     checkVictory();
   } else {
     enemy.respawning = true;
@@ -150,7 +136,7 @@ function respawnUnit(unit) {
   if (canControlUnit(unit)) unit.respawnTipUntil = performance.now() + respawnPointerDuration;
   unit.moneyDart = null;
   if (canControlUnit(unit)) playSound("respawn");
-  setMessage(`${unit.name} respawned.`);
+  setMessage(`${unit.name} 已復活。`);
 }
 
 function randomOpenCell() {

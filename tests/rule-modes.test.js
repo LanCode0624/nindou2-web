@@ -19,13 +19,11 @@ test("modified 模式使用調整後的武器與忍術數值", () => {
   assert.equal(context.moneyDartRule().cost, 0);
   assert.equal(context.moneyDartRule().readyMs, 200);
   assert.equal(context.attackNinjuRule("flash").cost, 0);
-  assert.equal(context.attackNinjuRule("wildfire").cost, 7);
+  assert.equal(context.attackNinjuRule("wildfire").cost, 0);
   assert.equal(context.attackNinjuRule("angel").damage, 100);
   assert.equal(context.attackNinjuRule("mouryo").damage, 145);
-  assert.equal(context.attackNinjuRule("butsu").damage, 155);
   assert.equal(context.specialNinjuRule("seven").damage, 130);
   assert.equal(context.specialNinjuRule("clone").cost, 10);
-  assert.equal(context.fireToadRule().durationMs, 7000);
   assert.equal(context.healNinjuRule("kakki").cost, 6);
   assert.equal(context.healNinjuRule("genki").effect, "steelNoDefense");
 });

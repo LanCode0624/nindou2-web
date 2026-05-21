@@ -1,36 +1,32 @@
 ﻿// ===== Combat =====
 function attack(attacker, target) {
-  if (isFireToadActive(attacker) || isFireToadTransforming(attacker)) {
-    setMessage(`${attacker.name}: Fire Toad cannot use weapons.`);
-    return;
-  }
   if (isUnitDisabled(attacker)) {
-    setMessage(`${attacker.name}: cannot act now.`);
+    setMessage(`${attacker.name}：目前無法行動。`);
     return;
   }
   if (attacker.moneyDart) {
-    setMessage(`${attacker.name}: cannot attack while holding money dart.`);
+    setMessage(`${attacker.name}：拿著錢鏢時不能攻擊。`);
     return;
   }
   if (isUnitCastingNinju(attacker)) {
-    setMessage(`${attacker.name}: cannot attack while using ninjutsu.`);
+    setMessage(`${attacker.name}：施放忍術時不能攻擊。`);
     return;
   }
   if (attacker.moveTrail && (performance.now() - attacker.moveTrail.startedAt) < ARRIVE_TOTAL) {
-    setMessage(`${attacker.name}: cannot attack while moving.`);
+    setMessage(`${attacker.name}：移動中不能攻擊。`);
     return;
   }
   if (activeMoneyDartCast(attacker)) {
-    setMessage(`${attacker.name}: cannot attack while throwing money dart.`);
+    setMessage(`${attacker.name}：丟錢鏢時不能攻擊。`);
     return;
   }
   if (!weaponIsReady(attacker)) {
-    setMessage(`${attacker.name}: weapon is recovering.`);
+    setMessage(`${attacker.name}：武器冷卻中。`);
     return;
   }
   const dir = weaponDirectionFromTarget(attacker, target);
   if (!dir || !isCellInWeaponRange(attacker, target, dir)) {
-    setMessage("Target is outside the Nodachi range.");
+    setMessage("目標不在忍太刀攻擊範圍內。");
     return;
   }
   attackCell(attacker, { x: attacker.x + dir.dx, y: attacker.y + dir.dy });
@@ -45,7 +41,7 @@ function damageUnit(target, baseDamage, label, announce = true, attacker = null)
   }
   target.hitFlash = 0.65;
   playSound("weaponDamaged");
-  if (announce) setMessage(`${label} for ${formatDamage(damage)}.`);
+  if (announce) setMessage(`${label}，造成 ${formatDamage(damage)} 傷害。`);
   if (target.hp <= 0) {
     target.alive = false;
     target.moneyDart = null;
@@ -54,7 +50,7 @@ function damageUnit(target, baseDamage, label, announce = true, attacker = null)
     if (attacker && attacker !== target) attacker.kills += 1;
     cancelDragIfPressed(target);
     playSound("death");
-    setMessage(`${target.name} defeated.`);
+    setMessage(`${target.name} 被擊倒。`);
     checkVictory();
   }
   return damage;
@@ -74,47 +70,43 @@ function recordDamage(attacker, target, damage, options = {}) {
 function damageObject(object, attacker) {
   const damage = unitWeaponDamage(attacker);
   object.hp = Math.max(0, object.hp - damage);
-  setMessage(`${attacker.name} hit ${object.type} for ${damage}.`);
+  setMessage(`${attacker.name} 攻擊 ${object.type}，造成 ${damage} 傷害。`);
   if (object.hp <= 0) {
     object.alive = false;
     playBreakSound(object);
     const grantedItem = maybeGrantMapItem(object, attacker);
-    if (!grantedItem) setMessage(`${object.type} destroyed.`);
+    if (!grantedItem) setMessage(`${object.type} 被破壞。`);
   }
 }
 
 function attackCell(attacker, cell) {
-  if (isFireToadActive(attacker) || isFireToadTransforming(attacker)) {
-    setMessage(`${attacker.name}: Fire Toad cannot use weapons.`);
-    return;
-  }
   if (isUnitDisabled(attacker)) {
-    setMessage(`${attacker.name}: cannot act now.`);
+    setMessage(`${attacker.name}：目前無法行動。`);
     return;
   }
   if (attacker.moneyDart) {
-    setMessage(`${attacker.name}: cannot attack while holding money dart.`);
+    setMessage(`${attacker.name}：拿著錢鏢時不能攻擊。`);
     return;
   }
   if (isUnitCastingNinju(attacker) || isUnitInNinjuGap(attacker)) {
-    setMessage(`${attacker.name}: cannot attack while using ninjutsu.`);
+    setMessage(`${attacker.name}：施放忍術時不能攻擊。`);
     return;
   }
   if (attacker.moveTrail && (performance.now() - attacker.moveTrail.startedAt) < ARRIVE_TOTAL) {
-    setMessage(`${attacker.name}: cannot attack while moving.`);
+    setMessage(`${attacker.name}：移動中不能攻擊。`);
     return;
   }
   if (activeMoneyDartCast(attacker)) {
-    setMessage(`${attacker.name}: cannot attack while throwing money dart.`);
+    setMessage(`${attacker.name}：丟錢鏢時不能攻擊。`);
     return;
   }
   if (!weaponIsReady(attacker)) {
-    setMessage(`${attacker.name}: weapon is recovering.`);
+    setMessage(`${attacker.name}：武器冷卻中。`);
     return;
   }
   const dir = directionFromTarget(attacker, cell);
   if (!dir) {
-    setMessage(`${attacker.name}: choose a direction to slash.`);
+    setMessage(`${attacker.name}：請選擇揮砍方向。`);
     return;
   }
 
@@ -124,51 +116,47 @@ function attackCell(attacker, cell) {
   markWeaponUsed(attacker);
   const targetCount = hits.units.length + hits.objects.length;
   if (targetCount === 0) {
-    setMessage(`${attacker.name} slashed.`);
+    setMessage(`${attacker.name} 揮空了。`);
     return;
   }
 
   for (const unit of hits.units) {
-    damageUnit(unit, unitWeaponDamage(attacker), `${attacker.name} attacked ${unit.name}`, false, attacker);
+    damageUnit(unit, unitWeaponDamage(attacker), `${attacker.name} 攻擊 ${unit.name}`, false, attacker);
   }
   for (const object of hits.objects) {
     damageObject(object, attacker);
   }
-  setMessage(`${attacker.name} hit ${targetCount} targets.`);
+  setMessage(`${attacker.name} 命中 ${targetCount} 個目標。`);
 }
 
 function attackAimedWeapon(attacker, targetCell) {
-  if (isFireToadActive(attacker) || isFireToadTransforming(attacker)) {
-    setMessage(`${attacker.name}: Fire Toad cannot use weapons.`);
-    return;
-  }
   if (isUnitDisabled(attacker)) {
-    setMessage(`${attacker.name}: cannot act now.`);
+    setMessage(`${attacker.name}：目前無法行動。`);
     return;
   }
   if (attacker.moneyDart) {
-    setMessage(`${attacker.name}: cannot attack while holding money dart.`);
+    setMessage(`${attacker.name}：拿著錢鏢時不能攻擊。`);
     return;
   }
   if (isUnitCastingNinju(attacker) || isUnitInNinjuGap(attacker)) {
-    setMessage(`${attacker.name}: cannot attack while using ninjutsu.`);
+    setMessage(`${attacker.name}：施放忍術時不能攻擊。`);
     return;
   }
   if (attacker.moveTrail && (performance.now() - attacker.moveTrail.startedAt) < ARRIVE_TOTAL) {
-    setMessage(`${attacker.name}: cannot attack while moving.`);
+    setMessage(`${attacker.name}：移動中不能攻擊。`);
     return;
   }
   if (activeMoneyDartCast(attacker)) {
-    setMessage(`${attacker.name}: cannot attack while throwing money dart.`);
+    setMessage(`${attacker.name}：丟錢鏢時不能攻擊。`);
     return;
   }
   if (!weaponIsReady(attacker)) {
-    setMessage(`${attacker.name}: weapon is recovering.`);
+    setMessage(`${attacker.name}：武器冷卻中。`);
     return;
   }
   const dir = weaponDirectionFromTarget(attacker, targetCell);
   if (!dir) {
-    setMessage(`${attacker.name}: choose a direction to slash.`);
+    setMessage(`${attacker.name}：請選擇揮砍方向。`);
     return;
   }
   attackCell(attacker, { x: attacker.x + dir.dx, y: attacker.y + dir.dy });

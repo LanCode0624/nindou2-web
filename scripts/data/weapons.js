@@ -8,8 +8,8 @@ const weaponDefinitions = [
   { key: "weapon7", label: "極冰鬼切丸", folder: "7極冰鬼切丸", frameCount: 22, cooldownMs: 1000, area: "line2", damage: 100 },
   { key: "weapon8", label: "伊賀溜溜球", folder: "8伊賀溜溜球", frameCount: 13, cooldownMs: 500, area: "ring8", damage: 20 },
   { key: "weapon10", label: "風魔手裏劍", folder: "10風魔手裏劍", frameCount: 13, cooldownMs: 500, area: "line6", damage: 25 },
-  { key: "weapon19", label: "妖刀村正", folder: "19Weapon19", frameCount: 13, cooldownMs: 500, area: "surround", damage: 80 },
-  { key: "weapon20", label: "鐵扇青海波", folder: "20Weapon20", frameCount: 10, cooldownMs: 300, area: "wide331", damage: 60 },
+  { key: "weapon19", label: "妖刀村正", folder: "19妖刀村正", frameCount: 13, cooldownMs: 500, area: "surround", damage: 80 },
+  { key: "weapon20", label: "鐵扇青海波", folder: "20鐵扇青海波", frameCount: 10, cooldownMs: 300, area: "wide331", damage: 60 },
   { key: "weapon44", label: "滅魂之劍", folder: "44滅魂之劍", frameCount: 6, cooldownMs: 260, area: "NinjaS", damage: 25 },
   { key: "weapon106", label: "光劍", folder: "106光劍", frameCount: 8, cooldownMs: 330, area: "NinjaS", damage: 30 },
 ];

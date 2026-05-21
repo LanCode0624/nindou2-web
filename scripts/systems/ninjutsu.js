@@ -1,43 +1,24 @@
 // ===== Ninjutsu System =====
 function updateNinju(now) {
   for (const unit of state.units) {
-    if (unit.fireToadTransformUntil) {
-      unit.skill = maxSkill;
-      if (now < unit.fireToadTransformUntil) continue;
-      unit.fireToadTransformUntil = 0;
-      unit.fireToadUntil = now + (unit.fireToadDurationMs || fireToadRule().durationMs);
-      unit.fireToadStartedAt = now;
-      playSound("fireToadChid");
-      if (canControlUnit(unit)) setMessage(`${unit.name}: ${localizedNinjuTypeLabel("fireToad")}!`);
-    } else if (isFireToadActive(unit)) {
-      unit.skill = maxSkill;
-    } else if (unit.fireToadUntil && now >= unit.fireToadUntil) {
-      endFireToad(unit);
-      if (canControlUnit(unit)) setMessage(`${unit.name}: ${localizedNinjuTypeLabel("fireToad")} ended.`);
-    }
     if (!unit.ninju) continue;
 
     if (unit.ninju.phase === "active") {
       if (now - unit.ninju.startedAt < unit.ninju.duration) continue;
-      if (unit.ninju.type === "fireToad") {
-        unit.ninju = null;
-        startFireToadTransform(unit, now);
-        continue;
-      }
       refreshStatusNinju(unit, unit.ninju.type, now);
       const queuedType = unit.ninju.pendingType || unit.ninju.type;
 
       if (unit.ninju.queue > 0) {
         // 先依點擊順序打完 queue 裡的忍術，pendingMoneyDart 延後帶著
         unit.ninju = { type: unit.ninju.type, phase: "gap", nextType: queuedType, nextAttackNinjuLevel: unit.ninju.pendingAttackNinjuLevel || 0, startedAt: now, duration: ninjuChainMaxGap, queue: unit.ninju.queue, gapMoves: 0, pendingMoneyDart: unit.ninju.pendingMoneyDart };
-        if (unit.id === playerUnitId) setMessage(`${unit.name}: ninjutsu chain gap.`);
+        if (unit.id === playerUnitId) setMessage(`${unit.name}：忍術連段空檔中。`);
       } else if (unit.ninju.pendingMoneyDart) {
         // queue 清空後才輪到錢鏢
         unit.ninju = { type: unit.ninju.type, phase: "gap", nextType: "moneyDart", startedAt: now, duration: ninjuChainGap, queue: 0, gapMoves: 0 };
-        if (unit.id === playerUnitId) setMessage(`${unit.name}: money dart chain gap.`);
+        if (unit.id === playerUnitId) setMessage(`${unit.name}：錢鏢接段空檔中。`);
       } else {
         unit.ninju = null;
-        if (unit.id === playerUnitId) setMessage(`${unit.name}: ninjutsu cast finished.`);
+        if (unit.id === playerUnitId) setMessage(`${unit.name}：忍術施放完成。`);
       }
       continue;
     }
@@ -54,7 +35,7 @@ function updateNinju(now) {
         unit.ninju = { type, phase: "active", startedAt: now, duration: statusNinjuRule(type).castDurationMs, queue: Math.max(0, unit.ninju.queue - 1), chainMoves: firstMoveSucceeded ? ninjuFollowupMoveAllowance : 0, attackNinjuLevel: unit.ninju.nextAttackNinjuLevel || 0, pendingMoneyDart: unit.ninju.pendingMoneyDart };
         if (canControlUnit(unit)) playSound("useNinju");
         playStatusNinjuSound(type);
-        if (unit.id === playerUnitId) setMessage(`${unit.name}: ninjutsu cast continued.`);
+        if (unit.id === playerUnitId) setMessage(`${unit.name}：忍術續接完成。`);
       }
     }
   }
@@ -97,64 +78,6 @@ function useSpecialNinju(type) {
   useStatusNinju(type, config?.label || type);
 }
 
-function useFireToadNinju() {
-  const unit = selectedUnit();
-  if (!unit || !canControlUnit(unit)) return;
-  if (isUnitDisabled(unit)) {
-    setMessage(`${unit.name}: cannot act now.`);
-    return;
-  }
-  if (unit.moneyDart) {
-    setMessage(`${unit.name}: cannot use ${localizedNinjuTypeLabel("fireToad")} while holding money dart.`);
-    return;
-  }
-  if (isFireToadActive(unit) || isFireToadTransforming(unit)) {
-    setMessage(`${unit.name}: already transformed.`);
-    return;
-  }
-  if (isUnitCastingNinju(unit) || isUnitInNinjuGap(unit)) {
-    setMessage(`${unit.name}: cannot use ${localizedNinjuTypeLabel("fireToad")} while another ninjutsu is casting.`);
-    return;
-  }
-  const rule = fireToadRule();
-  if (unit.skill < rule.cost) {
-    setMessage(`${localizedNinjuTypeLabel("fireToad")} needs ${rule.cost} skill.`);
-    return;
-  }
-  unit.skill -= rule.cost;
-  const now = performance.now();
-  unit.ninju = { type: "fireToad", phase: "active", startedAt: now, duration: rule.castDurationMs, queue: 0 };
-  unit.moneyDart = null;
-  playSound("useNinju");
-  playStatusEnergyUpSequence();
-  clearDragState();
-  setMessage(`${unit.name} used ${localizedNinjuTypeLabel("fireToad")}.`);
-}
-
-function startFireToadTransform(unit, now = performance.now()) {
-  const rule = fireToadRule();
-  unit.fireToadTransformUntil = now + rule.transformMs;
-  unit.fireToadTransformStartedAt = now;
-  unit.fireToadDurationMs = rule.durationMs;
-  unit.fireToadUntil = 0;
-  unit.fireToadStartedAt = 0;
-  unit.fireToadFacing = unit.facing || "down";
-  unit.moneyDart = null;
-  clearDragState();
-  setMessage(`${unit.name} is transforming into ${localizedNinjuTypeLabel("fireToad")}.`);
-}
-
-function endFireToad(unit) {
-  if (!unit) return;
-  unit.fireToadTransformUntil = 0;
-  unit.fireToadTransformStartedAt = 0;
-  unit.fireToadUntil = 0;
-  unit.fireToadStartedAt = 0;
-  unit.fireToadFacing = "";
-  unit.fireToadDurationMs = 0;
-  unit.skill = maxSkill * 0.2;
-}
-
 function useGenkiNinju() {
   useStatusNinju("genki", localizedNinjuTypeLabel("genki"));
 }
@@ -173,27 +96,27 @@ function useStatusNinju(type, label) {
   const rule = statusNinjuRule(type);
   if (rule.available === false) return;
   if (isUnitDisabled(unit)) {
-    setMessage(`${unit.name}: cannot act now.`);
+    setMessage(`${unit.name}：目前無法行動。`);
     return;
   }
   if (unit.moneyDart) {
-    setMessage(`${unit.name}: cannot use ninjutsu while holding money dart.`);
+    setMessage(`${unit.name}：拿著錢鏢時不能使用忍術。`);
     return;
   }
   if ((unit.ninjuLockedUntil || 0) > performance.now()) {
-    setMessage(`${unit.name}: cannot use ninjutsu yet.`);
+    setMessage(`${unit.name}：現在還不能使用忍術。`);
     return;
   }
   const isAttackNinju = isAttackNinjuType(type);
   const skillCost = isAttackNinju ? 0 : rule.cost;
   if (unit.skill < skillCost) {
-    setMessage(`${label} needs ${rule.cost} skill.`);
+    setMessage(`${label}需要 ${rule.cost} 技。`);
     return;
   }
 
   const attackNinjuLevel = isAttackNinju ? consumeAttackNinjuSoulLevel(unit) : 0;
   if (isAttackNinju && attackNinjuLevel < 1) {
-    setMessage(`${label} needs soul 1.`);
+    setMessage(`${label}需要 1 級魂。`);
     return;
   }
 
@@ -204,11 +127,11 @@ function useStatusNinju(type, label) {
     unit.ninju.pendingType = type;
     if (isAttackNinju) unit.ninju.pendingAttackNinjuLevel = attackNinjuLevel;
     unit.ninju.queue = (unit.ninju.queue || 0) + 1;
-    setMessage(`${unit.name} queued ${label}.`);
+    setMessage(`${unit.name} 已排入${label}。`);
   } else {
     unit.ninju = { type, phase: "active", startedAt: now, duration: rule.castDurationMs, queue: 0, attackNinjuLevel };
     playStatusNinjuSound(type);
-    setMessage(`${unit.name} used ${label}.`);
+    setMessage(`${unit.name} 使用了${label}。`);
   }
   playSound("useNinju");
   clearDragState();
@@ -219,28 +142,28 @@ function useMoneyDart() {
   if (!unit || !canControlUnit(unit)) return;
   const rule = moneyDartRule();
   if (isUnitDisabled(unit)) {
-    setMessage(`${unit.name}: cannot act now.`);
+    setMessage(`${unit.name}：目前無法行動。`);
     return;
   }
   if (unit.skill < rule.cost) {
-    setMessage(`${localizedNinjuTypeLabel("moneyDart")} needs ${rule.cost} skill.`);
+    setMessage(`${localizedNinjuTypeLabel("moneyDart")}需要 ${rule.cost} 技。`);
     return;
   }
   if (unit.moneyDart) {
-    setMessage(`${unit.name}: money dart is already ready.`);
+    setMessage(`${unit.name}：錢鏢已經備好。`);
     return;
   }
   if (unit.moveTrail && (performance.now() - unit.moveTrail.startedAt) < ARRIVE_TOTAL) {
-    setMessage(`${unit.name}: cannot use ninjutsu while moving.`);
+    setMessage(`${unit.name}：移動中不能使用忍術。`);
     return;
   }
   if ((unit.ninjuLockedUntil || 0) > performance.now()) {
-    setMessage(`${unit.name}: cannot use ninjutsu yet.`);
+    setMessage(`${unit.name}：現在還不能使用忍術。`);
     return;
   }
   if (isUnitCastingNinju(unit)) {
     if (unit.ninju.pendingMoneyDart) {
-      setMessage(`${unit.name}: money dart is already queued.`);
+      setMessage(`${unit.name}：錢鏢已經排程。`);
       return;
     }
     unit.skill -= rule.cost;
@@ -248,12 +171,12 @@ function useMoneyDart() {
     playSound("useNinju");
     // takeDart 音效延後到實際拿起錢標時（startMoneyDart）才播放
     clearDragState();
-    setMessage(`${unit.name}: money dart queued after ninjutsu.`);
+    setMessage(`${unit.name}：錢鏢已排到忍術之後。`);
     return;
   }
   if (isUnitInNinjuGap(unit)) {
     if (unit.ninju.nextType === "moneyDart") {
-      setMessage(`${unit.name}: money dart is already queued.`);
+      setMessage(`${unit.name}：錢鏢已經排程。`);
       return;
     }
     unit.skill -= rule.cost;
@@ -261,7 +184,7 @@ function useMoneyDart() {
     playSound("useNinju");
     // takeDart 音效延後到實際拿起錢標時（startMoneyDart）才播放
     clearDragState();
-    setMessage(`${unit.name}: money dart queued in the chain gap.`);
+    setMessage(`${unit.name}：錢鏢已排到連段空檔。`);
     return;
   }
   unit.skill -= rule.cost;
@@ -276,32 +199,32 @@ function startMoneyDart(unit, now = performance.now(), playActivationSound = tru
   unit.moneyDart = { startedAt: now, invincibleUntil: now + rule.readyMs };
   if (playActivationSound) playSound("takeDart");
   if (canControlUnit(unit)) clearDragState();
-  setMessage(`${unit.name}: money dart ready. Choose up, down, left, or right.`);
+  setMessage(`${unit.name}：錢鏢已備好，請選擇上、下、左、右方向。`);
 }
 
 function throwMoneyDart(unit, targetCell) {
   if (!unit.moneyDart) return;
   const now = performance.now();
   if (isUnitDisabled(unit)) {
-    setMessage(`${unit.name}: cannot act now.`);
+    setMessage(`${unit.name}：目前無法行動。`);
     return;
   }
   if (now < unit.moneyDart.invincibleUntil) {
-    setMessage(`${unit.name}: money dart is ready after the invincible moment.`);
+    setMessage(`${unit.name}：無敵時間結束後才能丟出錢鏢。`);
     return;
   }
   if (isUnitCastingNinju(unit)) {
-    setMessage(`${unit.name}: cannot throw while using ninjutsu.`);
+    setMessage(`${unit.name}：施放忍術時不能丟錢鏢。`);
     return;
   }
   if (!weaponIsReady(unit)) {
-    setMessage(`${unit.name}: cannot throw money dart while weapon is recovering.`);
+    setMessage(`${unit.name}：武器冷卻中不能丟錢鏢。`);
     return;
   }
 
   const dir = directionFromTarget(unit, targetCell);
   if (!dir) {
-    setMessage(`${unit.name}: choose a straight direction for money dart.`);
+    setMessage(`${unit.name}：請選擇錢鏢的直線方向。`);
     return;
   }
 
@@ -330,7 +253,7 @@ function throwMoneyDart(unit, targetCell) {
     duration: 300,
   });
   unit.ninjuLockedUntil = now + moneyDartRule().postThrowNinjuLockMs;
-  setMessage(`${unit.name} threw money dart.`);
+  setMessage(`${unit.name} 丟出了錢鏢。`);
 }
 
 function traceMoneyDart(unit, dir) {
@@ -369,7 +292,7 @@ function canUnitMoveNow(unit) {
 }
 
 function isUnitInvincible(unit) {
-  return isFireToadTransforming(unit) || isUnitCastingNinju(unit) || isUnitInNinjuGap(unit) || isMoneyDartInvincible(unit) || isFlashInvincible(unit);
+  return isUnitCastingNinju(unit) || isUnitInNinjuGap(unit) || isMoneyDartInvincible(unit) || isFlashInvincible(unit);
 }
 
 function isUnitDisabled(unit) {
@@ -396,21 +319,13 @@ function isHotBloodActive(unit) {
   return Boolean(unit && unit.hotBloodUntil && performance.now() < unit.hotBloodUntil);
 }
 
-function isFireToadActive(unit) {
-  return Boolean(unit && unit.fireToadUntil && performance.now() < unit.fireToadUntil);
-}
-
-function isFireToadTransforming(unit) {
-  return Boolean(unit && unit.fireToadTransformUntil && performance.now() < unit.fireToadTransformUntil);
-}
-
 function refreshStatusNinju(unit, type, now = performance.now()) {
   if (isAttackNinjuType(type)) {
     triggerAttackNinju(unit, type, unit.ninju?.attackNinjuLevel || 0, now);
     return;
   }
   if (isSpecialNinjuType(type)) {
-    triggerSpecialNinju(unit, type, now);
+    triggerSpecialNinju(unit, type, now, unit.ninju?.startedAt || now);
     return;
   }
   if (isHealNinjuType(type)) {
@@ -486,11 +401,11 @@ function attackNinjuTargets(caster, attackNinjuLevel) {
     .slice(0, count);
 }
 
-function triggerSpecialNinju(caster, type, now = performance.now()) {
+function triggerSpecialNinju(caster, type, now = performance.now(), castStartedAt = now) {
   const config = specialNinjuConfigs[type];
   const rule = specialNinjuRule(type);
   if (type === "clone") {
-    triggerCloneNinju(caster, rule, now, config);
+    triggerCloneNinju(caster, rule, now, config, castStartedAt);
     return;
   }
   const target = attackNinjuTargets(caster, 1)[0];
@@ -500,22 +415,22 @@ function triggerSpecialNinju(caster, type, now = performance.now()) {
   if (rule.damage) damageUnit(target, rule.damage, `${caster.name} hit ${target.name} with ${config?.label || type}`, true, caster);
 }
 
-function triggerCloneNinju(caster, rule, now = performance.now(), config = null) {
+function triggerCloneNinju(caster, rule, now = performance.now(), config = null, castStartedAt = now) {
   const origin = { x: caster.x, y: caster.y };
   const candidates = cloneOpenCells(caster);
   if (candidates.length < 3) {
-    if (canControlUnit(caster)) setMessage(`${caster.name}: not enough open cells for ${config?.label || localizedNinjuTypeLabel("clone")}.`);
+    if (canControlUnit(caster)) setMessage(`${caster.name}：沒有足夠空格施放${config?.label || localizedNinjuTypeLabel("clone")}。`);
     return;
   }
   const teleportCell = pickRandomCloneCell(candidates, (cell) => cell.x !== origin.x || cell.y !== origin.y);
   if (!teleportCell) {
-    if (canControlUnit(caster)) setMessage(`${caster.name}: not enough open cells for ${config?.label || localizedNinjuTypeLabel("clone")}.`);
+    if (canControlUnit(caster)) setMessage(`${caster.name}：沒有足夠空格施放${config?.label || localizedNinjuTypeLabel("clone")}。`);
     return;
   }
   const decoyA = pickRandomCloneCell(candidates);
   const decoyB = pickRandomCloneCell(candidates);
   if (!decoyA || !decoyB) {
-    if (canControlUnit(caster)) setMessage(`${caster.name}: not enough open cells for ${config?.label || localizedNinjuTypeLabel("clone")}.`);
+    if (canControlUnit(caster)) setMessage(`${caster.name}：沒有足夠空格施放${config?.label || localizedNinjuTypeLabel("clone")}。`);
     return;
   }
   clearCloneDecoysForCaster(caster.id);
@@ -533,11 +448,12 @@ function triggerCloneNinju(caster, rule, now = performance.now(), config = null)
     ? window.setTimeout.bind(window)
     : (typeof setTimeout === "function" ? setTimeout : null);
   if (playCloneSoundLater) {
+    const remainingDelayMs = Math.max(0, 1500 - Math.max(0, now - castStartedAt));
     playCloneSoundLater(() => {
       playSound("cloneNinju");
-    }, 1500);
+    }, remainingDelayMs);
   }
-  if (canControlUnit(caster)) setMessage(`${caster.name} used ${config?.label || localizedNinjuTypeLabel("clone")}.`);
+  if (canControlUnit(caster)) setMessage(`${caster.name} 使用了${config?.label || localizedNinjuTypeLabel("clone")}。`);
 }
 
 function cloneOpenCells(caster) {
@@ -579,8 +495,6 @@ function makeCloneDecoy(caster, cell, now = performance.now()) {
     hotBloodUntil: caster.hotBloodUntil || 0,
     buffAuraType: caster.buffAuraType || "",
     facing: "down",
-    fireToadActive: isFireToadActive(caster) || isFireToadTransforming(caster),
-    fireToadFacing: "down",
     createdAt: now,
   };
 }
@@ -599,13 +513,12 @@ function consumeAttackNinjuSoulLevel(unit) {
 function statusNinjuRule(type) {
   if (isAttackNinjuType(type)) return attackNinjuRule(type);
   if (isSpecialNinjuType(type)) return specialNinjuRule(type);
-  if (type === "fireToad") return fireToadRule();
   if (isHealNinjuType(type)) return healNinjuRule(type);
   return type === "hotBlood" ? hotBloodRule() : steelRule();
 }
 
 function isStatusNinjuType(type) {
-  return type === "steel" || type === "hotBlood" || type === "fireToad" || isAttackNinjuType(type) || isSpecialNinjuType(type) || isHealNinjuType(type);
+  return type === "steel" || type === "hotBlood" || isAttackNinjuType(type) || isSpecialNinjuType(type) || isHealNinjuType(type);
 }
 
 function isAttackNinjuType(type) {

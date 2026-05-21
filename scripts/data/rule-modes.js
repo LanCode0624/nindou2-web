@@ -43,6 +43,13 @@ function currentRuleProfile() {
   return modeRuleProfiles[modeKey] || modeRuleProfiles.modified;
 }
 
+function currentDeathModeKey() {
+  if (typeof state !== "undefined" && typeof state?.deathModeKey === "string") {
+    return state.deathModeKey === "death_heal" ? "death_heal" : "death_command";
+  }
+  return "death_command";
+}
+
 function weaponDamageForMode(weaponKey, fallbackDamage) {
   const weaponRule = currentRuleProfile().weapons?.[weaponKey];
   return weaponRule?.damage ?? fallbackDamage;
@@ -57,15 +64,36 @@ function hotBloodRule() {
 }
 
 function healNinjuRule(type) {
-  return currentRuleProfile().ninjutsu?.[type] || {};
+  const baseRule = currentRuleProfile().ninjutsu?.[type] || {};
+  if (type !== "genki" && type !== "kakki" && type !== "shinki") return baseRule;
+  const deathModeKey = currentDeathModeKey();
+  if (deathModeKey === "death_heal") {
+    if (type === "genki" && currentRuleModeKey() === "modified") {
+      const healRule = modeRuleProfiles.original?.ninjutsu?.genki || {};
+      return {
+        ...healRule,
+        available: true,
+      };
+    }
+    return {
+      ...baseRule,
+      available: true,
+    };
+  }
+  if (type === "genki" && currentRuleModeKey() === "modified") {
+    return {
+      ...baseRule,
+      available: baseRule.available !== false,
+    };
+  }
+  return {
+    ...baseRule,
+    available: false,
+  };
 }
 
 function specialNinjuRule(type) {
   return currentRuleProfile().ninjutsu?.[type] || {};
-}
-
-function fireToadRule() {
-  return currentRuleProfile().ninjutsu?.fireToad || {};
 }
 
 function moneyDartRule() {

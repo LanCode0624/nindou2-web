@@ -51,7 +51,7 @@ test("attack ninjutsu is blocked below soul 1", () => {
 });
 
 test("ported attack ninjutsu spend soul instead of skill", () => {
-  for (const type of ["angel", "mouryo", "butsu"]) {
+  for (const type of ["angel", "mouryo"]) {
     const unit = {
       id: 1,
       name: "blue1",

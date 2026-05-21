@@ -51,9 +51,7 @@ const soundSources = {
   summonDeath: "assets/sounds/ninja/status/summon/Death.ogg",
   sevenNinju: "assets/ninju/special_exports/sounds/919.mp3",
   angelNinju: "assets/ninju/special_exports/sounds/1052.mp3",
-  butsuNinju: "assets/ninju/special_exports/sounds/1100.mp3",
   mouryoNinju: "assets/ninju/special_exports/sounds/1002.mp3",
-  fireToadChid: "assets/nindou3/nindou_fire_toad/sounds/316.mp3",
   smallThunder: "assets/sounds/ninja/status/damaged/small_thunder.ogg",
   smallFire: "assets/sounds/ninja/status/damaged/small_fire.ogg",
   deathHit: "assets/sounds/ninja/status/damaged/Death1.ogg",
@@ -205,7 +203,6 @@ const imageSources = {
   steelButton: "assets/ninju/buttons/2.png",
   moneyDartButton: "assets/ninju/buttons/3.png",
   healButton: "assets/ninju/buttons/4.png",
-  fireToadButton: "assets/ninju/buttons/5.png",
   moneyDartProjectile: "assets/characters/dart/10.png",
   blueIcon: "assets/ui/b_icon.png",
   greyIcon: "assets/ui/g_icon.png",
@@ -232,14 +229,6 @@ const imageSources = {
   ninjuIcon5: "assets/ninju/consumables/5.png",
   ninjuIcon6: "assets/ninju/consumables/6.png",
   backup3Item: "assets/ninju/consumables/backup__3.png",
-  fireToadBlueUp: "assets/nindou3/nindou_fire_toad/sprites/DefineSprite_370_Idle_Up_Toad_B/1.png",
-  fireToadBlueRight: "assets/nindou3/nindou_fire_toad/sprites/DefineSprite_387_Idle_Right_Toad_B/1.png",
-  fireToadBlueLeft: "assets/nindou3/nindou_fire_toad/sprites/DefineSprite_389_Idle_Left_Toad_B/1.png",
-  fireToadBlueDown: "assets/nindou3/nindou_fire_toad/sprites/DefineSprite_397_Idle_Down_Toad_B/1.png",
-  fireToadGreyUp: "assets/nindou3/nindou_fire_toad/sprites/DefineSprite_402_Idle_Up_Toad_G/1.png",
-  fireToadGreyRight: "assets/nindou3/nindou_fire_toad/sprites/DefineSprite_414_Idle_Right_Toad_G/1.png",
-  fireToadGreyLeft: "assets/nindou3/nindou_fire_toad/sprites/DefineSprite_416_Idle_Left_Toad_G/1.png",
-  fireToadGreyDown: "assets/nindou3/nindou_fire_toad/sprites/DefineSprite_423_Idle_Down_Toad_G/1.png",
   chargeOuter: "assets/characters/charge/outer_moving.png",
   eyesFront: "assets/characters/parts/eyes-middle/11.png",
   eyeSide: "assets/characters/parts/eyes-look-right/11.png",
@@ -295,8 +284,6 @@ const cloneGreyNinjuFrameSources = Array.from({ length: 40 }, (_, index) => `ass
 const cloneGreyNinjuFrames = [];
 const angelNinjuFrameSources = Array.from({ length: 43 }, (_, index) => `assets/ninju/special_exports/sprites/DefineSprite_1049_Angel/${index + 1}.png`);
 const angelNinjuFrames = [];
-const butsuNinjuFrameSources = Array.from({ length: 46 }, (_, index) => `assets/ninju/special_exports/sprites/DefineSprite_907_Suicide/${index + 1}.png`);
-const butsuNinjuFrames = [];
 const mouryoNinjuFrameSources = Array.from({ length: 43 }, (_, index) => `assets/ninju/special_exports/sprites/DefineSprite_1067_Mouryou/${index + 1}.png`);
 const mouryoNinjuFrames = [];
 const mouryoNinjuHitFrameSources = Array.from({ length: 45 }, (_, index) => `assets/ninju/special_exports/sprites/DefineSprite_580_Dmg_Mouryou/${index + 1}.png`);
@@ -374,46 +361,11 @@ const attackNinjuConfigs = {
     hitSound: "mouryoNinju",
     castSize: 150,
   },
-  butsu: {
-    label: "\u4f5b",
-    rule: "butsu",
-    summonFrames: butsuNinjuFrames,
-    hitFrames: [],
-    castSound: "butsuNinju",
-    castSize: 150,
-  },
 };
 const chargeRedFrameSources = Array.from({ length: 4 }, (_, index) => `assets/characters/charge/inner_fire/${index + 1}.png`);
 const chargeYellowFrameSources = Array.from({ length: 4 }, (_, index) => `assets/characters/charge/inner_fire/${index + 5}.png`);
 const chargeRedFrames = [];
 const chargeYellowFrames = [];
-const fireToadDirections = ["up", "right", "left", "down"];
-const fireToadTeams = ["blue", "grey"];
-const fireToadExportDirs = {
-  blue: {
-    up: { arrive: "DefineSprite_1362_Arrive_Up_Toad_B", setoff: "DefineSprite_1403_SetOff_Up_Toad_B" },
-    right: { arrive: "DefineSprite_1361_Arrive_Right_Toad_B", setoff: "DefineSprite_1407_SetOff_Right_Toad_B" },
-    left: { arrive: "DefineSprite_1360_Arrive_Left_Toad_B", setoff: "DefineSprite_1405_SetOff_Left_Toad_B" },
-    down: { arrive: "DefineSprite_1363_Arrive_Down_Toad_B", setoff: "DefineSprite_1409_SetOff_Down_Toad_B" },
-  },
-  grey: {
-    up: { arrive: "DefineSprite_433_Arrive_Up_Toad_G", setoff: "DefineSprite_1402_SetOff_Up_Toad_G" },
-    right: { arrive: "DefineSprite_430_Arrive_Right_Toad_G", setoff: "DefineSprite_1406_SetOff_Right_Toad_G" },
-    left: { arrive: "DefineSprite_429_Arrive_Left_Toad_G", setoff: "DefineSprite_1404_SetOff_Left_Toad_G" },
-    down: { arrive: "DefineSprite_432_Arrive_Down_Toad_G", setoff: "DefineSprite_1408_SetOff_Down_Toad_G" },
-  },
-};
-const fireToadFrameSources = Object.fromEntries(fireToadTeams.map((team) => [team, Object.fromEntries(fireToadDirections.map((direction) => [
-  direction,
-  {
-    arrive: Array.from({ length: 8 }, (_, index) => `assets/nindou3/nindou_fire_toad/sprites/${fireToadExportDirs[team][direction].arrive}/${index + 1}.png`),
-    setoff: Array.from({ length: 3 }, (_, index) => `assets/nindou3/nindou_fire_toad/sprites/${fireToadExportDirs[team][direction].setoff}/${index + 1}.png`),
-  },
-]))]));
-const fireToadFrames = Object.fromEntries(fireToadTeams.map((team) => [team, Object.fromEntries(fireToadDirections.map((direction) => [
-  direction,
-  { arrive: [], setoff: [] },
-]))]));
 // 回技角色方向素材：b/g × 4 方向 × 2 幀（1=right, 2=left, 3=up, 4=down）
 const chargeDirFrameSources = {
   b: {

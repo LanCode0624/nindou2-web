@@ -16,7 +16,6 @@ const defaultRoomMapKey = "evil-castle-1";
 const roomMapDefinitions = {
   "country-10": {
     label: "鄉野之十",
-    labelEn: "Country 10",
     groundImageKey: "arena",
     fallbackImageKey: "bg",
     objectLayout: "country-10",
@@ -26,7 +25,6 @@ const roomMapDefinitions = {
   },
   "evil-castle-1": {
     label: "極惡城之一",
-    labelEn: "Evil Castle 1",
     groundImageKey: "evilCastleGround",
     maskImageKey: "evilCastleMask",
     battleBgmSrc: "assets/sounds/bgm/忍2鬼島戰鬥.mp3",
@@ -56,7 +54,7 @@ function roomMapDefinitionEntries() {
   return Object.entries(roomMapDefinitions);
 }
 
-const maxSkill = 9999; // 18
+const maxSkill = 18; // 18
 const holdSeconds = 0;
 const chargePerSecond = 18 / 6.5;
 const maxHp = 300;
@@ -136,13 +134,13 @@ const ninjutsuRuleProfiles = {
     flash: {
       cost: 0, // 閃光
       castDurationMs: 1500,
-      hitChance: 0.3,
+      hitChance: 0.6,
       damage: 50,
       missDisableMs: 1500,
       hitDisableMs: 3500,
     },
     wildfire: {
-      cost: 7,
+      cost: 0,
       castDurationMs: 1500,
       hitChance: 0.6,
       damage: 50,
@@ -181,14 +179,6 @@ const ninjutsuRuleProfiles = {
       missDisableMs: 1500,
       hitDisableMs: 3500,
     },
-    butsu: {
-      cost: 7,
-      castDurationMs: 1840,
-      hitChance: 0.6,
-      damage: 155,
-      missDisableMs: 1500,
-      hitDisableMs: 3500,
-    },
     seven: {
       cost: 7,
       castDurationMs: 1720,
@@ -197,12 +187,6 @@ const ninjutsuRuleProfiles = {
     clone: {
       cost: 10,
       castDurationMs: 1600,
-    },
-    fireToad: {
-      cost: 7,
-      castDurationMs: 1500,
-      transformMs: 1000,
-      durationMs: 7000,
     },
   },
   original: {
@@ -247,15 +231,15 @@ const ninjutsuRuleProfiles = {
       effect: "teamHeal",
     },
     flash: {
-      cost: 7,
+      cost: 0,
       castDurationMs: 1500,
-      hitChance: 0.6,
+      hitChance: 0.3,
       damage: 50,
       missDisableMs: 1500,
       hitDisableMs: 3500,
     },
     wildfire: {
-      cost: 7,
+      cost: 0,
       castDurationMs: 1500,
       hitChance: 0.6,
       damage: 50,
@@ -294,14 +278,6 @@ const ninjutsuRuleProfiles = {
       missDisableMs: 1500,
       hitDisableMs: 3500,
     },
-    butsu: {
-      cost: 7,
-      castDurationMs: 1840,
-      hitChance: 0.6,
-      damage: 155,
-      missDisableMs: 1500,
-      hitDisableMs: 3500,
-    },
     seven: {
       cost: 7,
       castDurationMs: 1720,
@@ -310,12 +286,6 @@ const ninjutsuRuleProfiles = {
     clone: {
       cost: 10,
       castDurationMs: 1600,
-    },
-    fireToad: {
-      cost: 7,
-      castDurationMs: 1500,
-      transformMs: 1000,
-      durationMs: 7000,
     },
   },
 };
