@@ -1,6 +1,26 @@
 // Asset paths and frame buffers. Loading still happens in game.js for now.
-const roomBgm = new Audio("assets/sounds/bgm/lobby.mp3");
-const battleBgm = new Audio("assets/sounds/bgm/bgm.mp3");
+function createLoopingBgm(src) {
+  const audio = new Audio(src);
+  audio.preload = "auto";
+  audio.loop = true;
+  audio.volume = 0.2; //0 to 1
+  return audio;
+}
+
+const roomBgm = createLoopingBgm("assets/sounds/bgm/忍2大廳.mp3");
+const defaultBattleBgmSrc = "assets/sounds/bgm/忍3鄉野.mp3";
+const battleBgmsBySrc = {};
+
+function bgmBySrc(src) {
+  const key = src || defaultBattleBgmSrc;
+  if (!battleBgmsBySrc[key]) battleBgmsBySrc[key] = createLoopingBgm(key);
+  if (typeof musicVolumeInput !== "undefined" && musicVolumeInput) {
+    battleBgmsBySrc[key].volume = Number(musicVolumeInput.value) / 100;
+  }
+  return battleBgmsBySrc[key];
+}
+
+const defaultBattleBgm = bgmBySrc(defaultBattleBgmSrc);
 
 const soundSources = {
   move: "assets/sounds/ninja/normalmove.ogg",
@@ -21,6 +41,7 @@ const soundSources = {
   slash106: "assets/sounds/weapon/106.ogg",
   useNinju: "assets/sounds/ninja/useninju.ogg",
   takeDart: "assets/sounds/ninja/takedart.ogg",
+  cloneNinju: "assets/sounds/ninja/clone.ogg",
   shootDart: "assets/sounds/ninja/shootdart.ogg",
   statusEnergyUp1: "assets/sounds/ninja/status/energy_up_1.ogg",
   statusEnergyUp2: "assets/sounds/ninja/status/energy_up_2.ogg",
@@ -48,26 +69,126 @@ const soundSources = {
 };
 
 const images = {};
-const mapFolder = "assets/map/map/\u68EE\u679710";
+const mapFolder = "assets/map/map/鄉野10";
 const sounds = Object.fromEntries(Object.entries(soundSources).map(([key, src]) => {
   const audio = new Audio(src);
   audio.preload = "auto";
   audio.volume = 0.2;
   return [key, audio];
 }));
-[roomBgm, battleBgm].forEach((audio) => {
-  audio.preload = "auto";
-  audio.loop = true;
-  audio.volume = 0.2;
-});
+
+const aiLookDirections = ["right", "left", "up", "down"];
+const aiDirectionImageNames = { right: "right", left: "left", up: "up", down: "down" };
+
+function aiIdleImageSources(imageKeyPrefix, folderPrefix) {
+  return Object.fromEntries(aiLookDirections.map((direction) => [
+    `${imageKeyPrefix}${direction.replace(/^./, (letter) => letter.toUpperCase())}`,
+    `assets/characters/ai/idle/${folderPrefix}_idle/${aiDirectionImageNames[direction]}.png`,
+  ]));
+}
+
+function aiPrearriveFrameSources(folderPrefix, symbolGroups) {
+  return Object.fromEntries(aiLookDirections.map((direction, index) => [
+    direction,
+    symbolGroups[index].map((symbolName) => `assets/characters/ai/prearrive/${folderPrefix}_prearrive/${symbolName}`),
+  ]));
+}
+
+function aiArriveFrameSources(folderPrefix) {
+  return Object.fromEntries(aiLookDirections.map((direction) => [
+    direction,
+    Array.from({ length: 5 }, (_, frameIndex) => `assets/characters/ai/arrive/${folderPrefix}_arrive/${direction}/${frameIndex + 1}.png`),
+  ]));
+}
+
+function aiUseNinjuFrameSources(folderPrefix) {
+  return Array.from({ length: 12 }, (_, index) => `assets/characters/ai/use_ninju/${folderPrefix}_use_ninju/${index + 1}.png`);
+}
+
+function aiMoneyDartReadyFrameSources(folderPrefix) {
+  return aiLookDirections.map((direction) => `assets/characters/ai/dart/${folderPrefix}_dart/${aiDirectionImageNames[direction]}.png`);
+}
+
+function aiMoneyDartShootFrameSources(folderPrefix) {
+  return Object.fromEntries(aiLookDirections.map((direction) => [
+    direction,
+    Array.from({ length: 7 }, (_, frameIndex) => `assets/characters/ai/dart_shoot/${folderPrefix}_dart_shoot/${direction}/${frameIndex + 1}.png`),
+  ]));
+}
+
+const lookDefinitions = {
+  default: {
+    labelKey: "defaultLookOption",
+    roomAvatarSrc: "assets/room/ui/b_team.png",
+    roomAvatarEyeSrc: "assets/characters/parts/eyes-middle/11.png",
+    drawEyes: true,
+    eyeFrontImageKey: "eyesFront",
+    eyeSideImageKey: "eyeSide",
+    spriteSet: "blue",
+    moveSet: "blue",
+    useNinjuSet: "blue",
+    moneyDartReadySet: "b",
+    moneyDartShootSet: "b",
+  },
+  red: {
+    labelKey: "redLookOption",
+    roomAvatarSrc: "assets/characters/ai/idle/a1_idle/down.png",
+    roomAvatarEyeSrc: "assets/characters/eyes/middle/57.png",
+    drawEyes: true,
+    eyeFrontImageKey: "redEyesFront",
+    eyeSideImageKey: "redEyeSide",
+    spriteSet: "redBlue",
+    moveSet: "red",
+    useNinjuSet: "red",
+    moneyDartReadySet: "r",
+    moneyDartShootSet: "r",
+  },
+  zhaohuo: {
+    labelKey: "zhaohuoLookOption",
+    roomAvatarSrc: "assets/characters/ai/idle/趙活_idle/down.png",
+    roomAvatarEyeSrc: null,
+    drawEyes: false,
+    eyeFrontImageKey: "eyesFront",
+    eyeSideImageKey: "eyeSide",
+    spriteSet: "zhaohuo",
+    moveSet: "zhaohuo",
+    useNinjuSet: "zhaohuo",
+    moneyDartReadySet: "b",
+    moneyDartShootSet: "zhaohuo",
+  },
+};
+
+const baseTeamLookDefinitions = {
+  blue: lookDefinitions.default,
+  grey: {
+    roomAvatarSrc: "assets/room/ui/g_team.png",
+    roomAvatarEyeSrc: "assets/characters/parts/eyes-middle/11.png",
+    drawEyes: true,
+    eyeFrontImageKey: "eyesFront",
+    eyeSideImageKey: "eyeSide",
+    spriteSet: "grey",
+    moveSet: "grey",
+    useNinjuSet: "grey",
+    moneyDartReadySet: "g",
+    moneyDartShootSet: "g",
+  },
+};
 
 const imageSources = {
   bg: `${mapFolder}/bg.png`,
   arena: `${mapFolder}/arena-base.png`,
+  evilCastleGround: "assets/map/極惡城/1/1.png",
+  evilCastleMask: "assets/map/極惡城/1/2.png",
+  evilCastleBlock033: "assets/map/極惡城/1/033-01.png",
+  evilCastleBlock035: "assets/map/極惡城/1/035-01.png",
+  evilCastleBlock036: "assets/map/極惡城/1/036-01.png",
+  evilCastleDoor1: "assets/map/map/極惡城1/door-overlay.png",
   blueDown: "assets/characters/idle/blue/down.png",
   blueLeft: "assets/characters/idle/blue/left.png",
   blueRight: "assets/characters/idle/blue/right.png",
   blueUp: "assets/characters/idle/blue/up.png",
+  ...aiIdleImageSources("redBlue", "a1"),
+  ...aiIdleImageSources("zhaohuo", "趙活"),
   greyDown: "assets/characters/idle/grey/down.png",
   greyLeft: "assets/characters/idle/grey/left.png",
   greyRight: "assets/characters/idle/grey/right.png",
@@ -122,6 +243,8 @@ const imageSources = {
   chargeOuter: "assets/characters/charge/outer_moving.png",
   eyesFront: "assets/characters/parts/eyes-middle/11.png",
   eyeSide: "assets/characters/parts/eyes-look-right/11.png",
+  redEyesFront: "assets/characters/eyes/middle/57.png",
+  redEyeSide: "assets/characters/eyes/middle/57.png",
 };
 
 const defUpFrameSources = Array.from({ length: 31 }, (_, index) => `assets/ninju/status/def_up/${index + 1}.png`);
@@ -132,7 +255,7 @@ const regenHpSmallFrameSources = Array.from({ length: 23 }, (_, index) => `asset
 const regenHpSmallFrames = [];
 const regenHpLargeFrameSources = Array.from({ length: 24 }, (_, index) => `assets/ninju/status/regen_hp_l/${String(index + 1).padStart(2, "0")}.png`);
 const regenHpLargeFrames = [];
-const smallThunderSummonFrameSources = Array.from({ length: 25 }, (_, index) => `assets/ninju/status/summon/small_thunder/${index + 1}.png`);
+const smallThunderSummonFrameSources = Array.from({ length: 25 }, (_, index) => `assets/ninju/status/summon/small_thunder/${String(index + 1).padStart(2, "0")}.png`);
 const smallThunderSummonFrames = [];
 const smallThunderDamagedFrameSources = Array.from({ length: 36 }, (_, index) => `assets/ninju/status/damaged/small_thunder/${index + 1}.png`);
 const smallThunderDamagedFrames = [];
@@ -164,6 +287,12 @@ const damageSuccessNinjuSuccessFrameSources = Array.from({ length: 10 }, (_, ind
 const damageSuccessNinjuSuccessFrames = [];
 const sevenNinjuFrameSources = Array.from({ length: 43 }, (_, index) => `assets/ninju/special_exports/sprites/DefineSprite_946_Seven/${index + 1}.png`);
 const sevenNinjuFrames = [];
+const cloneNinjuFrameSources = Array.from({ length: 40 }, (_, index) => `assets/characters/b_clone/${index + 1}.png`);
+const cloneNinjuFrames = [];
+const cloneRedNinjuFrameSources = Array.from({ length: 40 }, (_, index) => `assets/characters/ai/clone/a1_clone/${index + 1}.png`);
+const cloneRedNinjuFrames = [];
+const cloneGreyNinjuFrameSources = Array.from({ length: 40 }, (_, index) => `assets/characters/g_clone/${index + 1}.png`);
+const cloneGreyNinjuFrames = [];
 const angelNinjuFrameSources = Array.from({ length: 43 }, (_, index) => `assets/ninju/special_exports/sprites/DefineSprite_1049_Angel/${index + 1}.png`);
 const angelNinjuFrames = [];
 const butsuNinjuFrameSources = Array.from({ length: 46 }, (_, index) => `assets/ninju/special_exports/sprites/DefineSprite_907_Suicide/${index + 1}.png`);
@@ -180,6 +309,13 @@ const specialNinjuConfigs = {
     hitFrames: [],
     castSound: "sevenNinju",
     castSize: 150,
+  },
+  clone: {
+    label: "\u5206\u8eab",
+    rule: "clone",
+    summonFrames: cloneNinjuFrames,
+    hitFrames: [],
+    castSize: 70,
   },
 };
 const attackNinjuConfigs = {
@@ -307,15 +443,25 @@ const dragArrowFrameSources = {
 };
 const dragArrowFrames = { right: [], left: [], up: [], down: [] };
 
-const moveDirections = ["right", "left", "up", "down"];
+const moveDirections = aiLookDirections;
 const movePrearriveFrameSources = {
   blue: Object.fromEntries(moveDirections.map((direction) => [
     direction,
     Array.from({ length: 2 }, (_, index) => `assets/characters/move/blue/prearrive/${direction}/${index + 1}.png`),
   ])),
+  red: aiPrearriveFrameSources("a1", [
+    ["right1.png", "right2.png"],
+    ["left1.png", "left2.png"],
+    ["up1.png", "up2.png"],
+    ["down1.png", "down2.png"],
+  ]),
   grey: Object.fromEntries(moveDirections.map((direction) => [
     direction,
     Array.from({ length: 2 }, (_, index) => `assets/characters/move/grey/prearrive/${direction}/${index + 1}.png`),
+  ])),
+  zhaohuo: Object.fromEntries(moveDirections.map((direction) => [
+    direction,
+    Array.from({ length: 2 }, (_, index) => `assets/characters/move/blue/prearrive/${direction}/${index + 1}.png`),
   ])),
 };
 const moveArriveFrameSources = {
@@ -323,31 +469,40 @@ const moveArriveFrameSources = {
     direction,
     Array.from({ length: 5 }, (_, index) => `assets/characters/move/blue/arrive/${direction}/${index + 1}.png`),
   ])),
+  red: aiArriveFrameSources("a1"),
   grey: Object.fromEntries(moveDirections.map((direction) => [
     direction,
     Array.from({ length: 5 }, (_, index) => `assets/characters/move/grey/arrive/${direction}/${index + 1}.png`),
   ])),
+  zhaohuo: aiArriveFrameSources("趙活"),
 };
 const movePrearriveFrames = {
   blue: { right: [], left: [], up: [], down: [] },
+  red: { right: [], left: [], up: [], down: [] },
   grey: { right: [], left: [], up: [], down: [] },
+  zhaohuo: { right: [], left: [], up: [], down: [] },
 };
 const moveArriveFrames = {
   blue: { right: [], left: [], up: [], down: [] },
+  red: { right: [], left: [], up: [], down: [] },
   grey: { right: [], left: [], up: [], down: [] },
+  zhaohuo: { right: [], left: [], up: [], down: [] },
 };
 const useNinjuFrameSources = {
   blue: Array.from({ length: 12 }, (_, index) => `assets/characters/use-ninju/blue/${index + 1}.png`),
+  red: aiUseNinjuFrameSources("a1"),
   grey: Array.from({ length: 12 }, (_, index) => `assets/characters/use-ninju/grey/${index + 1}.png`),
+  zhaohuo: aiUseNinjuFrameSources("趙活"),
 };
-const useNinjuFrames = { blue: [], grey: [] };
+const useNinjuFrames = { blue: [], red: [], grey: [], zhaohuo: [] };
 
 // 錢鏢備彈靜態幀（b/g_dart，4 幀對應 right/left/up/down）。
 const moneyDartReadyFrameSources = {
   b: Array.from({ length: 4 }, (_, i) => `assets/characters/b_dart/${i + 1}.png`),
+  r: aiMoneyDartReadyFrameSources("a1"),
   g: Array.from({ length: 4 }, (_, i) => `assets/characters/g_dart/${i + 1}.png`),
 };
-const moneyDartReadyFrames = { b: [], g: [] };
+const moneyDartReadyFrames = { b: [], r: [], g: [] };
 
 // 拿標起身動畫：dart 由小到完整的出現動畫（10 幀，與隊伍無關）。
 const moneyDartPickupFrameSources = Array.from({ length: 10 }, (_, i) => `assets/characters/dart/${i + 1}.png`);
@@ -360,6 +515,8 @@ const moneyDartShootFrameSources = {
     up:    Array.from({ length: 7 }, (_, i) => `assets/characters/b_dart_shoot/3/${i + 1}.png`),
     down:  Array.from({ length: 7 }, (_, i) => `assets/characters/b_dart_shoot/4/${i + 1}.png`),
   },
+  r: aiMoneyDartShootFrameSources("a1"),
+  zhaohuo: aiMoneyDartShootFrameSources("趙活"),
   g: {
     right: Array.from({ length: 7 }, (_, i) => `assets/characters/g_dart_shoot/1/${i + 1}.png`),
     left:  Array.from({ length: 7 }, (_, i) => `assets/characters/g_dart_shoot/2/${i + 1}.png`),
@@ -369,5 +526,7 @@ const moneyDartShootFrameSources = {
 };
 const moneyDartShootFrames = {
   b: { right: [], left: [], up: [], down: [] },
+  r: { right: [], left: [], up: [], down: [] },
+  zhaohuo: { right: [], left: [], up: [], down: [] },
   g: { right: [], left: [], up: [], down: [] },
 };

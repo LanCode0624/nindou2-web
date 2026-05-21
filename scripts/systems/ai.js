@@ -11,6 +11,17 @@ const aiProfiles = {
     moneyDartReadyChance: 0,
     moneyDartThrowChance: 0,
   },
+  ai_red: {
+    reactionMultiplier: 0.35,
+    skillRegenMultiplier: 0,
+    meleeAttackChance: 0,
+    chaseChance: 0.12,
+    thinkMinMs: 260,
+    thinkRandMs: 180,
+    steelUseChance: 0,
+    moneyDartReadyChance: 0,
+    moneyDartThrowChance: 0,
+  },
   ai_god: {
     reactionMultiplier: 0.1,
     skillRegenMultiplier: 4,
@@ -56,6 +67,156 @@ function isMoneyDartFocusedAi(unit) {
   return unit?.controlMode === "ai_money_dart_master" || unit?.controlMode === "ai_dart_only_master";
 }
 
+function isRedGroupAi(unit) {
+  return unit?.controlMode === "ai_red";
+}
+
+function aiIgnoresSkillCosts(unit) {
+  return isRedGroupAi(unit);
+}
+
+function aiRedRandomDelay(minMs, maxMs) {
+  return minMs + Math.random() * Math.max(0, maxMs - minMs);
+}
+
+function aiRedChargeDelay(distance) {
+  return 500 + Math.max(0, distance - 1) * 100;
+}
+
+function isDiagonalAdjacent(a, b) {
+  return Boolean(a && b && Math.abs(a.x - b.x) === 1 && Math.abs(a.y - b.y) === 1);
+}
+
+function isOrthogonalLine(unit, target) {
+  return Boolean(unit && target && (unit.x === target.x || unit.y === target.y));
+}
+
+function isInNineGrid(unit, target) {
+  return Boolean(unit && target && Math.max(Math.abs(unit.x - target.x), Math.abs(unit.y - target.y)) <= 1);
+}
+
+function ensureAiRedTimers(unit, now = performance.now()) {
+  if (!isRedGroupAi(unit)) return;
+  if (!Number.isFinite(unit.aiRedCloneAt)) unit.aiRedCloneAt = now + aiRedRandomDelay(0, 90000);
+  if (!Number.isFinite(unit.aiRedSteelAt)) unit.aiRedSteelAt = now + aiRedRandomDelay(12000, 30000);
+  if (!Number.isFinite(unit.aiRedAttackAt)) unit.aiRedAttackAt = now + aiRedRandomDelay(30000, 60000);
+}
+
+function rescheduleAiRedTimer(unit, timerKey, minMs, maxMs, now = performance.now()) {
+  unit[timerKey] = now + aiRedRandomDelay(minMs, maxMs);
+}
+
+function queueAiRedRetaliation(unit, attacker, now = performance.now()) {
+  if (!isRedGroupAi(unit) || !attacker || !attacker.alive || !unit.alive) return false;
+  if (!isDiagonalAdjacent(unit, attacker)) return false;
+  const roll = Math.random();
+  const type = roll < 0.15 ? "clone" : roll < 0.5 ? "ram" : "weapon";
+  unit.aiRedPendingAction = {
+    type,
+    targetId: attacker.id,
+    executeAt: now + 120,
+  };
+  unit.aiNextThink = Math.min(unit.aiNextThink || Infinity, unit.aiRedPendingAction.executeAt);
+  return true;
+}
+
+function aiRedWeaponAttack(unit, target) {
+  if (!target || !target.alive) return false;
+  if (isUnitDisabled(unit) || unit.moneyDart) return false;
+  if (isUnitCastingNinju(unit) || isUnitInNinjuGap(unit)) return false;
+  if (!weaponIsReady(unit)) return false;
+  const dir = weaponDirectionFromTarget(unit, target);
+  if (!dir || !isCellInWeaponRange(unit, target, dir)) return false;
+  attack(unit, target);
+  return true;
+}
+
+function aiRedRamTowardTarget(unit, target) {
+  if (!target || !target.alive) return false;
+  if (isStraightMove(unit, target) && clearStraightPath(unit, target, target)) {
+    return aiMoveUnit(unit, { x: target.x, y: target.y });
+  }
+  return aiPathMoveToward(unit, target) || aiStepToward(unit, target);
+}
+
+function tryAiRedPendingAction(unit, now) {
+  const pending = unit.aiRedPendingAction;
+  if (!pending || now < pending.executeAt) return false;
+  unit.aiRedPendingAction = null;
+  if (pending.type === "clone") return tryAiStartNinju(unit, "clone", 1, now);
+  const target = state.units.find((other) => other.id === pending.targetId && other.alive && other.team !== unit.team);
+  if (!target) return false;
+  if (pending.type === "weapon") return aiRedWeaponAttack(unit, target);
+  return aiRedRamTowardTarget(unit, target);
+}
+
+function tryAiRedScheduledNinjutsu(unit, now) {
+  ensureAiRedTimers(unit, now);
+
+  if (now >= unit.aiRedCloneAt) {
+    if (tryAiStartNinju(unit, "clone", 1, now)) {
+      rescheduleAiRedTimer(unit, "aiRedCloneAt", 0, 90000, now);
+      return true;
+    }
+    unit.aiRedCloneAt = now + 250;
+  }
+
+  if (now >= unit.aiRedSteelAt) {
+    if (!isSteelDefenseActive(unit) && tryAiStartNinju(unit, "steel", 1, now)) {
+      rescheduleAiRedTimer(unit, "aiRedSteelAt", 12000, 30000, now);
+      return true;
+    }
+    unit.aiRedSteelAt = now + 250;
+  }
+
+  if (now >= unit.aiRedAttackAt) {
+    const type = Math.random() < 0.5 ? "wildfire" : "freeze";
+    if (tryAiStartNinju(unit, type, 1, now)) {
+      rescheduleAiRedTimer(unit, "aiRedAttackAt", 30000, 60000, now);
+      return true;
+    }
+    unit.aiRedAttackAt = now + 250;
+  }
+
+  return false;
+}
+
+function tryAiRedCombatAction(unit, target, now) {
+  const dist = manhattan(unit, target);
+  if (isInNineGrid(unit, target)) {
+    if (aiRedWeaponAttack(unit, target)) {
+      unit.aiNextThink = now + 260 + Math.random() * 180;
+    } else {
+      unit.aiNextThink = now + 120;
+    }
+    return true;
+  }
+
+  if (isOrthogonalLine(unit, target) && dist >= 1) {
+    if (Math.random() < 0.15 && tryAiStartNinju(unit, "clone", 1, now)) {
+      unit.aiNextThink = now + 120;
+      return true;
+    }
+    unit.aiRedPendingAction = {
+      type: "ram",
+      targetId: target.id,
+      executeAt: now + aiRedChargeDelay(dist),
+    };
+    unit.aiNextThink = unit.aiRedPendingAction.executeAt;
+    return true;
+  }
+
+  const chaseChance = target.hp <= target.maxHp * 0.3 ? 0.5 : aiProfile(unit).chaseChance;
+  if (Math.random() < chaseChance) {
+    const acted = aiPathMoveToward(unit, target) || aiStepToward(unit, target);
+    if (acted) unit.aiNextThink = Math.max(unit.aiNextThink, now + 450 + Math.random() * 250);
+    return acted;
+  }
+
+  unit.aiNextThink = Math.max(unit.aiNextThink, now + 700 + Math.random() * 700);
+  return true;
+}
+
 // 更新電腦角色的判斷、攻擊、移動與脫困行為。
 function updateAi(dt, now) {
   if (state.gameOver) return;
@@ -64,7 +225,16 @@ function updateAi(dt, now) {
     if (canControlUnit(unit) || !unit.alive || unit.respawning || isUnitCastingNinju(unit) || isUnitDisabled(unit)) continue;
 
     const profile = aiProfile(unit);
+    if (aiIgnoresSkillCosts(unit)) {
+      unit.skill = maxSkill;
+      ensureAiRedTimers(unit, now);
+    }
     unit.skill = Math.min(maxSkill, unit.skill + aiSkillRegenPerSecond * profile.skillRegenMultiplier * dt);
+
+    if (isRedGroupAi(unit) && tryAiRedPendingAction(unit, now)) {
+      unit.aiNextThink = now + profile.thinkMinMs + Math.random() * profile.thinkRandMs;
+      continue;
+    }
 
     if (tryAiNinjutsu(unit, profile, now)) {
       unit.aiNextThink = now + profile.thinkMinMs + Math.random() * profile.thinkRandMs;
@@ -100,6 +270,12 @@ function updateAi(dt, now) {
 
     unit.aiPlanKey = "";
     unit.aiActionAt = 0;
+
+    if (isRedGroupAi(unit)) {
+      if (tryAiRedCombatAction(unit, target, now)) continue;
+      unit.aiNextThink = Math.max(unit.aiNextThink, now + profile.thinkMinMs + Math.random() * profile.thinkRandMs);
+      continue;
+    }
 
     if (unit.controlMode === "ai_dart_only_master") {
       // 尬鏢神人：不近戰、不撞人、不用武器，只追線丟錢鏢。
@@ -170,10 +346,10 @@ function aiMoveUnit(unit, cell) {
   if (isUnitCastingNinju(unit)) return false;
   if (unit.moneyDart) return false;
   if (!weaponIsReady(unit)) return false;
-  if (!cell || unit.skill < 1) return false;
+  if (!cell || (!aiIgnoresSkillCosts(unit) && unit.skill < 1)) return false;
   if (!isStraightMove(unit, cell)) return false;
   const cost = Math.max(1, manhattan(unit, cell));
-  if (unit.skill < cost) return false;
+  if (!aiIgnoresSkillCosts(unit) && unit.skill < cost) return false;
   if (isPermanentObstacle(cell.x, cell.y) || objectAt(cell.x, cell.y)) return false;
 
   const targetUnit = unitAt(cell.x, cell.y);
@@ -181,7 +357,7 @@ function aiMoveUnit(unit, cell) {
   if (targetUnit && targetUnit.team === unit.team) return false;
   if (!clearStraightPath(unit, cell, targetUnit)) return false;
 
-  unit.skill -= cost;
+  if (!aiIgnoresSkillCosts(unit)) unit.skill -= cost;
   moveUnit(unit, cell.x, cell.y);
   unit.aiNextThink = performance.now() + 650 + Math.random() * 420;
   unit.aiPlanKey = "";
@@ -351,10 +527,14 @@ function tryAiNinjutsu(unit, profile, now) {
   if ((unit.ninjuLockedUntil || 0) > now) return false;
   if (unit.ninju || unit.moneyDart) return false;
 
+  if (isRedGroupAi(unit)) {
+    return tryAiRedScheduledNinjutsu(unit, now);
+  }
+
   if (unit.controlMode === "ai_dart_only_master") {
     const steel = steelRule();
-    if (!isSteelDefenseActive(unit) && unit.skill >= steel.cost && Math.random() < profile.steelUseChance) {
-      unit.skill -= steel.cost;
+    if (!isSteelDefenseActive(unit) && (aiIgnoresSkillCosts(unit) || unit.skill >= steel.cost) && Math.random() < profile.steelUseChance) {
+      if (!aiIgnoresSkillCosts(unit)) unit.skill -= steel.cost;
       unit.ninju = { type: "steel", phase: "active", startedAt: now, duration: steel.castDurationMs, queue: 0 };
       playStatusEnergyUpSequence();
       return true;
@@ -371,8 +551,8 @@ function tryAiNinjutsu(unit, profile, now) {
   }
 
   const steel = steelRule();
-  if (!isSteelDefenseActive(unit) && unit.skill >= steel.cost && Math.random() < profile.steelUseChance) {
-    unit.skill -= steel.cost;
+  if (!isSteelDefenseActive(unit) && (aiIgnoresSkillCosts(unit) || unit.skill >= steel.cost) && Math.random() < profile.steelUseChance) {
+    if (!aiIgnoresSkillCosts(unit)) unit.skill -= steel.cost;
     unit.ninju = { type: "steel", phase: "active", startedAt: now, duration: steel.castDurationMs, queue: 0 };
     playStatusEnergyUpSequence();
     return true;
@@ -399,9 +579,10 @@ function tryAiStartNinju(unit, type, chance = 0, now = performance.now()) {
   const rule = statusNinjuRule(type);
   if (rule.available === false) return false;
   const isAttackNinju = isAttackNinjuType(type);
-  const skillCost = isAttackNinju ? 0 : rule.cost;
+  const ignoreSkillCost = aiIgnoresSkillCosts(unit);
+  const skillCost = isAttackNinju || ignoreSkillCost ? 0 : rule.cost;
   if (unit.skill < skillCost) return false;
-  const attackNinjuLevel = isAttackNinju ? consumeAttackNinjuSoulLevel(unit) : 0;
+  const attackNinjuLevel = isAttackNinju ? (ignoreSkillCost ? 1 : consumeAttackNinjuSoulLevel(unit)) : 0;
   if (isAttackNinju && attackNinjuLevel < 1) return false;
   unit.skill -= skillCost;
   unit.ninju = { type, phase: "active", startedAt: now, duration: rule.castDurationMs, queue: 0, attackNinjuLevel };

@@ -97,6 +97,7 @@ function collideWithEnemy(mover, enemy) {
     enemy.hp = 0;
     enemy.alive = false;
     enemy.moneyDart = null;
+    if (typeof clearCloneDecoysForCaster === "function") clearCloneDecoysForCaster(enemy.id);
     cancelDragIfPressed(enemy);
     mover.kills += 1;
     playSound("death");
@@ -115,6 +116,7 @@ function collideWithEnemy(mover, enemy) {
   enemy.hitFlash = 0.65;
   enemy.alive = false;
   enemy.moneyDart = null;
+  if (typeof clearCloneDecoysForCaster === "function") clearCloneDecoysForCaster(enemy.id);
   cancelDragIfPressed(enemy);
   playSound("runOver");
   setMessage(`${mover.name} ran into ${enemy.name}. ${enemy.name} took ${formatDamage(damage)}.`);

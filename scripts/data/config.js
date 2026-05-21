@@ -12,7 +12,51 @@ const battleMapDrawInset = {
   right: 5, // 地圖背景右邊界：數字越小越往右。
   bottom: 5, // 地圖背景下邊界：數字越小越往下。
 };
-const maxSkill = 18; // 18
+const defaultRoomMapKey = "evil-castle-1";
+const roomMapDefinitions = {
+  "country-10": {
+    label: "鄉野之十",
+    labelEn: "Country 10",
+    groundImageKey: "arena",
+    fallbackImageKey: "bg",
+    objectLayout: "country-10",
+    coordinateBottomInternalY: 10,
+    playableInternalYMin: 1,
+    playableInternalYMax: 10,
+  },
+  "evil-castle-1": {
+    label: "極惡城之一",
+    labelEn: "Evil Castle 1",
+    groundImageKey: "evilCastleGround",
+    maskImageKey: "evilCastleMask",
+    battleBgmSrc: "assets/sounds/bgm/忍2鬼島戰鬥.mp3",
+    objectLayout: "evil-castle-1",
+    coordinateBottomInternalY: 11,
+    playableInternalYMin: 2,
+    playableInternalYMax: 11,
+    blockedDisplayCells: ["1,1", "18,1", "1,10", "18,10", "1,18", "18,18"],
+    startingDisplayCellsBySlot: {
+      blue: {
+        1: { x: 9, y: 3 },
+        2: { x: 8, y: 1 },
+        3: { x: 9, y: 1 },
+        4: { x: 10, y: 1 },
+      },
+      grey: {
+        1: { x: 6, y: 9 },
+        2: { x: 8, y: 8 },
+        3: { x: 11, y: 8 },
+        4: { x: 13, y: 9 },
+      },
+    },
+  },
+};
+
+function roomMapDefinitionEntries() {
+  return Object.entries(roomMapDefinitions);
+}
+
+const maxSkill = 9999; // 18
 const holdSeconds = 0;
 const chargePerSecond = 18 / 6.5;
 const maxHp = 300;
@@ -150,6 +194,10 @@ const ninjutsuRuleProfiles = {
       castDurationMs: 1720,
       damage: 130,
     },
+    clone: {
+      cost: 10,
+      castDurationMs: 1600,
+    },
     fireToad: {
       cost: 7,
       castDurationMs: 1500,
@@ -259,6 +307,10 @@ const ninjutsuRuleProfiles = {
       castDurationMs: 1720,
       damage: 130,
     },
+    clone: {
+      cost: 10,
+      castDurationMs: 1600,
+    },
     fireToad: {
       cost: 7,
       castDurationMs: 1500,
@@ -267,6 +319,7 @@ const ninjutsuRuleProfiles = {
     },
   },
 };
+ninjutsuRuleProfiles.n3 = JSON.parse(JSON.stringify(ninjutsuRuleProfiles.original));
 
 const attackNinjuOutcomeTables = {
   wildfire: [

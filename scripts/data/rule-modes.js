@@ -18,6 +18,14 @@ const modeRuleProfiles = {
     },
     ninjutsu: ninjutsuRuleProfiles.original,
   },
+  n3: {
+    weapons: {
+      weapon4: { damage: 50 },
+      weapon6: { damage: 25 },
+      weapon8: { damage: 50 },
+    },
+    ninjutsu: ninjutsuRuleProfiles.n3,
+  },
 };
 
 function currentRuleModeKey() {
@@ -32,7 +40,6 @@ function currentRuleModeKey() {
 
 function currentRuleProfile() {
   const modeKey = currentRuleModeKey();
-  if (modeKey === "n3") return modeRuleProfiles.original;
   return modeRuleProfiles[modeKey] || modeRuleProfiles.modified;
 }
 

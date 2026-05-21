@@ -1,15 +1,17 @@
 ﻿// ===== Grid / Coordinate Helpers =====
 function displayCellCoord(cell) {
+  const bottomY = currentRoomMapDefinition().coordinateBottomInternalY ?? grid.rows - 2;
   return {
     x: cell.x - 1,
-    y: grid.rows - 1 - cell.y,
+    y: bottomY + 1 - cell.y,
   };
 }
 
 function internalCellCoord(cell) {
+  const bottomY = currentRoomMapDefinition().coordinateBottomInternalY ?? grid.rows - 2;
   return {
     x: cell.x + 1,
-    y: grid.rows - 1 - cell.y,
+    y: bottomY + 1 - cell.y,
   };
 }
 
@@ -46,15 +48,25 @@ function inside(x, y) {
   return x >= 0 && x < grid.cols && y >= 0 && y < grid.rows;
 }
 
+function currentRoomMapDefinition() {
+  const key = state?.roomMapKey || defaultRoomMapKey;
+  return roomMapDefinitions[key] || roomMapDefinitions[defaultRoomMapKey];
+}
+
 function isBlockedCell(x, y) {
   return isPermanentObstacle(x, y) || Boolean(objectAt(x, y));
 }
 
 function isPermanentObstacle(x, y) {
+  const mapDefinition = currentRoomMapDefinition();
+  const playableYMin = mapDefinition.playableInternalYMin ?? 1;
+  const playableYMax = mapDefinition.playableInternalYMax ?? grid.rows - 2;
   if (!inside(x, y)) return true;
   if (x === 0 || x === grid.cols - 1) return true;
-  if (y === 0 || y === grid.rows - 1) return true;
   if (x === 1 || x === grid.cols - 2) return true;
+  if (y < playableYMin || y > playableYMax) return true;
+  const display = displayCellCoord({ x, y });
+  if (mapDefinition.blockedDisplayCells?.includes(`${display.x},${display.y}`)) return true;
   return false;
 }
 

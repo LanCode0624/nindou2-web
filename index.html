@@ -33,6 +33,10 @@
               <button type="button" class="room-slot-remove" aria-label="刪除">×</button>
               <button type="button" class="room-slot-add" aria-label="新增">新增</button>
               <div class="room-name">blue1</div>
+              <select class="room-look-select" data-team="blue" data-slot="1" aria-label="Blue 1 外觀">
+                <option value="default" selected>預設外觀</option>
+                <option value="red">赤組</option>
+              </select>
               <img class="room-avatar" src="assets/room/ui/b_team.png" alt="">
               <img class="room-avatar-eye" src="assets/characters/parts/eyes-middle/11.png" alt="">
               <div class="room-level"></div>
@@ -41,6 +45,7 @@
               <select class="room-control-select" data-team="blue" data-slot="1" aria-label="Blue 1 控制">
                 <option value="player" selected>玩家</option>
                 <option value="ai_beginner">初心者</option>
+                <option value="ai_red">AI赤組</option>
                 <option value="ai_money_dart_master">錢鏢神人</option>
                 <option value="ai_dart_only_master">尬鏢神人</option>
                 <option value="ai_god">AI神人</option>
@@ -142,6 +147,10 @@
           <button id="battleStartBtn" type="button" class="battle-start-btn" aria-label="戰鬥開始">
             <img src="assets/room/ui/start_button.png" alt="戰鬥開始">
           </button>
+          <select id="roomMapSelect" class="room-map-select" aria-label="地圖">
+            <option value="evil-castle-1" selected>極惡城之一</option>
+            <option value="country-10">鄉野之十</option>
+          </select>
 
           <section class="chat-panel" aria-label="聊天">
             <div class="chat-log">
@@ -158,7 +167,7 @@
 
           <section class="room-volume-panel" aria-label="音量">
             <label class="room-volume-control">
-              <input id="musicVolume" type="range" min="0" max="100" value="20" orient="vertical">
+              <input id="musicVolume" type="range" min="0" max="100" value="20" orient="vertical"> <!-- value預設音量 bgm -->
               <span>音樂</span>
             </label>
             <label class="room-volume-control">
@@ -189,6 +198,7 @@
                 <button type="button">武器</button>
                 <button type="button">眼睛</button>
                 <button type="button">道具</button>
+                <button type="button">外觀</button>
               </nav>
               <div class="ninju-editor-series" aria-label="忍術系別">
                 <span class="heal">回復系</span>

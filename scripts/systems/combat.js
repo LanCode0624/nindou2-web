@@ -40,12 +40,16 @@ function damageUnit(target, baseDamage, label, announce = true, attacker = null)
   const damage = defendedDamage(target, baseDamage);
   target.hp -= damage;
   recordDamage(attacker, target, damage);
+  if (typeof queueAiRedRetaliation === "function" && attacker && target.alive) {
+    queueAiRedRetaliation(target, attacker, performance.now());
+  }
   target.hitFlash = 0.65;
   playSound("weaponDamaged");
   if (announce) setMessage(`${label} for ${formatDamage(damage)}.`);
   if (target.hp <= 0) {
     target.alive = false;
     target.moneyDart = null;
+    if (typeof clearCloneDecoysForCaster === "function") clearCloneDecoysForCaster(target.id);
     gainSoul(target, soulDeathGainSteps);
     if (attacker && attacker !== target) attacker.kills += 1;
     cancelDragIfPressed(target);

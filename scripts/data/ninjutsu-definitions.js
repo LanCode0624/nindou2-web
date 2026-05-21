@@ -13,6 +13,7 @@ const ninjuCatalog = [
   { type: "kakki", label: "\u6d3b\u6c23", enLabel: "Kakki", group: "heal", editorRow: "heal", editorOrder: 2 },
   { type: "shinki", label: "\u795e\u6c23", enLabel: "Shinki", group: "heal", editorRow: "heal", editorOrder: 3 },
   { type: "seven", label: "\u4e03\u9053", enLabel: "Seven", group: "special", editorRow: "special", editorOrder: 2 },
+  { type: "clone", label: "\u5206\u8eab", enLabel: "Clone", group: "special", editorRow: "special", editorOrder: 3 },
   { type: "fireToad", label: "\u706b\u86d9", enLabel: "Toad", group: "transform", editorRow: "transform", editorOrder: 1 },
 ];
 const ninjuByType = Object.fromEntries(ninjuCatalog.map((ninju) => [ninju.type, ninju]));

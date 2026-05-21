@@ -6,6 +6,7 @@ const unitInfoEl = document.querySelector("#unitInfo");
 const skillFillEl = document.querySelector("#skillFill");
 const resetBtn = document.querySelector("#resetBtn");
 const battleStartBtn = document.querySelector("#battleStartBtn");
+const roomMapSelect = document.querySelector("#roomMapSelect");
 const musicVolumeInput = document.querySelector("#musicVolume");
 const sfxVolumeInput = document.querySelector("#sfxVolume");
 const ruleModeSelect = document.querySelector("#ruleModeSelect");
@@ -20,12 +21,14 @@ const ninjuEditorSaveBtn = document.querySelector("#ninjuEditorSave");
 const roomCardEls = Array.from(document.querySelectorAll(".room-player-card"));
 const weaponSelectEls = Array.from(document.querySelectorAll(".room-weapon-select"));
 const controlSelectEls = Array.from(document.querySelectorAll(".room-control-select"));
+const lookSelectEls = Array.from(document.querySelectorAll(".room-look-select"));
 const hpInputEls = Array.from(document.querySelectorAll(".room-hp-input"));
 
 // ===== Runtime State =====
 const state = {
   inRoom: true,
   roomLang: "zh",
+  roomMapKey: defaultRoomMapKey,
   units: [],
   selectedId: 1,
   pointer: { x: 0, y: 0, cell: null },
@@ -48,6 +51,7 @@ const state = {
   projectiles: [],
   ninjuDamageEffects: [],
   moneyDartCasts: [],
+  cloneDecoys: [],
   ruleModeKey: "original",
 };
 
@@ -179,7 +183,7 @@ function drawMoveTrails(now) {
 
     const trail = unit.moveTrail;
     const dir  = trail.facing;
-    const team = trail.team; // "blue" 或 "grey"
+    const team = unitLookDefinition(unit).moveSet || trail.team || (unit.team === "grey" ? "grey" : "blue");
     const dest = cellCenter(unit.x, unit.y);
     const src  = cellCenter(trail.fromX, trail.fromY);
 
@@ -282,6 +286,9 @@ function loadImages() {
   const damageSuccessBigImages = damageSuccessBigFrameSources.map((src, index) => loadFrame(src, damageSuccessBigFrames, index));
   const damageSuccessNinjuSuccessImages = damageSuccessNinjuSuccessFrameSources.map((src, index) => loadFrame(src, damageSuccessNinjuSuccessFrames, index));
   const sevenNinjuImages = sevenNinjuFrameSources.map((src, index) => loadFrame(src, sevenNinjuFrames, index));
+  const cloneNinjuImages = cloneNinjuFrameSources.map((src, index) => loadFrame(src, cloneNinjuFrames, index));
+  const cloneRedNinjuImages = cloneRedNinjuFrameSources.map((src, index) => loadFrame(src, cloneRedNinjuFrames, index));
+  const cloneGreyNinjuImages = cloneGreyNinjuFrameSources.map((src, index) => loadFrame(src, cloneGreyNinjuFrames, index));
   const angelNinjuImages = angelNinjuFrameSources.map((src, index) => loadFrame(src, angelNinjuFrames, index));
   const butsuNinjuImages = butsuNinjuFrameSources.map((src, index) => loadFrame(src, butsuNinjuFrames, index));
   const mouryoNinjuImages = mouryoNinjuFrameSources.map((src, index) => loadFrame(src, mouryoNinjuFrames, index));
@@ -331,7 +338,7 @@ function loadImages() {
       ))
     ))
   ));
-  return Promise.all([...staticImages, ...ninjuImages, ...atkUpImages, ...regenHpSmallImages, ...regenHpLargeImages, ...smallThunderSummonImages, ...smallThunderDamagedImages, ...smallFireSummonImages, ...smallFireDamagedImages, ...deathSummonImages, ...deathDamagedImages, ...smallIceSummonImages, ...smallIceDamagedImages, ...smallIceBreakImages, ...damageFailImages, ...faintedImages, ...damageSuccessSmallImages, ...damageSuccessMiddleImages, ...damageSuccessBigImages, ...damageSuccessNinjuSuccessImages, ...sevenNinjuImages, ...angelNinjuImages, ...butsuNinjuImages, ...mouryoNinjuImages, ...mouryoNinjuHitImages, ...fireToadImages, ...chargeRedImages, ...chargeYellowImages, ...readyImages, ...pickupImages, ...respawnPointerImages, ...dragArrowImages, ...movePrearriveImages, ...moveArriveImages, ...useNinjuImages, ...weaponImages, ...shootImages]);
+  return Promise.all([...staticImages, ...ninjuImages, ...atkUpImages, ...regenHpSmallImages, ...regenHpLargeImages, ...smallThunderSummonImages, ...smallThunderDamagedImages, ...smallFireSummonImages, ...smallFireDamagedImages, ...deathSummonImages, ...deathDamagedImages, ...smallIceSummonImages, ...smallIceDamagedImages, ...smallIceBreakImages, ...damageFailImages, ...faintedImages, ...damageSuccessSmallImages, ...damageSuccessMiddleImages, ...damageSuccessBigImages, ...damageSuccessNinjuSuccessImages, ...sevenNinjuImages, ...cloneNinjuImages, ...cloneRedNinjuImages, ...cloneGreyNinjuImages, ...angelNinjuImages, ...butsuNinjuImages, ...mouryoNinjuImages, ...mouryoNinjuHitImages, ...fireToadImages, ...chargeRedImages, ...chargeYellowImages, ...readyImages, ...pickupImages, ...respawnPointerImages, ...dragArrowImages, ...movePrearriveImages, ...moveArriveImages, ...useNinjuImages, ...weaponImages, ...shootImages]);
 }
 
 // 載入單張動畫影格，成功後放到指定陣列位置。
@@ -358,6 +365,7 @@ function resetGame() {
   state.projectiles = [];
   state.ninjuDamageEffects = [];
   state.moneyDartCasts = [];
+  state.cloneDecoys = [];
   state.selectedId = 1;
   state.pressedUnit = null;
   state.dragMoved = false;
@@ -377,35 +385,43 @@ function resetGame() {
 }
 
 // 建立一個角色資料物件，包含血量、技、AI 與統計資料。
-function makeUnit(id, name, team, x, y, weaponKey = defaultWeaponKey, controlMode = "ai_beginner", hpMax = maxHp) {
+function makeUnit(id, name, team, x, y, weaponKey = defaultWeaponKey, controlMode = "ai_beginner", hpMax = maxHp, appearanceKey = "default") {
   const aiNextThink = controlMode === "player" ? 0 : performance.now() + 520 + Math.random() * 500;
-  return { id, name, team, x, y, hp: hpMax, maxHp: hpMax, skill: maxSkill, soulSteps: 0, gold: 0, items: {}, itemSlots: [], facing: team === "blue" ? "right" : "left", alive: true, moveT: 1, fromX: x, fromY: y, moveTrail: null, hitFlash: 0, respawning: false, respawnTipUntil: 0, aiNextThink, aiActionAt: 0, aiPlanKey: "", ninju: null, steelUntil: 0, hotBloodUntil: 0, fireToadFacing: "", fireToadTransformUntil: 0, fireToadTransformStartedAt: 0, fireToadUntil: 0, fireToadStartedAt: 0, fireToadDurationMs: 0, buffAuraType: "", disabledUntil: 0, invincibleUntil: 0, moneyDart: null, ninjuLockedUntil: 0, weaponKey, controlMode, weaponReadyAt: 0, kills: 0, damageDone: 0, damageTaken: 0 };
+  const facing = controlMode === "ai_red" ? "down" : (team === "blue" ? "right" : "left");
+  return { id, name, team, x, y, hp: hpMax, maxHp: hpMax, skill: maxSkill, soulSteps: 0, gold: 0, items: {}, itemSlots: [], facing, alive: true, moveT: 1, fromX: x, fromY: y, moveTrail: null, hitFlash: 0, respawning: false, respawnTipUntil: 0, aiNextThink, aiActionAt: 0, aiPlanKey: "", ninju: null, steelUntil: 0, hotBloodUntil: 0, fireToadFacing: "", fireToadTransformUntil: 0, fireToadTransformStartedAt: 0, fireToadUntil: 0, fireToadStartedAt: 0, fireToadDurationMs: 0, buffAuraType: "", disabledUntil: 0, invincibleUntil: 0, moneyDart: null, ninjuLockedUntil: 0, weaponKey, controlMode, weaponReadyAt: 0, kills: 0, damageDone: 0, damageTaken: 0, appearanceKey };
 }
 
 // 依照兩隊起始範圍隨機產生本局角色位置。
 function buildStartingUnits() {
   const units = [];
   let id = 1;
+  const mapStartingDisplayCellsBySlot = currentRoomMapDefinition().startingDisplayCellsBySlot || null;
   const addTeam = (team, label) => {
     const activeSlots = roomCardEls
       .filter((card) => card.classList.contains("active-slot") && card.dataset.team === team)
       .map((card) => Number(card.dataset.slot))
       .sort((a, b) => a - b);
-    const cells = shuffledCellsInArea(startingAreas[team]).filter((cell) => !isBlockedCell(cell.x, cell.y) && !units.some((unit) => unit.x === cell.x && unit.y === cell.y));
-    const count = Math.min(activeSlots.length, cells.length);
-    for (let i = 0; i < count; i++) {
-      const slot = activeSlots[i];
+    const fallbackCells = shuffledCellsInArea(startingAreas[team]).filter((cell) => !isBlockedCell(cell.x, cell.y) && !units.some((unit) => unit.x === cell.x && unit.y === cell.y));
+    for (const slot of activeSlots) {
+      const displayCell = mapStartingDisplayCellsBySlot?.[team]?.[slot];
+      const fixedCell = displayCell ? internalCellCoord(displayCell) : null;
+      const cell = fixedCell && !isBlockedCell(fixedCell.x, fixedCell.y) && !units.some((unit) => unit.x === fixedCell.x && unit.y === fixedCell.y)
+        ? fixedCell
+        : fallbackCells.find((candidate) => !units.some((unit) => unit.x === candidate.x && unit.y === candidate.y));
+      if (!cell) continue;
       const controlMode = selectedControlMode(team, slot);
       const weaponKey = selectedWeaponKey(team, slot);
+      const appearanceKey = selectedLookKey(team, slot);
       units.push(makeUnit(
         id,
         `${label}${slot}`,
         team,
-        cells[i].x,
-        cells[i].y,
+        cell.x,
+        cell.y,
         weaponKey,
         controlMode,
         selectedHpValue(team, slot),
+        appearanceKey,
       ));
       id += 1;
     }
@@ -523,6 +539,7 @@ function applyRoomLanguage() {
   if (playerGridEl) playerGridEl.setAttribute("aria-label", text.playerCards);
   if (battleStartBtn) battleStartBtn.setAttribute("aria-label", text.startBattle);
   if (battleStartImgEl) battleStartImgEl.alt = text.startBattle;
+  setupRoomMapSelect();
   if (chatPanelEl) chatPanelEl.setAttribute("aria-label", text.chat);
   if (chatChannelEl) chatChannelEl.textContent = text.general;
   if (chatSendBtn) chatSendBtn.textContent = text.send;
@@ -572,6 +589,7 @@ function applyRoomLanguage() {
   if (ninjuTabButtons[1]) ninjuTabButtons[1].textContent = text.weaponTab;
   if (ninjuTabButtons[2]) ninjuTabButtons[2].textContent = text.eyesTab;
   if (ninjuTabButtons[3]) ninjuTabButtons[3].textContent = text.itemsTab;
+  if (ninjuTabButtons[4]) ninjuTabButtons[4].textContent = text.lookTab;
   const ninjuSeriesWrapEl = document.querySelector(".ninju-editor-series");
   if (ninjuSeriesWrapEl) ninjuSeriesWrapEl.setAttribute("aria-label", text.ninjuSeries);
   if (ninjuSeriesEls[0]) ninjuSeriesEls[0].textContent = text.healSeries;
@@ -588,6 +606,7 @@ function applyRoomLanguage() {
   if (ninjuEditorSaveBtn) ninjuEditorSaveBtn.textContent = text.save;
 
   setupWeaponSelects();
+  setupLookSelects();
   setupControlSelects();
 
   roomCardEls.forEach((card) => {
@@ -599,6 +618,7 @@ function applyRoomLanguage() {
     const ownerEl = card.querySelector(".room-owner");
     const readyEl = card.querySelector(".room-ready");
     const hpInputEl = card.querySelector(".room-hp-input");
+    const lookEl = card.querySelector(".room-look-select");
     const controlEl = card.querySelector(".room-control-select");
     const weaponEl = card.querySelector(".room-weapon-select");
 
@@ -611,9 +631,12 @@ function applyRoomLanguage() {
     if (ownerEl) ownerEl.alt = text.roomHost;
     if (readyEl) readyEl.alt = text.notReady;
     if (hpInputEl) hpInputEl.setAttribute("aria-label", `${roomTeamLabel(team)} ${slot} ${text.hp}`);
+    if (lookEl) lookEl.setAttribute("aria-label", `${roomTeamLabel(team)} ${slot} ${text.lookTab || "外觀"}`);
     if (controlEl) controlEl.setAttribute("aria-label", `${roomTeamLabel(team)} ${slot} ${text.control}`);
     if (weaponEl) weaponEl.setAttribute("aria-label", `${roomTeamLabel(team)} ${slot} ${text.weapon}`);
   });
+
+  updateAllRoomLookCards();
 
   if (!ninjuEditorEl?.hidden) renderNinjuEditor();
 }
@@ -632,12 +655,30 @@ function setupWeaponSelects() {
   });
 }
 
+function setupLookSelects() {
+  if (lookSelectEls.length === 0) return;
+  const locale = roomLocale();
+  const optionsHtml = Object.entries(lookDefinitions).map(([key, look]) => {
+    const label = locale[look.labelKey] || look.label || key;
+    return `<option value="${key}">${label}</option>`;
+  }).join("");
+  lookSelectEls.forEach((select) => {
+    const previousValue = select.value || "default";
+    select.innerHTML = optionsHtml;
+    select.value = lookDefinitions[previousValue] ? previousValue : "default";
+    select.onchange = () => {
+      updateRoomLookCard(select.dataset.team, Number(select.dataset.slot));
+    };
+  });
+}
+
 // 房間控制模式下拉選單的預設內容；玩家代表不跑 AI，可由使用者操作。
 function setupControlSelects() {
   if (controlSelectEls.length === 0) return;
   const optionsHtml = `
     <option value="player" selected>${localizedControlModeLabel("player")}</option>
     <option value="ai_beginner">${localizedControlModeLabel("ai_beginner")}</option>
+    <option value="ai_red">${localizedControlModeLabel("ai_red")}</option>
     <option value="ai_money_dart_master">${localizedControlModeLabel("ai_money_dart_master")}</option>
     <option value="ai_dart_only_master">${localizedControlModeLabel("ai_dart_only_master")}</option>
     <option value="ai_god">${localizedControlModeLabel("ai_god")}</option>
@@ -651,7 +692,10 @@ function setupControlSelects() {
       select.value = current;
     }
     if (select.value === "ai") select.value = "ai_beginner";
-    if (select.value !== "player" && select.value !== "ai_beginner" && select.value !== "ai_money_dart_master" && select.value !== "ai_dart_only_master" && select.value !== "ai_god") select.value = "player";
+    if (select.value !== "player" && select.value !== "ai_beginner" && select.value !== "ai_red" && select.value !== "ai_money_dart_master" && select.value !== "ai_dart_only_master" && select.value !== "ai_god") select.value = "player";
+    select.onchange = () => {
+      updateRoomLookCard(select.dataset.team, Number(select.dataset.slot));
+    };
   });
 }
 
@@ -699,6 +743,7 @@ function setupRoomSlots() {
 
 // 依房間卡片上的隊伍與位置，取得該角色進戰鬥後要使用的武器。
 function selectedWeaponKey(team, slot) {
+  if (selectedControlMode(team, slot) === "ai_red") return "weapon8";
   const select = weaponSelectEls.find((element) => element.dataset.team === team && Number(element.dataset.slot) === slot);
   return weaponDefinitionByKey[select?.value] ? select.value : defaultWeaponKey;
 }
@@ -707,6 +752,7 @@ function selectedWeaponKey(team, slot) {
 function selectedControlMode(team, slot) {
   const select = controlSelectEls.find((element) => element.dataset.team === team && Number(element.dataset.slot) === slot);
   if (select?.value === "player") return "player";
+  if (select?.value === "ai_red") return "ai_red";
   if (select?.value === "ai_money_dart_master") return "ai_money_dart_master";
   if (select?.value === "ai_dart_only_master") return "ai_dart_only_master";
   if (select?.value === "ai_god") return "ai_god";
@@ -719,6 +765,56 @@ function selectedHpValue(team, slot) {
   const value = Number(input?.value);
   if (!Number.isFinite(value)) return maxHp;
   return clamp(Math.round(value), 1, 9999);
+}
+
+function lookDefinitionByKey(key) {
+  return lookDefinitions[key] || lookDefinitions.default;
+}
+
+function baseLookDefinitionForTeam(team) {
+  return baseTeamLookDefinitions[team] || baseTeamLookDefinitions.blue || lookDefinitions.default;
+}
+
+function unitLookDefinition(unit) {
+  if (!unit) return baseLookDefinitionForTeam("blue");
+  if (unit.controlMode === "ai_red" || unit.appearanceKey === "red") return lookDefinitionByKey("red");
+  if (unit.team !== "blue") return baseLookDefinitionForTeam(unit.team);
+  return lookDefinitionByKey(unit.appearanceKey || "default");
+}
+
+function unitEyeFrontSprite(unit) {
+  const look = unitLookDefinition(unit);
+  return images[look.eyeFrontImageKey] || images.eyesFront;
+}
+
+function unitEyeSideSprite(unit) {
+  const look = unitLookDefinition(unit);
+  return images[look.eyeSideImageKey] || images.eyeSide || images.eyesFront;
+}
+
+function updateRoomLookCard(team, slot) {
+  const card = roomCardEls.find((element) => element.dataset.team === team && Number(element.dataset.slot) === slot);
+  if (!card) return;
+  const look = selectedControlMode(team, slot) === "ai_red"
+    ? lookDefinitionByKey("red")
+    : (team === "blue" ? lookDefinitionByKey(selectedLookKey(team, slot)) : baseLookDefinitionForTeam(team));
+  const avatarEl = card.querySelector(".room-avatar");
+  const eyeEl = card.querySelector(".room-avatar-eye");
+  if (avatarEl) avatarEl.src = look.roomAvatarSrc;
+  if (eyeEl) {
+    if (look.roomAvatarEyeSrc) {
+      eyeEl.src = look.roomAvatarEyeSrc;
+      eyeEl.style.display = "";
+    } else {
+      eyeEl.style.display = "none";
+    }
+  }
+}
+
+function updateAllRoomLookCards() {
+  roomCardEls.forEach((card) => {
+    updateRoomLookCard(card.dataset.team, Number(card.dataset.slot));
+  });
 }
 
 // 把指定玩家座標矩形範圍內的格子打散，用於隨機出生。
@@ -760,6 +856,7 @@ function draw(now = performance.now()) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBackdrop();
     drawBoard();
+    drawMapMaskOverlay();
     drawDrag();
     drawMapObjects();
     drawMoveTrails(now);
@@ -823,28 +920,43 @@ function isMatchActive() {
 }
 
 // ===== Rendering: Background / Board =====
-// 繪製整體背景與 UI 底板。
-function drawBackdrop() {
-  ctx.fillStyle = "#062f37";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  drawUiPanels();
-  const mapDrawRect = {
+function battleMapRect() {
+  return {
     x: grid.left + battleMapDrawInset.left,
     y: grid.top + battleMapDrawInset.top,
     w: grid.cols * grid.cell - battleMapDrawInset.left - battleMapDrawInset.right,
     h: grid.rows * grid.cell - battleMapDrawInset.top - battleMapDrawInset.bottom,
   };
-  if (images.arena) {
-    ctx.drawImage(images.arena, mapDrawRect.x, mapDrawRect.y, mapDrawRect.w, mapDrawRect.h);
-  } else if (images.bg) {
+}
+
+// 繪製整體背景與 UI 底板。
+function drawBackdrop() {
+  ctx.fillStyle = "#062f37";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  drawUiPanels();
+  const mapDrawRect = battleMapRect();
+  const mapDefinition = currentRoomMapDefinition();
+  const groundImage = images[mapDefinition.groundImageKey] || images.arena;
+  const fallbackImage = images[mapDefinition.fallbackImageKey] || images.bg;
+  if (groundImage) {
+    ctx.drawImage(groundImage, mapDrawRect.x, mapDrawRect.y, mapDrawRect.w, mapDrawRect.h);
+  } else if (fallbackImage) {
     ctx.globalAlpha = 0.8;
-    ctx.drawImage(images.bg, mapDrawRect.x, mapDrawRect.y, mapDrawRect.w, mapDrawRect.h);
+    ctx.drawImage(fallbackImage, mapDrawRect.x, mapDrawRect.y, mapDrawRect.w, mapDrawRect.h);
     ctx.globalAlpha = 1;
   } else {
     ctx.fillStyle = "#74ad7f";
     ctx.fillRect(mapDrawRect.x, mapDrawRect.y, mapDrawRect.w, mapDrawRect.h);
   }
   drawFrame();
+}
+
+function drawMapMaskOverlay() {
+  const mapDefinition = currentRoomMapDefinition();
+  const maskImage = images[mapDefinition.maskImageKey];
+  if (!maskImage) return;
+  const mapDrawRect = battleMapRect();
+  ctx.drawImage(maskImage, mapDrawRect.x, mapDrawRect.y, mapDrawRect.w, mapDrawRect.h);
 }
 
 // 繪製下方 UI 面板區塊。
@@ -921,6 +1033,7 @@ function drawBoard() {
 // ===== Rendering: Units / Objects / Effects =====
 // 繪製所有角色、名字、血條與手持忍術物件。
 function drawUnits() {
+  drawCloneDecoys();
   for (const unit of state.units) {
     if (!unit.alive) continue;
     const p = unitPosition(unit);
@@ -999,7 +1112,7 @@ function drawUnits() {
           }
         } else {
           // ready 備彈階段：b_dart 幀 + 補正偏移，光圈對齊補正後位置
-          auraSprite = moneyDartReadyFrame(unit.facing, unit.team) || unitSprite(unit);
+          auraSprite = moneyDartReadyFrame(unit.facing, unit) || unitSprite(unit);
           const auraOff = moneyDartReadyOffsets[unit.facing] || { dx: 0, dy: 0 };
           const drawAt = { x: p.x - 31 + auraOff.dx, y: p.y - 47 + auraOff.dy + bob, w: 62, h: 62 };
           if (auraSprite) {
@@ -1020,6 +1133,56 @@ function drawUnits() {
       drawUnitName(unit, p.x, p.y - 50);
     }
   }
+}
+
+function drawCloneDecoys() {
+  if (!state.cloneDecoys?.length) return;
+  for (const decoy of state.cloneDecoys) {
+    const visualDecoy = cloneDecoyVisualState(decoy);
+    const p = unitPosition(decoy);
+    const fireToadSprite = cloneDecoyFireToadSprite(visualDecoy);
+    const sprite = fireToadSprite || unitSprite(visualDecoy);
+    if (!sprite) continue;
+    ctx.save();
+    ctx.globalAlpha = 0.92;
+    if (fireToadSprite) {
+      drawFireToadUnit({ ...visualDecoy, moveTrail: null }, fireToadSprite, p);
+    } else {
+      const auraType = activeBuffAuraType(visualDecoy);
+      if (auraType === "steel") drawSteelSpriteOutline(sprite, p, 0);
+      if (auraType === "hotBlood") drawHotBloodSpriteOutline(sprite, p, 0);
+      drawUnitImage(sprite, p);
+      drawUnitEyes(visualDecoy, p, 0);
+    }
+    drawHp(visualDecoy, p.x, p.y - 70);
+    drawUnitName(visualDecoy, p.x, p.y - 50);
+    ctx.restore();
+  }
+}
+
+function cloneDecoyVisualState(decoy) {
+  const caster = state.units.find((unit) => unit.id === decoy.casterId);
+  if (!caster) return decoy;
+  return {
+    ...decoy,
+    name: caster.name,
+    hp: caster.hp,
+    maxHp: caster.maxHp,
+    controlMode: caster.controlMode,
+    appearanceKey: caster.appearanceKey,
+    steelUntil: caster.steelUntil,
+    hotBloodUntil: caster.hotBloodUntil,
+    buffAuraType: caster.buffAuraType,
+    fireToadActive: isFireToadActive(caster) || isFireToadTransforming(caster),
+    fireToadFacing: caster.fireToadFacing || caster.facing || decoy.fireToadFacing,
+  };
+}
+
+function cloneDecoyFireToadSprite(decoy) {
+  if (!decoy?.fireToadActive) return null;
+  const teamKey = decoy.team === "blue" ? "Blue" : "Grey";
+  const dirKey = (decoy.fireToadFacing || decoy.facing || "down").replace(/^./, (letter) => letter.toUpperCase());
+  return images[`fireToad${teamKey}${dirKey}`] || images[`fireToad${teamKey}Down`] || null;
 }
 
 // 集技時繪製藍色外圈與紅/黃火焰。unit 用來根據面向決定火焰位置。
@@ -1181,7 +1344,6 @@ function drawHeldMoneyDart(unit, p) {
   const now = performance.now();
   const elapsed = now - unit.moneyDart.startedAt;
   const pickupMs = 300;
-  const key = unit.team === "blue" ? "b" : "g";
 
   ctx.save();
   if (elapsed < pickupMs) {
@@ -1198,7 +1360,7 @@ function drawHeldMoneyDart(unit, p) {
     drawUnitEyes(unit, p, 0);
   } else {
     // ready 備彈階段：依面向方向顯示 b_dart 幀，套用補正偏移對齊 idle 視覺位置
-    const frame = moneyDartReadyFrame(unit.facing, unit.team);
+    const frame = moneyDartReadyFrame(unit.facing, unit);
     const readyOff = moneyDartReadyOffsets[unit.facing] || { dx: 0, dy: 0 };
     if (frame) ctx.drawImage(frame, p.x - 31 + readyOff.dx, p.y - 47 + readyOff.dy, 62, 62);
     drawUnitEyes(unit, p, 0, moneyDartEyeOffsets);
@@ -1207,9 +1369,9 @@ function drawHeldMoneyDart(unit, p) {
 }
 
 // 依照面向方向取得對應隊伍的錢鏢備彈靜態影格。
-function moneyDartReadyFrame(facing, team) {
+function moneyDartReadyFrame(facing, unit) {
   const dirIndex = { right: 0, left: 1, up: 2, down: 3 }[facing] ?? 0;
-  const key = team === "blue" ? "b" : "g";
+  const key = unitLookDefinition(unit).moneyDartReadySet || (unit.team === "grey" ? "g" : "b");
   return (moneyDartReadyFrames[key] || [])[dirIndex] || null;
 }
 
@@ -1221,22 +1383,25 @@ function moneyDartPickupOrReadyFrame(unit, elapsed) {
     const idx = Math.min(moneyDartPickupFrames.length - 1, Math.floor(elapsed / frameMs));
     return moneyDartPickupFrames[idx] || null;
   }
-  return moneyDartReadyFrame(unit.facing, unit.team);
+  return moneyDartReadyFrame(unit.facing, unit);
 }
 
 // 繪製地圖上的草、瓶子、箱子、岩石等物件。
 function drawMapObjects() {
   if (!state.objects) return;
-  const sorted = state.objects.filter((object) => object.alive).slice().sort((a, b) => a.y - b.y || a.x - b.x);
+  const sorted = state.objects.filter((object) => object.alive && !object.hidden).slice().sort((a, b) => a.y - b.y || a.x - b.x);
   for (const object of sorted) {
     const img = images[object.type];
     const center = cellCenter(object.x, object.y);
     const scale = object.scale || 1;
-    const width = grid.cell * scale;
-    const height = grid.cell * scale;
+    const width = grid.cell * (object.drawWidthCells || scale);
+    const height = grid.cell * (object.drawHeightCells || scale);
+    const anchorY = object.drawAnchorY ?? 0.72;
+    const drawX = center.x + (object.drawOffsetX || 0);
+    const drawY = center.y + (object.drawOffsetY || 0);
 
     if (img) {
-      ctx.drawImage(img, center.x - width / 2, center.y - height * 0.72, width, height);
+      ctx.drawImage(img, drawX - width / 2, drawY - height * anchorY, width, height);
     } else {
       ctx.fillStyle = object.breakable ? "#d9d260" : "#245038";
       ctx.fillRect(center.x - width / 2, center.y - height / 2, width, height);
@@ -1388,7 +1553,7 @@ function drawMoneyDartShootAnimations(now) {
       state.moneyDartCasts.splice(i, 1);
       continue;
     }
-    const teamKey = unit.team === "blue" ? "b" : "g";
+    const teamKey = unitLookDefinition(unit).moneyDartShootSet || (unit.team === "blue" ? "b" : "g");
     const frames = ((moneyDartShootFrames[teamKey] || {})[cast.dir] || []).filter(f => f && f.naturalWidth > 0);
     if (frames.length === 0) continue; // 圖片未載入時跳過這幀，保留 cast
     const frameIdx = Math.max(0, Math.min(frames.length - 1, Math.floor(progress * frames.length)));
@@ -1416,7 +1581,7 @@ function drawMoneyDartShootAnimations(now) {
       x: placement.x + headPx.x * scale - headCfg.w / 2,
       y: placement.y + headPx.y * scale - headCfg.h / 2,
     };
-    drawMoneyDartShootEye(unit.facing, eyeAnchor, headCfg);
+    drawMoneyDartShootEye(unit, unit.facing, eyeAnchor, headCfg);
   }
 }
 
@@ -1539,7 +1704,7 @@ function drawUnitName(unit, x, y) {
     ctx.fillStyle = "rgba(0,0,0,.55)";
     ctx.fillRect(x - NW / 2, y - NH / 2, NW, NH);
   }
-  ctx.fillStyle = "#fffde7";
+  ctx.fillStyle = unit.team === "blue" ? "#b9efff" : "#d2d2d2";
   ctx.fillText(unit.name, x, y);
   ctx.restore();
 }
@@ -1555,10 +1720,11 @@ function drawPlayerArrow(p) {
 }
 
 // 射出動畫專用眼睛繪製：錨點已由 placement 推算好，直接依面向畫眼睛。
-function drawMoneyDartShootEye(facing, anchor, cfg) {
+function drawMoneyDartShootEye(unit, facing, anchor, cfg) {
   if (!cfg) return;
+  if (unitLookDefinition(unit).drawEyes === false) return;
   if (facing === "left" || facing === "right") {
-    const img = images.eyeSide || images.eyesFront;
+    const img = unitEyeSideSprite(unit);
     if (!img) return;
     ctx.save();
     if (facing === "left") {
@@ -1570,7 +1736,7 @@ function drawMoneyDartShootEye(facing, anchor, cfg) {
     }
     ctx.restore();
   } else if (facing === "down") {
-    const img = images.eyesFront;
+    const img = unitEyeFrontSprite(unit);
     if (!img) return;
     ctx.drawImage(img, anchor.x, anchor.y, cfg.w, cfg.h);
   }
@@ -1579,12 +1745,13 @@ function drawMoneyDartShootEye(facing, anchor, cfg) {
 
 // 疊加角色眼睛。左右只顯示單眼；上下顯示雙眼。
 function drawUnitEyes(unit, p, bob = 0, offsetTable = eyeOffsets) {
+  if (unitLookDefinition(unit).drawEyes === false) return;
   const facing = unit.facing || "down";
   const offset = Object.prototype.hasOwnProperty.call(offsetTable, facing) ? offsetTable[facing] : offsetTable.down;
   if (!offset) return;
 
   if (facing === "left" || facing === "right") {
-    const sideEye = images.eyeSide || images.eyesFront;
+    const sideEye = unitEyeSideSprite(unit);
     if (!sideEye) return;
     ctx.save();
     if (facing === "left") {
@@ -1600,7 +1767,7 @@ function drawUnitEyes(unit, p, bob = 0, offsetTable = eyeOffsets) {
     return;
   }
 
-  const frontEyes = images.eyesFront;
+  const frontEyes = unitEyeFrontSprite(unit);
   if (!frontEyes) return;
   ctx.drawImage(frontEyes, p.x + offset.x, p.y - offset.y + bob, offset.w, offset.h);
 }
@@ -1656,7 +1823,7 @@ function drawNinjuEffects(now) {
     const p = unitPosition(unit);
     if (isUnitCastingNinju(unit)) {
       const progress = Math.min(0.999, (now - unit.ninju.startedAt) / unit.ninju.duration);
-      const frames = ninjuCastFrames(unit.ninju.type);
+      const frames = ninjuCastFrames(unit.ninju.type, unit);
       const frame = frames[Math.floor(progress * frames.length)];
       if (frame) {
         ctx.save();
@@ -1670,7 +1837,12 @@ function drawNinjuEffects(now) {
   drawNinjuDamageEffects(now);
 }
 
-function ninjuCastFrames(type) {
+function ninjuCastFrames(type, unit = null) {
+  if (type === "clone") {
+    if (unit?.controlMode === "ai_red" || unit?.appearanceKey === "red") return cloneRedNinjuFrames;
+    if (unit?.team === "grey") return cloneGreyNinjuFrames;
+    return cloneNinjuFrames;
+  }
   if (attackNinjuConfigs[type]) return attackNinjuConfigs[type].summonFrames;
   if (specialNinjuConfigs[type]) return specialNinjuConfigs[type].summonFrames;
   if (type === "hotBlood") return atkUpFrames;
@@ -1878,7 +2050,7 @@ function drawTopHud() {
   const unit = state.units.find((u) => u.id === playerUnitId);
   if (unit) {
     const coord = displayCellCoord(unit);
-    drawOutlinedText(`${text.cellLabel} [${coord.x},${coord.y}]`, grid.left + grid.cols * grid.cell - 10, 18, 13, "#d9f4ff", "right"); // 右上角目前角色座標位置/大小/顏色
+    drawOutlinedText(`${text.cellLabel} [${coord.x},${coord.y}]`, grid.left + grid.cols * grid.cell - 52, 18, 13, "#d9f4ff", "right"); // 右上角目前角色座標位置/大小/顏色
   }
   ctx.restore();
 }
@@ -2352,7 +2524,7 @@ function unitMoveDirection(unit) {
 }
 
 function unitMoveSprite(unit, direction, progress) {
-  const team = unit.team === "blue" ? "blue" : "grey";
+  const team = unitLookDefinition(unit).moveSet || (unit.team === "blue" ? "blue" : "grey");
   const frameSet = progress < 0.35 ? movePrearriveFrames : moveArriveFrames;
   const frames = frameSet[team]?.[direction] || [];
   const available = frames.filter(Boolean);
@@ -2364,7 +2536,7 @@ function unitMoveSprite(unit, direction, progress) {
 
 function unitUseNinjuSprite(unit) {
   if (!unit || unit.moneyDart || !isUnitCastingNinju(unit)) return null;
-  const team = unit.team === "blue" ? "blue" : "grey";
+  const team = unitLookDefinition(unit).useNinjuSet || (unit.team === "blue" ? "blue" : "grey");
   const frames = (useNinjuFrames[team] || []).filter(Boolean);
   if (!frames.length) return null;
   const progress = Math.min(0.999, (performance.now() - unit.ninju.startedAt) / unit.ninju.duration);
@@ -2520,7 +2692,7 @@ function updatePanel() {
 
 // 依隊伍與面向取得角色圖片。
 function unitSprite(unit) {
-  const prefix = unit.team === "blue" ? "blue" : "grey";
+  const prefix = unitLookDefinition(unit).spriteSet || (unit.team === "blue" ? "blue" : "grey");
   const suffix = unit.facing.charAt(0).toUpperCase() + unit.facing.slice(1);
   return images[prefix + suffix];
 }
@@ -2591,9 +2763,14 @@ function setMessage(text) {
 }
 
 // 依目前所在畫面選擇背景音樂：房間播大廳，戰鬥播地圖，結算停止地圖。
+function currentBattleBgm() {
+  const mapDefinition = currentRoomMapDefinition();
+  return bgmBySrc(mapDefinition?.battleBgmSrc || defaultBattleBgmSrc) || defaultBattleBgm;
+}
+
 function activeBgm() {
   if (state.result) return null;
-  return state.inRoom ? roomBgm : battleBgm;
+  return state.inRoom ? roomBgm : currentBattleBgm();
 }
 
 // 停止指定背景音樂，並把播放位置歸零，方便下次重新進入時從頭播。
@@ -2606,7 +2783,16 @@ function stopBgm(audio) {
 function syncBgm() {
   const active = activeBgm();
   if (active !== roomBgm && !roomBgm.paused) stopBgm(roomBgm);
-  if (active !== battleBgm && !battleBgm.paused) stopBgm(battleBgm);
+  Object.values(battleBgmsBySrc).forEach((audio) => {
+    if (audio !== active && !audio.paused) stopBgm(audio);
+  });
+}
+
+function selectedLookKey(team, slot) {
+  if (selectedControlMode(team, slot) === "ai_red") return "red";
+  if (team !== "blue") return "default";
+  const select = lookSelectEls.find((element) => element.dataset.team === team && Number(element.dataset.slot) === slot);
+  return lookDefinitions[select?.value] ? select.value : "default";
 }
 
 // 嘗試播放目前畫面的背景音樂。
@@ -2624,7 +2810,9 @@ function applyVolumeControls() {
   if (musicVolumeInput) {
     const volume = Number(musicVolumeInput.value) / 100;
     roomBgm.volume = volume;
-    battleBgm.volume = volume;
+    Object.values(battleBgmsBySrc).forEach((audio) => {
+      audio.volume = volume;
+    });
   }
   if (sfxVolumeInput) {
     const volume = Number(sfxVolumeInput.value) / 100;
@@ -2657,6 +2845,7 @@ function playBreakSound(object) {
 
 // 從房間畫面進入正式戰鬥。
 function startBattleFromRoom() {
+  setRoomMap(roomMapSelect?.value);
   state.inRoom = false;
   document.body.classList.remove("room-mode");
   resetRestartHold();
@@ -2685,6 +2874,7 @@ function returnToRoom() {
   state.projectiles = [];
   state.ninjuDamageEffects = [];
   state.moneyDartCasts = [];
+  state.cloneDecoys = [];
   clearDragState();
   resetRestartHold();
   document.body.classList.add("room-mode");
@@ -2703,6 +2893,30 @@ function updateRuleModeUi() {
   ruleModeSelect.value = state.ruleModeKey || "original";
   if (ruleModeSelect.value !== (state.ruleModeKey || "original")) ruleModeSelect.value = "original";
   ruleModeSelect.setAttribute("aria-label", localizedRuleModeLabel(ruleModeSelect.value));
+}
+
+function updateRoomMapUi() {
+  if (!roomMapSelect) return;
+  roomMapSelect.value = state.roomMapKey || defaultRoomMapKey;
+  if (roomMapSelect.value !== (state.roomMapKey || defaultRoomMapKey)) roomMapSelect.value = defaultRoomMapKey;
+  state.roomMapKey = roomMapSelect.value;
+  roomMapSelect.setAttribute("aria-label", roomLocale().mapSelect);
+}
+
+function roomMapOptionLabel(mapDefinition, key) {
+  if (state.roomLang === "en" && mapDefinition.labelEn) return mapDefinition.labelEn;
+  return mapDefinition.label || key;
+}
+
+function setupRoomMapSelect() {
+  if (!roomMapSelect) return;
+  const previousValue = roomMapSelect.value || state.roomMapKey || defaultRoomMapKey;
+  roomMapSelect.innerHTML = roomMapDefinitionEntries().map(([key, mapDefinition]) => {
+    const selected = key === previousValue ? " selected" : "";
+    return `<option value="${key}"${selected}>${roomMapOptionLabel(mapDefinition, key)}</option>`;
+  }).join("");
+  roomMapSelect.value = roomMapDefinitions[previousValue] ? previousValue : defaultRoomMapKey;
+  updateRoomMapUi();
 }
 
 function startRestartHold(event) {
@@ -2730,6 +2944,14 @@ function updateRestartHold(now) {
 function setRuleMode(modeKey) {
   state.ruleModeKey = modeKey === "modified" || modeKey === "n3" ? modeKey : "original";
   updateRuleModeUi();
+}
+
+function setRoomMap(mapKey) {
+  const nextMapKey = roomMapDefinitions[mapKey] ? mapKey : defaultRoomMapKey;
+  const mapChanged = state.roomMapKey !== nextMapKey;
+  state.roomMapKey = nextMapKey;
+  updateRoomMapUi();
+  if (mapChanged && state.inRoom) state.objects = buildMapObjects();
 }
 
 function toggleRoomLanguage() {
@@ -2780,11 +3002,12 @@ function renderNinjuEditor() {
   ninjuEditorSlotsEl.innerHTML = "";
   for (let i = 0; i < 6; i++) {
     const type = editNinjuDraft[i];
-    const ninju = ninjuByType[type] || { label: roomLocale().emptySlot, enLabel: roomLocale().emptySlot };
+    const ninju = ninjuByType[type] || { label: roomLocale().emptySlot, enLabel: roomLocale().emptySlot, editorRow: "" };
     const button = document.createElement("button");
     button.type = "button";
     button.className = `ninju-slot-choice${i === editNinjuSlotIndex ? " selected" : ""}${type ? "" : " empty"}`;
     if (type) button.dataset.ninjuType = type;
+    if (ninju.editorRow) button.dataset.editorRow = ninju.editorRow;
     button.textContent = localizedNinjuLabel(ninju);
     button.style.fontSize = `${localizedNinjuFontSize(18)}px`;
     button.addEventListener("click", () => {
@@ -2840,12 +3063,14 @@ if (musicVolumeInput) musicVolumeInput.addEventListener("input", applyVolumeCont
 if (sfxVolumeInput) sfxVolumeInput.addEventListener("input", applyVolumeControls);
 if (roomLangToggleBtn) roomLangToggleBtn.addEventListener("click", toggleRoomLanguage);
 if (ruleModeSelect) ruleModeSelect.addEventListener("change", (event) => setRuleMode(event.target.value));
+if (roomMapSelect) roomMapSelect.addEventListener("change", (event) => setRoomMap(event.target.value));
 window.addEventListener("keydown", startBgm, { once: true });
 
 applyRoomLanguage();
 
 loadImages().then(() => {
   updateRuleModeUi();
+  updateRoomMapUi();
   applyVolumeControls();
   resetGame();
   startBgm();

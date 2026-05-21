@@ -281,6 +281,7 @@ html[lang="en"] .room-rule-select {
 .room-player-card:not(.active-slot) .room-owner,
 .room-player-card:not(.active-slot) .room-ready,
 .room-player-card:not(.active-slot) .room-hp-input,
+.room-player-card:not(.active-slot) .room-look-select,
 .room-player-card:not(.active-slot) .room-control-select,
 .room-player-card:not(.active-slot) .room-weapon-select,
 .room-player-card:not(.active-slot) .room-slot-remove {
@@ -315,6 +316,22 @@ html[lang="en"] .room-rule-select {
   width: 56px;
   height: 54px;
   image-rendering: auto;
+}
+
+.room-look-select {
+  position: absolute;
+  left: 0px;
+  top: 42px;
+  width: 74px;
+  height: 24px;
+  padding: 0 18px 0 6px;
+  border: 2px solid #0b3140;
+  border-radius: 3px;
+  background: linear-gradient(#e5f7ff, #55a7c8);
+  color: #05141a;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .room-avatar-eye {
@@ -426,6 +443,26 @@ html[lang="en"] .room-rule-select {
   width: 100%;
   height: 100%;
   display: block;
+}
+
+.room-map-select {
+  position: absolute;
+  left: calc(50% + 70px);
+  top: 548px;
+  width: 132px;
+  height: 39px;
+  padding: 0 28px 0 12px;
+  border: 2px solid #e8c981;
+  border-radius: 4px;
+  background: #06364b;
+  color: #f7e8a9;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.room-map-select:focus {
+  outline: 2px solid #f9efb5;
+  outline-offset: 2px;
 }
 
 .chat-panel {
@@ -919,69 +956,32 @@ html[lang="en"] .room-rule-select {
   transform: translate(var(--transform-row-offset-x), var(--transform-row-offset-y));
 }
 
-.ninju-slot-choice[data-ninju-type="fireToad"],
-.ninju-option[data-ninju-type="fireToad"] {
+.ninju-slot-choice[data-editor-row="transform"],
+.ninju-option[data-editor-row="transform"] {
   position: relative;
   left: var(--fire-toad-offset-x);
   top: var(--fire-toad-offset-y);
   background-image: url("assets/ninju/buttons/5.png");
 }
 
-.ninju-slot-choice[data-ninju-type="moneyDart"],
-.ninju-option[data-ninju-type="moneyDart"] {
-  background-image: url("assets/ninju/buttons/3.png");
-}
-
-.ninju-slot-choice[data-ninju-type="flash"],
-.ninju-slot-choice[data-ninju-type="wildfire"],
-.ninju-slot-choice[data-ninju-type="death"],
-.ninju-slot-choice[data-ninju-type="freeze"],
-.ninju-slot-choice[data-ninju-type="angel"],
-.ninju-slot-choice[data-ninju-type="mouryo"],
-.ninju-slot-choice[data-ninju-type="butsu"],
-.ninju-option[data-ninju-type="flash"],
-.ninju-option[data-ninju-type="wildfire"],
-.ninju-option[data-ninju-type="death"],
-.ninju-option[data-ninju-type="freeze"],
-.ninju-option[data-ninju-type="angel"],
-.ninju-option[data-ninju-type="mouryo"],
-.ninju-option[data-ninju-type="butsu"] {
+.ninju-slot-choice[data-editor-row="attack"],
+.ninju-option[data-editor-row="attack"] {
   background-image: url("assets/ninju/buttons/1.png");
 }
 
-.ninju-slot-choice[data-ninju-type="seven"],
-.ninju-option[data-ninju-type="seven"] {
-  background-image: url("assets/ninju/buttons/3.png");
-}
-
-.ninju-option[data-ninju-type="moneyDart"] {
-  border-radius: 7px;
-  box-shadow: 0 0 0 3px #f3e94f;
-}
-
-.ninju-slot-choice[data-ninju-type="steel"],
-.ninju-slot-choice[data-ninju-type="hotBlood"],
-.ninju-option[data-ninju-type="steel"],
-.ninju-option[data-ninju-type="hotBlood"] {
+.ninju-slot-choice[data-editor-row="support"],
+.ninju-option[data-editor-row="support"] {
   background-image: url("assets/ninju/buttons/2.png");
 }
 
-.ninju-slot-choice[data-ninju-type="genki"],
-.ninju-slot-choice[data-ninju-type="kakki"],
-.ninju-slot-choice[data-ninju-type="shinki"],
-.ninju-option[data-ninju-type="genki"],
-.ninju-option[data-ninju-type="kakki"],
-.ninju-option[data-ninju-type="shinki"] {
+.ninju-slot-choice[data-editor-row="heal"],
+.ninju-option[data-editor-row="heal"] {
   background-image: url("assets/ninju/buttons/4.png");
 }
 
-.ninju-option.projectile {
-  background: linear-gradient(#fff3dc, #efc15e);
-}
-
-.ninju-option[data-ninju-type="moneyDart"] {
-  background: transparent url("assets/ninju/buttons/3.png") center / 100% 100% no-repeat;
-  box-shadow: none;
+.ninju-slot-choice[data-editor-row="special"],
+.ninju-option[data-editor-row="special"] {
+  background-image: url("assets/ninju/buttons/3.png");
 }
 
 .ninju-option.selected {

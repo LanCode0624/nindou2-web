@@ -238,12 +238,12 @@ function useMoneyDart() {
     setMessage(`${unit.name}: cannot use ninjutsu yet.`);
     return;
   }
-  unit.skill -= rule.cost;
   if (isUnitCastingNinju(unit)) {
     if (unit.ninju.pendingMoneyDart) {
       setMessage(`${unit.name}: money dart is already queued.`);
       return;
     }
+    unit.skill -= rule.cost;
     unit.ninju.pendingMoneyDart = true;
     playSound("useNinju");
     // takeDart 音效延後到實際拿起錢標時（startMoneyDart）才播放
@@ -252,6 +252,11 @@ function useMoneyDart() {
     return;
   }
   if (isUnitInNinjuGap(unit)) {
+    if (unit.ninju.nextType === "moneyDart") {
+      setMessage(`${unit.name}: money dart is already queued.`);
+      return;
+    }
+    unit.skill -= rule.cost;
     unit.ninju.nextType = "moneyDart";
     playSound("useNinju");
     // takeDart 音效延後到實際拿起錢標時（startMoneyDart）才播放
@@ -259,6 +264,7 @@ function useMoneyDart() {
     setMessage(`${unit.name}: money dart queued in the chain gap.`);
     return;
   }
+  unit.skill -= rule.cost;
   playSound("useNinju");
   startMoneyDart(unit, performance.now(), true);
 }
@@ -483,11 +489,105 @@ function attackNinjuTargets(caster, attackNinjuLevel) {
 function triggerSpecialNinju(caster, type, now = performance.now()) {
   const config = specialNinjuConfigs[type];
   const rule = specialNinjuRule(type);
+  if (type === "clone") {
+    triggerCloneNinju(caster, rule, now, config);
+    return;
+  }
   const target = attackNinjuTargets(caster, 1)[0];
   if (!target) return;
   if (config?.hitSound) playSound(config.hitSound);
   if (typeof addNinjuDamageEffect === "function") addNinjuDamageEffect(type, target, now, 1500);
   if (rule.damage) damageUnit(target, rule.damage, `${caster.name} hit ${target.name} with ${config?.label || type}`, true, caster);
+}
+
+function triggerCloneNinju(caster, rule, now = performance.now(), config = null) {
+  const origin = { x: caster.x, y: caster.y };
+  const candidates = cloneOpenCells(caster);
+  if (candidates.length < 3) {
+    if (canControlUnit(caster)) setMessage(`${caster.name}: not enough open cells for ${config?.label || localizedNinjuTypeLabel("clone")}.`);
+    return;
+  }
+  const teleportCell = pickRandomCloneCell(candidates, (cell) => cell.x !== origin.x || cell.y !== origin.y);
+  if (!teleportCell) {
+    if (canControlUnit(caster)) setMessage(`${caster.name}: not enough open cells for ${config?.label || localizedNinjuTypeLabel("clone")}.`);
+    return;
+  }
+  const decoyA = pickRandomCloneCell(candidates);
+  const decoyB = pickRandomCloneCell(candidates);
+  if (!decoyA || !decoyB) {
+    if (canControlUnit(caster)) setMessage(`${caster.name}: not enough open cells for ${config?.label || localizedNinjuTypeLabel("clone")}.`);
+    return;
+  }
+  clearCloneDecoysForCaster(caster.id);
+  caster.x = teleportCell.x;
+  caster.y = teleportCell.y;
+  caster.fromX = teleportCell.x;
+  caster.fromY = teleportCell.y;
+  caster.moveT = 1;
+  caster.moveTrail = null;
+  caster.moneyDart = null;
+  state.cloneDecoys = state.cloneDecoys || [];
+  state.cloneDecoys.push(makeCloneDecoy(caster, decoyA, now), makeCloneDecoy(caster, decoyB, now));
+  if (typeof addNinjuDamageEffect === "function") addNinjuDamageEffect("clone", caster, now, rule.castDurationMs || 1600);
+  const playCloneSoundLater = typeof window !== "undefined" && typeof window.setTimeout === "function"
+    ? window.setTimeout.bind(window)
+    : (typeof setTimeout === "function" ? setTimeout : null);
+  if (playCloneSoundLater) {
+    playCloneSoundLater(() => {
+      playSound("cloneNinju");
+    }, 1500);
+  }
+  if (canControlUnit(caster)) setMessage(`${caster.name} used ${config?.label || localizedNinjuTypeLabel("clone")}.`);
+}
+
+function cloneOpenCells(caster) {
+  const cells = [];
+  for (let y = 0; y < grid.rows; y++) {
+    for (let x = 0; x < grid.cols; x++) {
+      if (x === caster.x && y === caster.y) continue;
+      if (isBlockedCell(x, y) || unitAt(x, y)) continue;
+      cells.push({ x, y });
+    }
+  }
+  return cells;
+}
+
+function pickRandomCloneCell(pool, predicate = null) {
+  const candidates = predicate ? pool.filter(predicate) : pool;
+  if (!candidates.length) return null;
+  const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+  const poolIndex = pool.findIndex((cell) => cell.x === chosen.x && cell.y === chosen.y);
+  if (poolIndex >= 0) pool.splice(poolIndex, 1);
+  return chosen;
+}
+
+function makeCloneDecoy(caster, cell, now = performance.now()) {
+  return {
+    casterId: caster.id,
+    name: caster.name,
+    team: caster.team,
+    x: cell.x,
+    y: cell.y,
+    fromX: cell.x,
+    fromY: cell.y,
+    moveT: 1,
+    hp: caster.hp,
+    maxHp: caster.maxHp,
+    controlMode: caster.controlMode,
+    appearanceKey: caster.appearanceKey || "default",
+    steelUntil: caster.steelUntil || 0,
+    hotBloodUntil: caster.hotBloodUntil || 0,
+    buffAuraType: caster.buffAuraType || "",
+    facing: "down",
+    fireToadActive: isFireToadActive(caster) || isFireToadTransforming(caster),
+    fireToadFacing: "down",
+    createdAt: now,
+  };
+}
+
+function clearCloneDecoysForCaster(casterId) {
+  if (!state.cloneDecoys) return;
+  state.cloneDecoys = state.cloneDecoys.filter((decoy) => decoy.casterId !== casterId);
 }
 
 function consumeAttackNinjuSoulLevel(unit) {
