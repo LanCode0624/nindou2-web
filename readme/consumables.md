@@ -56,7 +56,7 @@
   `mapItemDropChance`、`mapItemDropTypes`、`mapGoldDropTypes`
 - 單位資料：[`game.js`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/game.js:384)
   `items`、`itemSlots`、`gold`
-- HUD：[`game.js`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/game.js:2077)
+- HUD：[`scripts/systems/hud-renderer.js`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/scripts/systems/hud-renderer.js)
   `drawInventoryHud()`、`drawInventoryItemHud()`、`itemIconByType()`
 - 道具流程：[`scripts/systems/consumables.js`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/scripts/systems/consumables.js)
   `useItemSlot(index)`、`addInventoryItem()`、`removeInventoryItem()`、`updateConsumables()`、`requestConsumableUse()`、`executeConsumableItem()`

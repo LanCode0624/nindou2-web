@@ -12,7 +12,7 @@
 - 素材與特效：`scripts/data/assets.js -> attackNinjuConfigs`、`specialNinjuConfigs`
 - 規則查詢：`scripts/data/rule-modes.js`
 - 施放流程：`scripts/systems/ninjutsu.js`
-- HUD 按鈕：`game.js -> drawNinjuSlot()`、`currentNinjuButtonList()`
+- HUD 按鈕：`scripts/systems/hud-renderer.js -> drawNinjuSlot()`、`currentNinjuButtonList()`
 - 編輯 UI：`game.js -> renderNinjuEditor()`、`style.css`
 - 整理表：`readme/ninjutsu-table.csv`
 
