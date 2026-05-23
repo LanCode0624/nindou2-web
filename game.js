@@ -245,45 +245,6 @@ function isMatchActive() {
   return Boolean(!state.inRoom && state.matchStart && !state.result);
 }
 
-// ===== Rendering: Background / Board =====
-// ===== Rendering: Units / Objects / Effects =====
-// 繪製角色頭上的血條（原版金框樣式）。
-function drawHp(unit, x, y) {
-  const W = 50, H = 8;
-  const hpMax = unit.maxHp || maxHp;
-  const ratio = Math.max(0, unit.hp / hpMax);
-  const hpText = `${Math.max(0, Math.round(unit.hp))}/${Math.round(hpMax)}`;
-  // 底層背景圖
-  if (images.barBackground) {
-    ctx.drawImage(images.barBackground, x - W / 2, y, W, H);
-  } else {
-    ctx.fillStyle = "rgba(0,0,0,.55)";
-    ctx.fillRect(x - W / 2, y, W, H);
-  }
-  // 血量填色（紅色）
-  ctx.fillStyle = "#e02020";
-  ctx.fillRect(x - W / 2, y, W * ratio, H);
-  // 金框外框
-  ctx.save();
-  ctx.strokeStyle = "#e8c000";
-  ctx.lineWidth = 1.2;
-  ctx.strokeRect(x - W / 2, y, W, H);
-  // 內層細框
-  ctx.strokeStyle = "rgba(255,255,255,0.25)";
-  ctx.lineWidth = 0.6;
-  ctx.strokeRect(x - W / 2 + 1, y + 1, W - 2, H - 2);
-  // 直接在頭上血條中央顯示具體血量，方便戰鬥中讀值。
-  ctx.font = "700 7px Microsoft JhengHei, sans-serif";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = "rgba(0,0,0,0.85)";
-  ctx.strokeText(hpText, x, y + H / 2);
-  ctx.fillStyle = "#fff7d6";
-  ctx.fillText(hpText, x, y + H / 2);
-  ctx.restore();
-}
-
 // 繪製玩家拖曳移動時的目標線與落點提示。
 function drawDrag() {
   if (!state.charging || !state.dragMoved || !state.pressedUnit) return;
@@ -446,28 +407,6 @@ function pointerUp(event) {
 }
 
 // ===== UI Text / Audio Helpers =====
-// 更新頁面旁邊或下方的文字狀態資訊。
-function updatePanel() {
-  const unit = selectedHudUnit();
-  if (!unit) return;
-  const text = roomLocale();
-  const coord = displayCellCoord(unit);
-  const skillLimit = unit.skillMax || maxSkill;
-  unitInfoEl.innerHTML = `
-    <div>HP: ${Math.round(unit.hp)}/${unit.maxHp || maxHp}</div>
-    <div>${text.panelSkill}: ${unit.skill.toFixed(1)} / ${skillLimit}</div>
-    <div>${text.panelCell}: [${coord.x}, ${coord.y}]</div>
-  `;
-  skillFillEl.style.width = `${Math.min(100, unit.skill / skillLimit * 100)}%`;
-}
-
-// 依隊伍與面向取得角色圖片。
-function unitSprite(unit) {
-  const prefix = unitLookDefinition(unit).spriteSet || (unit.team === "blue" ? "blue" : "grey");
-  const suffix = unit.facing.charAt(0).toUpperCase() + unit.facing.slice(1);
-  return images[prefix + suffix];
-}
-
 // 依滑鼠游標相對角色的位置更新面向。
 function updateFacingFromPointer(unit) {
   const origin = cellCenter(unit.x, unit.y);
@@ -479,12 +418,6 @@ function updateFacingFromPointer(unit) {
   } else {
     unit.facing = dy > 0 ? "down" : "up";
   }
-}
-
-// 設定目前狀態訊息。
-function setMessage(text) {
-  state.message = text;
-  statusEl.textContent = text;
 }
 
 canvas.addEventListener("pointerdown", pointerDown);

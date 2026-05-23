@@ -102,6 +102,7 @@ scripts/systems/match.js               -> 勝負判定、結算
 scripts/systems/room-ui.js             -> 房間文案套用、外觀卡、規則/地圖選單、忍術編輯器、商店、房間卡數值/下拉 DOM helper
 scripts/systems/game-flow.js           -> 開戰/回房、重開長按、模式切換與房間流程協調
 scripts/systems/scene-renderer.js      -> 戰鬥背景、地圖遮罩、外框與格子提示繪製
+scripts/systems/status-ui.js           -> 狀態訊息與側邊資訊面板更新
 scripts/systems/unit-renderer.js       -> 角色本體、分身、血條、名字、眼睛與 buff 外圈繪製
 scripts/systems/combat-renderer.js     -> 地圖物件、武器揮砍、錢鏢射出與近戰攻擊視覺繪製
 scripts/systems/effects-renderer.js    -> 忍術施放、命中與道具使用的 Canvas 特效繪製
@@ -160,7 +161,7 @@ game.js                                -> 尚未 module 化；不要直接全量
 - 行為先放 `scripts/systems/*`，不要把流程全部堆回 `game.js`。
 - 如果對應 `.module.mjs` 已存在，新增或調整純資料/純 helper 時要同步考慮 module mirror、legacy `globalThis.Nindou*` bridge、`scripts/main.module.js` probe 與 `tests/*-module.test.js`。
 - 不要新增依賴 classic `<script>` 載入順序的全新 helper；新 helper 優先寫成可注入依賴、可被 ES module import 測試的形式。
-- 只有直接碰 DOM 綁定、輸入、主迴圈時，才進 `game.js`；房間外觀卡、忍術編輯器、商店背包與規則/地圖選單先看 `scripts/systems/room-ui.js`，開戰/回房、重開長按、模式切換與房間流程協調先看 `scripts/systems/game-flow.js`，戰鬥背景與格子提示先看 `scripts/systems/scene-renderer.js`，角色本體、分身、血條、名字、眼睛與 buff 外圈先看 `scripts/systems/unit-renderer.js`，地圖物件、武器揮砍、錢鏢射出與近戰攻擊視覺先看 `scripts/systems/combat-renderer.js`，移動視覺 helper 先看 `scripts/systems/movement-renderer.js`，忍術/道具特效先看 `scripts/systems/effects-renderer.js`，戰鬥 HUD 先看 `scripts/systems/hud-renderer.js`，倒數/結算覆蓋層先看 `scripts/systems/overlay-renderer.js`。
+- 只有直接碰 DOM 綁定、輸入、主迴圈時，才進 `game.js`；房間外觀卡、忍術編輯器、商店背包與規則/地圖選單先看 `scripts/systems/room-ui.js`，開戰/回房、重開長按、模式切換與房間流程協調先看 `scripts/systems/game-flow.js`，戰鬥背景與格子提示先看 `scripts/systems/scene-renderer.js`，狀態訊息與側邊資訊面板先看 `scripts/systems/status-ui.js`，角色本體、分身、血條、名字、眼睛與 buff 外圈先看 `scripts/systems/unit-renderer.js`，地圖物件、武器揮砍、錢鏢射出與近戰攻擊視覺先看 `scripts/systems/combat-renderer.js`，移動視覺 helper 先看 `scripts/systems/movement-renderer.js`，忍術/道具特效先看 `scripts/systems/effects-renderer.js`，戰鬥 HUD 先看 `scripts/systems/hud-renderer.js`，倒數/結算覆蓋層先看 `scripts/systems/overlay-renderer.js`。
 - 外觀解析、BGM/音效入口、道具流程、出生格洗牌、隊伍存活數都已拆出 `game.js`；改這些功能先找對應 `scripts/systems/*`。
 - `scripts/systems/grid.js` 不處理 DOM event；滑鼠事件先由 `game.js -> pointerMove()` 換成 `state.pointer` / `pointToCell()` 結果。
 - 同一份規則不要在多個檔案維護兩套；例如模式差異統一經過 `scripts/data/rule-modes.js`。

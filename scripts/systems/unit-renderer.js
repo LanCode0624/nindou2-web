@@ -2,6 +2,12 @@ const steelOutlineCache = new WeakMap();
 const hotBloodOutlineCache = new WeakMap();
 const sake4OutlineCache = new WeakMap();
 
+function unitSprite(unit) {
+  const prefix = unitLookDefinition(unit).spriteSet || (unit.team === "blue" ? "blue" : "grey");
+  const suffix = unit.facing.charAt(0).toUpperCase() + unit.facing.slice(1);
+  return images[prefix + suffix];
+}
+
 // 繪製所有角色、名字、血條與手持忍術物件。
 function drawUnits() {
   drawCloneDecoys();
