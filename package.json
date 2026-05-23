@@ -10,6 +10,7 @@
     "check": "node --check game.js",
     "sync:weapons": "node scripts/tools/generate-weapons-classic.mjs",
     "sync:locales": "node scripts/tools/generate-locales-classic.mjs",
+    "sync:map": "node scripts/tools/generate-map-classic.mjs",
     "test": "node --test"
   },
   "keywords": [],

@@ -2,6 +2,7 @@ const assert = require("node:assert/strict");
 const test = require("node:test");
 const { pathToFileURL } = require("node:url");
 const path = require("node:path");
+const fs = require("node:fs");
 const { contextValue, createGameContext, loadScripts, plain } = require("./helpers/script-loader");
 
 const repoRoot = path.resolve(__dirname, "..");
@@ -42,4 +43,15 @@ test("map ES module stays in sync with legacy map object builders", async () => 
     });
     assert.deepEqual(plain(moduleObjects), legacyObjects);
   }
+});
+
+test("classic map bridge is generated from module source", () => {
+  const classicPath = path.join(repoRoot, "scripts", "data", "map.js");
+  const classicSource = fs.readFileSync(classicPath, "utf8");
+
+  assert.equal(classicSource.includes("// AUTO-GENERATED FILE."), true);
+  assert.equal(classicSource.includes("// Run: npm run sync:map"), true);
+  assert.equal(classicSource.includes("globalThis.NindouMaps = {"), true);
+  assert.equal(classicSource.includes("import "), false);
+  assert.equal(classicSource.includes("export function "), false);
 });

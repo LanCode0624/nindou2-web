@@ -31,6 +31,7 @@
 - 想用本機 Vite server 玩/測，可雙擊 repo 根目錄的 `啟動遊戲.cmd`。黑色視窗需保持開著，關掉 server 就停止。
 - `weapons` 已切成單一來源：只手改 `scripts/data/weapons.module.mjs`，再跑 `npm run sync:weapons` 產生 `scripts/data/weapons.js`。
 - `locales` 已切成單一來源：只手改 `scripts/data/locales.module.mjs`，再跑 `npm run sync:locales` 產生 `scripts/data/locales.js`。
+- `map` 已切成單一來源：只手改 `scripts/data/map.module.mjs`，再跑 `npm run sync:map` 產生 `scripts/data/map.js`。
 
 目前頁面 probe 檢查：
 
@@ -95,7 +96,7 @@ Classic scripts 暫時會暴露 bridge 供 module probe 比對：
 - `scripts/data/locales.js -> globalThis.NindouLocales`（由 `scripts/tools/generate-locales-classic.mjs` 產生，勿手改）
 - `scripts/data/ninjutsu-definitions.js -> globalThis.NindouNinjutsu`
 - `scripts/data/rule-modes.js -> globalThis.NindouRuleModes`
-- `scripts/data/map.js -> globalThis.NindouMaps`
+- `scripts/data/map.js -> globalThis.NindouMaps`（由 `scripts/tools/generate-map-classic.mjs` 產生，勿手改）
 - `scripts/data/assets.js -> globalThis.NindouAssets`
 - `scripts/systems/appearance.js -> globalThis.NindouAppearance`
 - `scripts/systems/state-helpers.js -> globalThis.NindouStateHelpers`
@@ -171,6 +172,12 @@ locales 資料日常流程：
 
 1. 只改 `scripts/data/locales.module.mjs`。
 2. 跑 `npm run sync:locales` 產生 classic bridge `scripts/data/locales.js`。
+3. 跑 `npm test` 與 `npm run build`，確認 probe / mirror 同步。
+
+map 資料日常流程：
+
+1. 只改 `scripts/data/map.module.mjs`。
+2. 跑 `npm run sync:map` 產生 classic bridge `scripts/data/map.js`。
 3. 跑 `npm test` 與 `npm run build`，確認 probe / mirror 同步。
 
 暫時不要做：
