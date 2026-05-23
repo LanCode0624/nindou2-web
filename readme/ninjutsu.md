@@ -83,7 +83,7 @@
 
 - `wildfire` 要用 `assets/ninju/status/small_fire/F/`。
 - `death` 要維持獨立，不要覆蓋 `wildfire`。
-- 錢鏢視覺偏移在 `game.js -> moneyDartVisualOffsets`。
+- 錢鏢視覺偏移在 `scripts/data/render-tuning.js -> moneyDartVisualOffsets`。
 
 ---
 

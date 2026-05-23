@@ -84,6 +84,7 @@ scripts/data/weapons.js                -> weaponDefinitions、武器靜態資料
 scripts/data/ninjutsu-definitions.js   -> ninjuCatalog、editor 分類排序、defaultNinjuLoadout
 scripts/data/locales.js                -> 房間/HUD/武器/忍術中文文字與 localized label helpers
 scripts/data/assets.js                 -> 圖片、音效、動畫影格來源、attackNinjuConfigs
+scripts/data/render-tuning.js          -> Canvas 視覺微調資料：眼睛、錢鏢、移動殘影與施術 sprite offset
 scripts/data/rule-modes.js             -> original / modified 規則查詢入口
 scripts/systems/appearance.js          -> 外觀定義查詢、角色外觀解析、眼睛素材選擇
 scripts/systems/asset-loader.js        -> classic runtime 圖片與動畫影格載入
@@ -453,10 +454,10 @@ weapon8 -> assets/sounds/weapon/8.ogg
 
 這些值通常是人工調好的，改之前先確認使用者真的要動：
 
-- `eyeOffsets`
-- `useNinjuSpriteOffset`
-- `moveEffectOffsets`
-- `moneyDartVisualOffsets`
+- `scripts/data/render-tuning.js -> eyeOffsets`
+- `scripts/data/render-tuning.js -> useNinjuSpriteOffset`
+- `scripts/data/render-tuning.js -> moveEffectOffsets`
+- `scripts/data/render-tuning.js -> moneyDartVisualOffsets`
 
 不要做的事：
 
