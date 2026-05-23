@@ -2,6 +2,7 @@ const assert = require("node:assert/strict");
 const test = require("node:test");
 const { pathToFileURL } = require("node:url");
 const path = require("node:path");
+const fs = require("node:fs");
 const { contextValue, loadCombatRules, plain } = require("./helpers/script-loader");
 
 const repoRoot = path.resolve(__dirname, "..");
@@ -35,4 +36,15 @@ test("weapon ES module stays in sync with legacy weapon data", async () => {
     weaponsModule.weaponFrames.weapon1,
     plain(contextValue(context, "weaponFrames.weapon1")),
   );
+});
+
+test("classic weapons bridge is generated from module source", () => {
+  const classicPath = path.join(repoRoot, "scripts", "data", "weapons.js");
+  const classicSource = fs.readFileSync(classicPath, "utf8");
+
+  assert.equal(classicSource.includes("// AUTO-GENERATED FILE."), true);
+  assert.equal(classicSource.includes("// Run: npm run sync:weapons"), true);
+  assert.equal(classicSource.includes("globalThis.NindouWeapons = {"), true);
+  assert.equal(classicSource.includes("import "), false);
+  assert.equal(classicSource.includes("export const "), false);
 });

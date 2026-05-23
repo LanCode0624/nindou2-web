@@ -29,6 +29,7 @@
 - `vite.config.js` 目前只打包 module entry，並複製 `assets/`、`scripts/`、`game.js`、`index.html`、`style.css` 到 `dist/`。
 - 目前 production build 會轉換 18 個 modules。
 - 想用本機 Vite server 玩/測，可雙擊 repo 根目錄的 `啟動遊戲.cmd`。黑色視窗需保持開著，關掉 server 就停止。
+- `weapons` 已切成單一來源：只手改 `scripts/data/weapons.module.mjs`，再跑 `npm run sync:weapons` 產生 `scripts/data/weapons.js`。
 
 目前頁面 probe 檢查：
 
@@ -89,7 +90,7 @@
 Classic scripts 暫時會暴露 bridge 供 module probe 比對：
 
 - `scripts/data/config.js -> globalThis.NindouConfig`
-- `scripts/data/weapons.js -> globalThis.NindouWeapons`
+- `scripts/data/weapons.js -> globalThis.NindouWeapons`（由 `scripts/tools/generate-weapons-classic.mjs` 產生，勿手改）
 - `scripts/data/ninjutsu-definitions.js -> globalThis.NindouNinjutsu`
 - `scripts/data/locales.js -> globalThis.NindouLocales`
 - `scripts/data/rule-modes.js -> globalThis.NindouRuleModes`
@@ -158,6 +159,12 @@ npm audit --omit=optional
 6. `skillMove()`、`updateAi()`、`attack()`、`attackCell()`、`ninjutsu.js` 都是高副作用流程，只有在有明確接管計畫與測試時再動。
 7. 測試逐步從 `script-loader.js` 改成直接 import module；同時保留少量 legacy sync 測試，直到 classic scripts 移除。
 8. 最後才收斂 `index.html` 的 classic scripts，只留下單一 module entry。
+
+武器資料日常流程：
+
+1. 只改 `scripts/data/weapons.module.mjs`。
+2. 跑 `npm run sync:weapons` 產生 classic bridge `scripts/data/weapons.js`。
+3. 跑 `npm test` 與 `npm run build`，確認 probe / mirror 同步。
 
 暫時不要做：
 
