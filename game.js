@@ -249,7 +249,55 @@ const sake4OutlineCache = new WeakMap();
 // ===== Asset Loading =====
 // 載入所有遊戲圖片與動畫影格。
 function loadImages() {
-  const staticImages = Object.entries(imageSources).map(([key, src]) => new Promise((resolve) => {
+  const frameGroups = [
+    [defUpFrameSources, defUpFrames],
+    [atkUpFrameSources, atkUpFrames],
+    [regenHpSmallFrameSources, regenHpSmallFrames],
+    [regenHpLargeFrameSources, regenHpLargeFrames],
+    [consumableRegenSpFrameSources, consumableRegenSpFrames],
+    [smallThunderSummonFrameSources, smallThunderSummonFrames],
+    [smallThunderDamagedFrameSources, smallThunderDamagedFrames],
+    [smallFireSummonFrameSources, smallFireSummonFrames],
+    [smallFireDamagedFrameSources, smallFireDamagedFrames],
+    [deathSummonFrameSources, deathSummonFrames],
+    [deathDamagedFrameSources, deathDamagedFrames],
+    [smallIceSummonFrameSources, smallIceSummonFrames],
+    [smallIceDamagedFrameSources, smallIceDamagedFrames],
+    [smallIceBreakFrameSources, smallIceBreakFrames],
+    [damageFailFrameSources, damageFailFrames],
+    [faintedFrameSources, faintedFrames],
+    [damageSuccessSmallFrameSources, damageSuccessSmallFrames],
+    [damageSuccessMiddleFrameSources, damageSuccessMiddleFrames],
+    [damageSuccessBigFrameSources, damageSuccessBigFrames],
+    [damageSuccessNinjuSuccessFrameSources, damageSuccessNinjuSuccessFrames],
+    [sevenNinjuFrameSources, sevenNinjuFrames],
+    [cloneNinjuFrameSources, cloneNinjuFrames],
+    [cloneRedNinjuFrameSources, cloneRedNinjuFrames],
+    [cloneGreyNinjuFrameSources, cloneGreyNinjuFrames],
+    [angelNinjuFrameSources, angelNinjuFrames],
+    [mouryoNinjuFrameSources, mouryoNinjuFrames],
+    [mouryoNinjuHitFrameSources, mouryoNinjuHitFrames],
+    [moneyDartPickupFrameSources, moneyDartPickupFrames],
+    [respawnPointerFrameSources, respawnPointerFrames],
+    [chargeRedFrameSources, chargeRedFrames],
+    [chargeYellowFrameSources, chargeYellowFrames],
+  ];
+
+  return Promise.all([
+    ...loadStaticImages(),
+    ...loadFrameGroups(frameGroups),
+    ...loadKeyedFrameGroups(moneyDartReadyFrameSources, moneyDartReadyFrames),
+    ...loadKeyedFrameGroups(dragArrowFrameSources, dragArrowFrames),
+    ...loadKeyedFrameGroups(useNinjuFrameSources, useNinjuFrames),
+    ...loadNestedFrameGroups(movePrearriveFrameSources, movePrearriveFrames),
+    ...loadNestedFrameGroups(moveArriveFrameSources, moveArriveFrames),
+    ...loadNestedFrameGroups(moneyDartShootFrameSources, moneyDartShootFrames),
+    ...loadWeaponFrames(),
+  ]);
+}
+
+function loadStaticImages() {
+  return Object.entries(imageSources).map(([key, src]) => new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
       images[key] = img;
@@ -258,68 +306,32 @@ function loadImages() {
     img.onerror = resolve;
     img.src = src;
   }));
-  const ninjuImages = defUpFrameSources.map((src, index) => new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      defUpFrames[index] = img;
-      resolve();
-    };
-    img.onerror = resolve;
-    img.src = src;
-  }));
-  const atkUpImages = atkUpFrameSources.map((src, index) => loadFrame(src, atkUpFrames, index));
-  const regenHpSmallImages = regenHpSmallFrameSources.map((src, index) => loadFrame(src, regenHpSmallFrames, index));
-  const regenHpLargeImages = regenHpLargeFrameSources.map((src, index) => loadFrame(src, regenHpLargeFrames, index));
-  const consumableRegenSpImages = consumableRegenSpFrameSources.map((src, index) => loadFrame(src, consumableRegenSpFrames, index));
-  const smallThunderSummonImages = smallThunderSummonFrameSources.map((src, index) => loadFrame(src, smallThunderSummonFrames, index));
-  const smallThunderDamagedImages = smallThunderDamagedFrameSources.map((src, index) => loadFrame(src, smallThunderDamagedFrames, index));
-  const smallFireSummonImages = smallFireSummonFrameSources.map((src, index) => loadFrame(src, smallFireSummonFrames, index));
-  const smallFireDamagedImages = smallFireDamagedFrameSources.map((src, index) => loadFrame(src, smallFireDamagedFrames, index));
-  const deathSummonImages = deathSummonFrameSources.map((src, index) => loadFrame(src, deathSummonFrames, index));
-  const deathDamagedImages = deathDamagedFrameSources.map((src, index) => loadFrame(src, deathDamagedFrames, index));
-  const smallIceSummonImages = smallIceSummonFrameSources.map((src, index) => loadFrame(src, smallIceSummonFrames, index));
-  const smallIceDamagedImages = smallIceDamagedFrameSources.map((src, index) => loadFrame(src, smallIceDamagedFrames, index));
-  const smallIceBreakImages = smallIceBreakFrameSources.map((src, index) => loadFrame(src, smallIceBreakFrames, index));
-  const damageFailImages = damageFailFrameSources.map((src, index) => loadFrame(src, damageFailFrames, index));
-  const faintedImages = faintedFrameSources.map((src, index) => loadFrame(src, faintedFrames, index));
-  const damageSuccessSmallImages = damageSuccessSmallFrameSources.map((src, index) => loadFrame(src, damageSuccessSmallFrames, index));
-  const damageSuccessMiddleImages = damageSuccessMiddleFrameSources.map((src, index) => loadFrame(src, damageSuccessMiddleFrames, index));
-  const damageSuccessBigImages = damageSuccessBigFrameSources.map((src, index) => loadFrame(src, damageSuccessBigFrames, index));
-  const damageSuccessNinjuSuccessImages = damageSuccessNinjuSuccessFrameSources.map((src, index) => loadFrame(src, damageSuccessNinjuSuccessFrames, index));
-  const sevenNinjuImages = sevenNinjuFrameSources.map((src, index) => loadFrame(src, sevenNinjuFrames, index));
-  const cloneNinjuImages = cloneNinjuFrameSources.map((src, index) => loadFrame(src, cloneNinjuFrames, index));
-  const cloneRedNinjuImages = cloneRedNinjuFrameSources.map((src, index) => loadFrame(src, cloneRedNinjuFrames, index));
-  const cloneGreyNinjuImages = cloneGreyNinjuFrameSources.map((src, index) => loadFrame(src, cloneGreyNinjuFrames, index));
-  const angelNinjuImages = angelNinjuFrameSources.map((src, index) => loadFrame(src, angelNinjuFrames, index));
-  const mouryoNinjuImages = mouryoNinjuFrameSources.map((src, index) => loadFrame(src, mouryoNinjuFrames, index));
-  const mouryoNinjuHitImages = mouryoNinjuHitFrameSources.map((src, index) => loadFrame(src, mouryoNinjuHitFrames, index));
-  const readyImages = Object.entries(moneyDartReadyFrameSources).flatMap(([team, sources]) =>
-    sources.map((src, index) => loadFrame(src, moneyDartReadyFrames[team], index))
-  );
-  const pickupImages = moneyDartPickupFrameSources.map((src, index) => loadFrame(src, moneyDartPickupFrames, index));
-  const respawnPointerImages = respawnPointerFrameSources.map((src, index) => loadFrame(src, respawnPointerFrames, index));
-  const dragArrowImages = Object.entries(dragArrowFrameSources).flatMap(([direction, sources]) => (
-    sources.map((src, index) => loadFrame(src, dragArrowFrames[direction], index))
+}
+
+function loadFrameGroups(groups) {
+  return groups.flatMap(([sources, target]) => loadFrameGroup(sources, target));
+}
+
+function loadFrameGroup(sources, target) {
+  return sources.map((src, index) => loadFrame(src, target, index));
+}
+
+function loadKeyedFrameGroups(sourceGroups, targetGroups) {
+  return Object.entries(sourceGroups).flatMap(([key, sources]) => (
+    loadFrameGroup(sources, targetGroups[key])
   ));
-  const movePrearriveImages = Object.entries(movePrearriveFrameSources).flatMap(([team, directions]) => (
+}
+
+function loadNestedFrameGroups(sourceGroups, targetGroups) {
+  return Object.entries(sourceGroups).flatMap(([groupKey, directions]) => (
     Object.entries(directions).flatMap(([direction, sources]) => (
-      sources.map((src, index) => loadFrame(src, movePrearriveFrames[team][direction], index))
+      loadFrameGroup(sources, targetGroups[groupKey][direction])
     ))
   ));
-  const moveArriveImages = Object.entries(moveArriveFrameSources).flatMap(([team, directions]) => (
-    Object.entries(directions).flatMap(([direction, sources]) => (
-      sources.map((src, index) => loadFrame(src, moveArriveFrames[team][direction], index))
-    ))
-  ));
-  const useNinjuImages = Object.entries(useNinjuFrameSources).flatMap(([team, sources]) => (
-    sources.map((src, index) => loadFrame(src, useNinjuFrames[team], index))
-  ));
-  const shootImages = Object.entries(moneyDartShootFrameSources).flatMap(([team, dirs]) =>
-    Object.entries(dirs).flatMap(([direction, sources]) =>
-      sources.map((src, index) => loadFrame(src, moneyDartShootFrames[team][direction], index))
-    )
-  );
-  const weaponImages = weaponDefinitions.flatMap((weapon) => (
+}
+
+function loadWeaponFrames() {
+  return weaponDefinitions.flatMap((weapon) => (
     ["right", "left", "up", "down"].flatMap((direction) => (
       ["hand", "attack"].flatMap((kind) => (
         Array.from({ length: weapon.frameCount }, (_, index) => {
@@ -329,9 +341,6 @@ function loadImages() {
       ))
     ))
   ));
-  const chargeRedImages = chargeRedFrameSources.map((src, index) => loadFrame(src, chargeRedFrames, index));
-  const chargeYellowImages = chargeYellowFrameSources.map((src, index) => loadFrame(src, chargeYellowFrames, index));
-  return Promise.all([...staticImages, ...ninjuImages, ...atkUpImages, ...regenHpSmallImages, ...regenHpLargeImages, ...consumableRegenSpImages, ...smallThunderSummonImages, ...smallThunderDamagedImages, ...smallFireSummonImages, ...smallFireDamagedImages, ...deathSummonImages, ...deathDamagedImages, ...smallIceSummonImages, ...smallIceDamagedImages, ...smallIceBreakImages, ...damageFailImages, ...faintedImages, ...damageSuccessSmallImages, ...damageSuccessMiddleImages, ...damageSuccessBigImages, ...damageSuccessNinjuSuccessImages, ...sevenNinjuImages, ...cloneNinjuImages, ...cloneRedNinjuImages, ...cloneGreyNinjuImages, ...angelNinjuImages, ...mouryoNinjuImages, ...mouryoNinjuHitImages, ...chargeRedImages, ...chargeYellowImages, ...readyImages, ...pickupImages, ...respawnPointerImages, ...dragArrowImages, ...movePrearriveImages, ...moveArriveImages, ...useNinjuImages, ...weaponImages, ...shootImages]);
 }
 
 // 載入單張動畫影格，成功後放到指定陣列位置。
