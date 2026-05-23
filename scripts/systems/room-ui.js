@@ -1,3 +1,154 @@
+function applyRoomLanguage() {
+  const text = roomLocale();
+  const roomScreenEl = document.querySelector("#roomScreen");
+  const roomTitleLabelEl = document.querySelector(".room-title-cell span");
+  const roomLeaveBtn = document.querySelector(".room-leave-btn");
+  const teamTabsEl = document.querySelector(".team-tabs");
+  const teamTabBlueEl = document.querySelector(".team-tab-blue");
+  const teamTabGreyEl = document.querySelector(".team-tab-grey");
+  const playerGridEl = document.querySelector(".player-grid");
+  const battleStartImgEl = battleStartBtn?.querySelector("img");
+  const chatPanelEl = document.querySelector(".chat-panel");
+  const chatChannelEl = document.querySelector(".chat-input span");
+  const chatSendBtn = document.querySelector(".chat-input button");
+  const modePanelEl = document.querySelector(".mode-panel");
+  const modeTitleEl = document.querySelector(".mode-title");
+  const modeSideAEl = document.querySelector(".mode-side.side-a");
+  const modeSideBEl = document.querySelector(".mode-side.side-b");
+  const volumePanelEl = document.querySelector(".room-volume-panel");
+  const volumeLabels = Array.from(document.querySelectorAll(".room-volume-control span"));
+  const ninjuProfileRows = Array.from(document.querySelectorAll(".ninju-editor-stats > div"));
+  const ninjuScoreRows = Array.from(document.querySelectorAll(".ninju-editor-score > div"));
+  const ninjuTabButtons = Array.from(document.querySelectorAll(".ninju-editor-tabs button"));
+  const ninjuSeriesEls = Array.from(document.querySelectorAll(".ninju-editor-series span"));
+  const ninjuTitleSpanEl = document.querySelector(".ninju-editor-title span");
+  const ninjuInfoBtn = document.querySelector(".ninju-editor-title button");
+
+  document.documentElement.lang = text.htmlLang;
+  if (roomScreenEl) roomScreenEl.setAttribute("aria-label", text.roomScreen);
+  setupRuleModeSelect();
+  setupDeathModeSelect();
+  if (roomTitleLabelEl) roomTitleLabelEl.textContent = text.modeLabel;
+  if (roomLeaveBtn) roomLeaveBtn.setAttribute("aria-label", text.leave);
+  if (teamTabsEl) teamTabsEl.setAttribute("aria-label", text.teams);
+  if (teamEditBtn) {
+    teamEditBtn.textContent = text.edit;
+    teamEditBtn.setAttribute("aria-label", text.editNinjutsu);
+  }
+  if (teamShopBtn) {
+    teamShopBtn.textContent = text.shop;
+    teamShopBtn.setAttribute("aria-label", text.shopAria);
+  }
+  if (roomShopEl) {
+    roomShopEl.setAttribute("aria-label", text.shopAria);
+    const shopTitleEl = roomShopEl.querySelector(".room-shop-header h2");
+    const shopTotalEl = roomShopEl.querySelector(".room-shop-footer span");
+    if (shopTitleEl) shopTitleEl.textContent = text.shopTitle;
+    if (shopTotalEl) shopTotalEl.textContent = text.shopTotal;
+  }
+  if (teamTabBlueEl) teamTabBlueEl.textContent = text.blueTeam;
+  if (teamTabGreyEl) teamTabGreyEl.textContent = text.greyTeam;
+  if (playerGridEl) playerGridEl.setAttribute("aria-label", text.playerCards);
+  if (battleStartBtn) battleStartBtn.setAttribute("aria-label", text.startBattle);
+  if (battleStartImgEl) battleStartImgEl.alt = text.startBattle;
+  setupRoomMapSelect();
+  if (chatPanelEl) chatPanelEl.setAttribute("aria-label", text.chat);
+  if (chatChannelEl) chatChannelEl.textContent = text.general;
+  if (chatSendBtn) chatSendBtn.textContent = text.send;
+  if (modePanelEl) modePanelEl.setAttribute("aria-label", text.modePanel);
+  if (modeTitleEl) modeTitleEl.textContent = text.randomMode;
+  if (modeSideAEl) modeSideAEl.textContent = text.editSettings;
+  if (modeSideBEl) modeSideBEl.textContent = text.gameSettings;
+  if (volumePanelEl) volumePanelEl.setAttribute("aria-label", text.volume);
+  if (volumeLabels[0]) volumeLabels[0].textContent = text.music;
+  if (volumeLabels[1]) volumeLabels[1].textContent = text.sfx;
+  if (ninjuEditorEl) ninjuEditorEl.setAttribute("aria-label", text.ninjuEditor);
+  if (ninjuProfileRows[0]) {
+    const spans = ninjuProfileRows[0].querySelectorAll("span");
+    const button = ninjuProfileRows[0].querySelector("button");
+    if (spans[0]) spans[0].textContent = text.nickname;
+    if (button) button.textContent = text.change;
+  }
+  if (ninjuProfileRows[1]) {
+    const spans = ninjuProfileRows[1].querySelectorAll("span");
+    const strongs = ninjuProfileRows[1].querySelectorAll("strong");
+    if (spans[0]) spans[0].textContent = text.level;
+    if (spans[1]) spans[1].textContent = text.role;
+    if (strongs[1]) strongs[1].textContent = text.roleName;
+  }
+  if (ninjuProfileRows[2]) {
+    const span = ninjuProfileRows[2].querySelector("span");
+    const strong = ninjuProfileRows[2].querySelector("strong");
+    if (span) span.textContent = text.guild;
+    if (strong) strong.textContent = text.guildName;
+  }
+  if (ninjuScoreRows[0]) {
+    const spans = ninjuScoreRows[0].querySelectorAll("span");
+    if (spans[0]) spans[0].textContent = text.wins;
+    if (spans[1]) spans[1].textContent = text.losses;
+  }
+  if (ninjuScoreRows[1]) {
+    const span = ninjuScoreRows[1].querySelector("span");
+    if (span) span.textContent = text.gold;
+  }
+  if (ninjuScoreRows[2]) {
+    const span = ninjuScoreRows[2].querySelector("span");
+    if (span) span.textContent = text.rep;
+  }
+  const ninjuTabsEl = document.querySelector(".ninju-editor-tabs");
+  if (ninjuTabsEl) ninjuTabsEl.setAttribute("aria-label", text.editCategories);
+  if (ninjuTabButtons[0]) ninjuTabButtons[0].textContent = text.ninjuTab;
+  if (ninjuTabButtons[1]) ninjuTabButtons[1].textContent = text.weaponTab;
+  if (ninjuTabButtons[2]) ninjuTabButtons[2].textContent = text.eyesTab;
+  if (ninjuTabButtons[3]) ninjuTabButtons[3].textContent = text.itemsTab;
+  if (ninjuTabButtons[4]) ninjuTabButtons[4].textContent = text.lookTab;
+  const ninjuSeriesWrapEl = document.querySelector(".ninju-editor-series");
+  if (ninjuSeriesWrapEl) ninjuSeriesWrapEl.setAttribute("aria-label", text.ninjuSeries);
+  if (ninjuSeriesEls[0]) ninjuSeriesEls[0].textContent = text.healSeries;
+  if (ninjuSeriesEls[1]) ninjuSeriesEls[1].textContent = text.supportSeries;
+  if (ninjuSeriesEls[2]) ninjuSeriesEls[2].textContent = text.attackSeries;
+  if (ninjuSeriesEls[3]) ninjuSeriesEls[3].textContent = text.specialSeries;
+  if (ninjuSeriesEls[4]) ninjuSeriesEls[4].textContent = text.transformSeries;
+  if (ninjuTitleSpanEl) ninjuTitleSpanEl.textContent = text.chooseNinju;
+  if (ninjuInfoBtn) ninjuInfoBtn.textContent = text.ninjuInfo;
+  if (ninjuEditorSlotsEl) ninjuEditorSlotsEl.setAttribute("aria-label", text.selectedNinju);
+  if (ninjuEditorListEl) ninjuEditorListEl.setAttribute("aria-label", text.availableNinju);
+  if (ninjuEditorResetBtn) ninjuEditorResetBtn.textContent = text.reset;
+  if (ninjuEditorCancelBtn) ninjuEditorCancelBtn.textContent = text.cancel;
+  if (ninjuEditorSaveBtn) ninjuEditorSaveBtn.textContent = text.save;
+
+  setupWeaponSelects();
+  setupLookSelects();
+  setupControlSelects();
+
+  roomCardEls.forEach((card) => {
+    const team = card.dataset.team;
+    const slot = Number(card.dataset.slot);
+    const addBtn = card.querySelector(".room-slot-add");
+    const removeBtn = card.querySelector(".room-slot-remove");
+    const hpInputEl = card.querySelector(".room-hp-input");
+    const skillInputEl = card.querySelector(".room-skill-input");
+    const lookEl = card.querySelector(".room-look-select");
+    const controlEl = card.querySelector(".room-control-select");
+    const weaponEl = card.querySelector(".room-weapon-select");
+
+    if (addBtn) {
+      addBtn.textContent = text.add;
+      addBtn.setAttribute("aria-label", text.add);
+    }
+    if (removeBtn) removeBtn.setAttribute("aria-label", text.remove);
+    if (hpInputEl) hpInputEl.setAttribute("aria-label", `${roomTeamLabel(team)} ${slot} ${text.hp}`);
+    if (skillInputEl) skillInputEl.setAttribute("aria-label", `${roomTeamLabel(team)} ${slot} ${text.skillBadge}`);
+    if (lookEl) lookEl.setAttribute("aria-label", `${roomTeamLabel(team)} ${slot} ${text.lookTab || "外觀"}`);
+    if (controlEl) controlEl.setAttribute("aria-label", `${roomTeamLabel(team)} ${slot} ${text.control}`);
+    if (weaponEl) weaponEl.setAttribute("aria-label", `${roomTeamLabel(team)} ${slot} ${text.weapon}`);
+  });
+
+  updateAllRoomLookCards();
+
+  if (!ninjuEditorEl?.hidden) renderNinjuEditor();
+}
+
 function setupWeaponSelects() {
   if (weaponSelectEls.length === 0) return;
   const optionsHtml = weaponDefinitions.map((weapon) => (

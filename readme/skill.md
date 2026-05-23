@@ -99,7 +99,7 @@ scripts/systems/movement.js            -> 移動、消耗技量、衝撞
 scripts/systems/movement-renderer.js   -> 移動殘影、平滑座標與角色移動/施術 sprite 繪製 helper
 scripts/systems/ai.js                  -> AI profile 與決策流程
 scripts/systems/match.js               -> 勝負判定、結算
-scripts/systems/room-ui.js             -> 房間外觀卡、規則/地圖選單、忍術編輯器、商店、房間卡數值/下拉 DOM helper
+scripts/systems/room-ui.js             -> 房間文案套用、外觀卡、規則/地圖選單、忍術編輯器、商店、房間卡數值/下拉 DOM helper
 scripts/systems/game-flow.js           -> 開戰/回房、重開長按、模式切換與房間流程協調
 scripts/systems/scene-renderer.js      -> 戰鬥背景、地圖遮罩、外框與格子提示繪製
 scripts/systems/unit-renderer.js       -> 角色本體、分身、血條、名字、眼睛與 buff 外圈繪製
