@@ -32,6 +32,7 @@
 - `weapons` 已切成單一來源：只手改 `scripts/data/weapons.module.mjs`，再跑 `npm run sync:weapons` 產生 `scripts/data/weapons.js`。
 - `locales` 已切成單一來源：只手改 `scripts/data/locales.module.mjs`，再跑 `npm run sync:locales` 產生 `scripts/data/locales.js`。
 - `map` 已切成單一來源：只手改 `scripts/data/map.module.mjs`，再跑 `npm run sync:map` 產生 `scripts/data/map.js`。
+- `rule-modes` 已切成單一來源：只手改 `scripts/data/rule-modes.module.mjs`，再跑 `npm run sync:rule-modes` 產生 `scripts/data/rule-modes.js`。
 
 目前頁面 probe 檢查：
 

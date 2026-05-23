@@ -21,6 +21,10 @@ test("rule mode ES module stays in sync with legacy rule mode behavior", async (
   assert.deepEqual(ruleModesModule.moneyDartRule({ deathModeKey: "death_command" }), plain(context.moneyDartRule()));
   assert.deepEqual(ruleModesModule.attackNinjuRule("angel", { deathModeKey: "death_command" }), plain(context.attackNinjuRule("angel")));
   assert.deepEqual(ruleModesModule.healNinjuRule("genki", { deathModeKey: "death_command" }), plain(context.healNinjuRule("genki")));
+  assert.deepEqual(plain(context.flashRule()), plain(context.attackNinjuRule("flash")));
+  assert.deepEqual(plain(context.wildfireRule()), plain(context.attackNinjuRule("wildfire")));
+  assert.deepEqual(plain(context.deathRule()), plain(context.attackNinjuRule("death")));
+  assert.deepEqual(plain(context.freezeRule()), plain(context.attackNinjuRule("freeze")));
 });
 
 test("rule mode ES module matches original and death-heal legacy behavior", async () => {

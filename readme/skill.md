@@ -60,6 +60,7 @@ npm run build
 - 武器資料已改成「module 單一來源」：請只手改 `scripts/data/weapons.module.mjs`，再跑 `npm run sync:weapons` 產生 `scripts/data/weapons.js`。
 - locales 資料已改成「module 單一來源」：請只手改 `scripts/data/locales.module.mjs`，再跑 `npm run sync:locales` 產生 `scripts/data/locales.js`。
 - map 資料已改成「module 單一來源」：請只手改 `scripts/data/map.module.mjs`，再跑 `npm run sync:map` 產生 `scripts/data/map.js`。
+- rule-modes 資料已改成「module 單一來源」：請只手改 `scripts/data/rule-modes.module.mjs`，再跑 `npm run sync:rule-modes` 產生 `scripts/data/rule-modes.js`。
 
 目前已知可用狀態：
 
@@ -174,6 +175,7 @@ game.js                                -> 尚未 module 化；不要直接全量
 - 武器資料調整後固定流程：改 `scripts/data/weapons.module.mjs` -> 跑 `npm run sync:weapons` -> 跑 `npm test`。
 - locales 資料調整後固定流程：改 `scripts/data/locales.module.mjs` -> 跑 `npm run sync:locales` -> 跑 `npm test`。
 - map 資料調整後固定流程：改 `scripts/data/map.module.mjs` -> 跑 `npm run sync:map` -> 跑 `npm test`。
+- rule-modes 資料調整後固定流程：改 `scripts/data/rule-modes.module.mjs` -> 跑 `npm run sync:rule-modes` -> 跑 `npm test`。
 - 不要新增依賴 classic `<script>` 載入順序的全新 helper；新 helper 優先寫成可注入依賴、可被 ES module import 測試的形式。
 - 只有直接碰主迴圈與 runtime state 時，才進 `game.js`；啟動流程、DOM 事件綁定與房間初始化先看 `scripts/systems/app-bootstrap.js`，房間外觀卡、忍術編輯器、商店背包與規則/地圖選單先看 `scripts/systems/room-ui.js`，開局建立角色、起始位置與整局 reset 先看 `scripts/systems/battle-setup.js`，集技、開場倒數、對戰 active 與忍術 dispatch 先看 `scripts/systems/battle-runtime.js`，戰鬥滑鼠輸入、拖曳與戰鬥中點擊判定先看 `scripts/systems/battle-input.js`，開戰/回房、重開長按、模式切換與房間流程協調先看 `scripts/systems/game-flow.js`，戰鬥背景與格子提示先看 `scripts/systems/scene-renderer.js`，狀態訊息與側邊資訊面板先看 `scripts/systems/status-ui.js`，角色本體、分身、血條、名字、眼睛與 buff 外圈先看 `scripts/systems/unit-renderer.js`，地圖物件、武器揮砍、錢鏢射出與近戰攻擊視覺先看 `scripts/systems/combat-renderer.js`，移動殘影、平滑座標、拖曳箭頭與角色移動/施術 sprite helper 先看 `scripts/systems/movement-renderer.js`，忍術/道具特效先看 `scripts/systems/effects-renderer.js`，戰鬥 HUD 先看 `scripts/systems/hud-renderer.js`，倒數/結算覆蓋層先看 `scripts/systems/overlay-renderer.js`。
 - 外觀解析、BGM/音效入口、道具流程、出生格洗牌、隊伍存活數都已拆出 `game.js`；改這些功能先找對應 `scripts/systems/*`。
