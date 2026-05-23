@@ -9,6 +9,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "check": "node --check game.js",
     "sync:weapons": "node scripts/tools/generate-weapons-classic.mjs",
+    "sync:locales": "node scripts/tools/generate-locales-classic.mjs",
     "test": "node --test"
   },
   "keywords": [],

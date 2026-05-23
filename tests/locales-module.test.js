@@ -2,6 +2,7 @@ const assert = require("node:assert/strict");
 const test = require("node:test");
 const { pathToFileURL } = require("node:url");
 const path = require("node:path");
+const fs = require("node:fs");
 const { contextValue, loadCombatRules, plain } = require("./helpers/script-loader");
 
 const repoRoot = path.resolve(__dirname, "..");
@@ -22,4 +23,15 @@ test("locales ES module stays in sync with legacy locale data", async () => {
   assert.equal(localesModule.localizedCountdownText(0), contextValue(context, "localizedCountdownText(0)"));
   assert.equal(localesModule.localizedRuleModeLabel("modified"), contextValue(context, 'localizedRuleModeLabel("modified")'));
   assert.equal(localesModule.localizedDeathModeLabel("death_heal"), contextValue(context, 'localizedDeathModeLabel("death_heal")'));
+});
+
+test("classic locales bridge is generated from module source", () => {
+  const classicPath = path.join(repoRoot, "scripts", "data", "locales.js");
+  const classicSource = fs.readFileSync(classicPath, "utf8");
+
+  assert.equal(classicSource.includes("// AUTO-GENERATED FILE."), true);
+  assert.equal(classicSource.includes("// Run: npm run sync:locales"), true);
+  assert.equal(classicSource.includes("globalThis.NindouLocales = {"), true);
+  assert.equal(classicSource.includes("import "), false);
+  assert.equal(classicSource.includes("export const "), false);
 });
