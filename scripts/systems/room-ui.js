@@ -1,3 +1,179 @@
+function setupWeaponSelects() {
+  if (weaponSelectEls.length === 0) return;
+  const optionsHtml = weaponDefinitions.map((weapon) => (
+    `<option value="${weapon.key}"${weapon.key === defaultWeaponKey ? " selected" : ""}>${localizedWeaponLabel(weapon)}</option>`
+  )).join("");
+  weaponSelectEls.forEach((select) => {
+    const previousValue = select.value || defaultWeaponKey;
+    select.innerHTML = optionsHtml;
+    if (weaponDefinitionByKey[previousValue]) select.value = previousValue;
+    if (!weaponDefinitionByKey[select.value]) select.value = defaultWeaponKey;
+  });
+}
+
+function setupLookSelects() {
+  if (lookSelectEls.length === 0) return;
+  const optionsHtml = Object.entries(lookDefinitions).map(([key, look]) => {
+    const label = roomLocaleText[look.labelKey] || look.label || key;
+    return `<option value="${key}">${label}</option>`;
+  }).join("");
+  lookSelectEls.forEach((select) => {
+    const previousValue = select.value || "default";
+    select.innerHTML = optionsHtml;
+    select.value = lookDefinitions[previousValue] ? previousValue : "default";
+    select.onchange = () => {
+      updateRoomLookCard(select.dataset.team, Number(select.dataset.slot));
+    };
+  });
+}
+
+function setupControlSelects() {
+  if (controlSelectEls.length === 0) return;
+  const optionsHtml = `
+    <option value="player">${localizedControlModeLabel("player")}</option>
+    <option value="ai_beginner">${localizedControlModeLabel("ai_beginner")}</option>
+    <option value="ai_red">${localizedControlModeLabel("ai_red")}</option>
+    <option value="ai_tachi_master">${localizedControlModeLabel("ai_tachi_master")}</option>
+    <option value="ai_money_dart_master">${localizedControlModeLabel("ai_money_dart_master")}</option>
+    <option value="ai_dart_only_master">${localizedControlModeLabel("ai_dart_only_master")}</option>
+    <option value="ai_god">${localizedControlModeLabel("ai_god")}</option>
+  `;
+  controlSelectEls.forEach((select) => {
+    const current = select.value;
+    if (!select.innerHTML.trim()) {
+      select.innerHTML = optionsHtml;
+    } else {
+      select.innerHTML = optionsHtml;
+      select.value = current;
+    }
+    if (!current) {
+      select.value = select.dataset.team === "grey" ? "player" : "ai_red";
+    }
+    if (select.value === "ai") select.value = "ai_beginner";
+    if (select.value !== "player" && select.value !== "ai_beginner" && select.value !== "ai_red" && select.value !== "ai_tachi_master" && select.value !== "ai_money_dart_master" && select.value !== "ai_dart_only_master" && select.value !== "ai_god") select.value = "player";
+    select.onchange = () => {
+      updateRoomLookCard(select.dataset.team, Number(select.dataset.slot));
+    };
+  });
+}
+
+function setupHpInputs() {
+  if (hpInputEls.length === 0) return;
+  hpInputEls.forEach((input) => {
+    if (!input.value) input.value = String(maxHp);
+    const fixed = clamp(Math.round(Number(input.value) || maxHp), 1, 9999);
+    input.value = String(fixed);
+    input.addEventListener("change", () => {
+      const value = clamp(Math.round(Number(input.value) || maxHp), 1, 9999);
+      input.value = String(value);
+    });
+  });
+}
+
+function setupSkillInputs() {
+  if (skillInputEls.length === 0) return;
+  skillInputEls.forEach((input) => {
+    if (!input.value) input.value = String(maxSkill);
+    const fixed = clamp(Math.round(Number(input.value) || maxSkill), 0, roomSkillInputMax);
+    input.value = String(fixed);
+    input.addEventListener("change", () => {
+      const value = clamp(Math.round(Number(input.value) || 0), 0, roomSkillInputMax);
+      input.value = String(value);
+    });
+  });
+}
+
+function setupRoomSlots() {
+  roomCardEls.forEach((card) => {
+    const team = card.dataset.team;
+    const slot = Number(card.dataset.slot);
+    const addBtn = card.querySelector(".room-slot-add");
+    const removeBtn = card.querySelector(".room-slot-remove");
+    const nameEl = card.querySelector(".room-name");
+    const controlEl = card.querySelector(".room-control-select");
+
+    if (addBtn) {
+      addBtn.addEventListener("click", () => {
+        card.classList.add("active-slot");
+        if (nameEl) nameEl.textContent = `${team === "blue" ? "青" : "灰"}${slot}`;
+        if (controlEl) controlEl.value = team === "grey" ? "player" : "ai_red";
+      });
+    }
+    if (removeBtn) {
+      removeBtn.addEventListener("click", () => {
+        if (slot === 1) return;
+        card.classList.remove("active-slot");
+      });
+    }
+  });
+}
+
+function selectedWeaponKey(team, slot) {
+  const controlMode = selectedControlMode(team, slot);
+  if (controlMode === "ai_red") return "weapon8";
+  if (controlMode === "ai_tachi_master") return "weapon3";
+  const select = weaponSelectEls.find((element) => element.dataset.team === team && Number(element.dataset.slot) === slot);
+  return weaponDefinitionByKey[select?.value] ? select.value : defaultWeaponKey;
+}
+
+function selectedControlMode(team, slot) {
+  const select = controlSelectEls.find((element) => element.dataset.team === team && Number(element.dataset.slot) === slot);
+  if (select?.value === "player") return "player";
+  if (select?.value === "ai_red") return "ai_red";
+  if (select?.value === "ai_tachi_master") return "ai_tachi_master";
+  if (select?.value === "ai_money_dart_master") return "ai_money_dart_master";
+  if (select?.value === "ai_dart_only_master") return "ai_dart_only_master";
+  if (select?.value === "ai_god") return "ai_god";
+  return "ai_beginner";
+}
+
+function selectedHpValue(team, slot) {
+  const input = hpInputEls.find((element) => element.dataset.team === team && Number(element.dataset.slot) === slot);
+  const value = Number(input?.value);
+  if (!Number.isFinite(value)) return maxHp;
+  return clamp(Math.round(value), 1, 9999);
+}
+
+function selectedSkillValue(team, slot) {
+  const input = skillInputEls.find((element) => element.dataset.team === team && Number(element.dataset.slot) === slot);
+  const value = Number(input?.value);
+  if (!Number.isFinite(value)) return maxSkill;
+  return clamp(Math.round(value), 0, roomSkillInputMax);
+}
+
+function setupRuleModeSelect() {
+  if (!ruleModeSelect) return;
+  const optionsHtml = `
+    <option value="original">${localizedRuleModeLabel("original")}</option>
+    <option value="modified">${localizedRuleModeLabel("modified")}</option>
+  `;
+  const current = state.ruleModeKey || "original";
+  ruleModeSelect.innerHTML = optionsHtml;
+  ruleModeSelect.value = current;
+  if (ruleModeSelect.value !== current) ruleModeSelect.value = "original";
+  ruleModeSelect.setAttribute("aria-label", localizedRuleModeLabel(ruleModeSelect.value));
+}
+
+function setupDeathModeSelect() {
+  if (!deathModeSelect) return;
+  const optionsHtml = `
+    <option value="death_command">${localizedDeathModeLabel("death_command")}</option>
+    <option value="death_heal">${localizedDeathModeLabel("death_heal")}</option>
+  `;
+  const current = state.deathModeKey || "death_heal";
+  deathModeSelect.innerHTML = optionsHtml;
+  deathModeSelect.value = current;
+  if (deathModeSelect.value !== current) deathModeSelect.value = "death_heal";
+  deathModeSelect.setAttribute("aria-label", localizedDeathModeLabel(deathModeSelect.value));
+}
+
+function selectedLookKey(team, slot) {
+  if (selectedControlMode(team, slot) === "ai_red") return "red";
+  if (team !== "blue") return "default";
+  const select = lookSelectEls.find((element) => element.dataset.team === team && Number(element.dataset.slot) === slot);
+  return lookDefinitions[select?.value] ? select.value : "default";
+}
+
 function updateRoomLookCard(team, slot) {
   const card = roomCardEls.find((element) => element.dataset.team === team && Number(element.dataset.slot) === slot);
   if (!card) return;
