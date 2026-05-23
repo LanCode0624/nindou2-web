@@ -99,6 +99,7 @@ scripts/systems/movement.js            -> 移動、消耗技量、衝撞
 scripts/systems/ai.js                  -> AI profile 與決策流程
 scripts/systems/match.js               -> 勝負判定、結算
 scripts/systems/hud-renderer.js        -> 戰鬥 HUD、魂條、道具列、忍術按鈕與 HUD 文字繪製
+scripts/systems/overlay-renderer.js    -> 倒數與結算 Canvas 覆蓋層繪製
 game.js                                -> DOM、房間 UI、Canvas 場景繪製、輸入、主迴圈
 ```
 
@@ -152,7 +153,7 @@ game.js                                -> 尚未 module 化；不要直接全量
 - 行為先放 `scripts/systems/*`，不要把流程全部堆回 `game.js`。
 - 如果對應 `.module.mjs` 已存在，新增或調整純資料/純 helper 時要同步考慮 module mirror、legacy `globalThis.Nindou*` bridge、`scripts/main.module.js` probe 與 `tests/*-module.test.js`。
 - 不要新增依賴 classic `<script>` 載入順序的全新 helper；新 helper 優先寫成可注入依賴、可被 ES module import 測試的形式。
-- 只有直接碰 DOM、Canvas 場景繪製、輸入、房間 UI 協調、主迴圈時，才進 `game.js`；戰鬥 HUD 先看 `scripts/systems/hud-renderer.js`。
+- 只有直接碰 DOM、Canvas 場景繪製、輸入、房間 UI 協調、主迴圈時，才進 `game.js`；戰鬥 HUD 先看 `scripts/systems/hud-renderer.js`，倒數/結算覆蓋層先看 `scripts/systems/overlay-renderer.js`。
 - 外觀解析、BGM/音效入口、道具流程、出生格洗牌、隊伍存活數都已拆出 `game.js`；改這些功能先找對應 `scripts/systems/*`。
 - `scripts/systems/grid.js` 不處理 DOM event；滑鼠事件先由 `game.js -> pointerMove()` 換成 `state.pointer` / `pointToCell()` 結果。
 - 同一份規則不要在多個檔案維護兩套；例如模式差異統一經過 `scripts/data/rule-modes.js`。
