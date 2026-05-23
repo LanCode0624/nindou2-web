@@ -92,3 +92,60 @@ function drawUnitImage(sprite, p, bob = 0, naturalSize = false, direction = "dow
   const yOffset = sprite.height > sprite.width ? 78 : 26;
   ctx.drawImage(sprite, p.x - sprite.width / 2 + offset.x, p.y - yOffset + bob - offset.y);
 }
+
+// 繪製玩家拖曳移動時的目標線與落點提示。
+function drawDrag() {
+  if (!state.charging || !state.dragMoved || !state.pressedUnit) return;
+  if (!canDraggedUnitMoveNow(state.pressedUnit)) return;
+  const target = dragMoveTargetCell(state.pressedUnit);
+  if (!target) return;
+  const maxDistance = Math.floor(state.pressedUnit.skill);
+  const reachable = maxDistance >= 1 ? reachableMoveCell(state.pressedUnit, target, maxDistance) : null;
+  if (!reachable) return;
+  const from = unitPosition(state.pressedUnit);
+  const to = cellCenter(reachable.x, reachable.y);
+  const dist = manhattan(state.pressedUnit, reachable);
+  const enough = state.pressedUnit.skill >= Math.max(1, dist);
+  const direction = directionFromTarget(state.pressedUnit, reachable);
+  if (!direction) return;
+  drawDragArrow(from, to, direction, enough);
+}
+
+// 用整理後的 drag-arrow 組合圖繪製拖曳移動方向。
+function drawDragArrow(from, to, direction, enough) {
+  const directionName = typeof direction === "string" ? direction : direction?.name;
+  const frame = dragArrowFrames[directionName]?.[0];
+  if (!frame) return;
+  const arrowY = -18;
+  const thickness = 32;
+  const minLength = 36;
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const length = Math.max(minLength, Math.abs(dx) + Math.abs(dy));
+
+  ctx.save();
+  ctx.globalAlpha = enough ? 0.95 : 0.45;
+  if (directionName === "right") {
+    ctx.drawImage(frame, from.x, from.y + arrowY - thickness / 2, length, thickness);
+  } else if (directionName === "left") {
+    ctx.drawImage(frame, from.x - length, from.y + arrowY - thickness / 2, length, thickness);
+  } else if (directionName === "up") {
+    ctx.drawImage(frame, from.x - thickness / 2, from.y + arrowY - length, thickness, length);
+  } else if (directionName === "down") {
+    ctx.drawImage(frame, from.x - thickness / 2, from.y + arrowY, thickness, length);
+  }
+  ctx.restore();
+}
+
+// 依滑鼠游標相對角色的位置更新面向。
+function updateFacingFromPointer(unit) {
+  const origin = cellCenter(unit.x, unit.y);
+  const dx = state.pointer.x - origin.x;
+  const dy = state.pointer.y - origin.y;
+  if (Math.hypot(dx, dy) < 8) return;
+  if (Math.abs(dx) >= Math.abs(dy)) {
+    unit.facing = dx > 0 ? "right" : "left";
+  } else {
+    unit.facing = dy > 0 ? "down" : "up";
+  }
+}
