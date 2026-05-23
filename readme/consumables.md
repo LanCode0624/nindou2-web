@@ -63,7 +63,7 @@
 - 掉落流程：`scripts/systems/combat.js -> damageObject()` 內呼叫 `scripts/systems/consumables.js -> maybeGrantMapItem(object, attacker)`
 - 房間商店：`game.js -> purchaseShopItem(itemEl)` 會把已實作商品直接加入 `state.roomItemSlots`
 - 房間商店重畫：`scripts/systems/consumables.js -> notifyRoomInventoryChanged()` 只觸發 `state.onRoomInventoryChanged` hook；實際 DOM 重畫仍由 `game.js -> renderRoomShopBag()` 負責。
-- 使用動畫：`scripts/systems/consumables.js -> startConsumableUseEffect(unit, now)` 建立 `state.consumableEffects`，`game.js -> drawConsumableEffects(now)` 繪製 `regen_sp`
+- 使用動畫：`scripts/systems/consumables.js -> startConsumableUseEffect(unit, now)` 建立 `state.consumableEffects`，`scripts/systems/effects-renderer.js -> drawConsumableEffects(now)` 繪製 `regen_sp`
 - 神水目前實際效果函式：`scripts/systems/consumables.js -> useBackupItem()`
 - 神酒目前實際效果函式：`scripts/systems/consumables.js -> useSakeItem()`
 - 移動免耗判定：`scripts/systems/movement.js -> skillMove()`
