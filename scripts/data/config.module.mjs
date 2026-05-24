@@ -21,6 +21,10 @@ export const itemSlotGap = 6;
 export const defaultConsumableDisableMs = 1500;
 export const defaultConsumableInvincibleMs = 1500;
 export const sake4MoveSkillFreeMs = 15000;
+export const mapItemDropChance = 0.4;
+export const mapItemDropTypes = ["chest", "vase", "barrel", "hay"];
+export const mapGoldDropTypes = ["hay"];
+export const mapConsumableDropTypes = ["backup3", "sake4"];
 
 export const ninjutsuRuleProfiles = {
   modified: {

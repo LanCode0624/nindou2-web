@@ -105,10 +105,6 @@ const soulDeathGainSteps = soulStepsPerLevel;
 const ninjuChainGap = 500;
 const ninjuChainMaxGap = 500;
 const ninjuFollowupMoveAllowance = 3;
-const mapItemDropChance = 0.4;
-const mapItemDropTypes = ["chest", "vase", "barrel", "hay"];
-const mapGoldDropTypes = ["hay"];
-const mapConsumableDropTypes = ["backup3", "sake4"];
 
 // NINDOU_CONFIG_BRIDGE_START
 // AUTO-GENERATED SECTION.
@@ -399,6 +395,20 @@ const itemSlotGap = 6;
 const defaultConsumableDisableMs = 1500;
 const defaultConsumableInvincibleMs = 1500;
 const sake4MoveSkillFreeMs = 15000;
+const mapItemDropChance = 0.4;
+const mapItemDropTypes = [
+  "chest",
+  "vase",
+  "barrel",
+  "hay"
+];
+const mapGoldDropTypes = [
+  "hay"
+];
+const mapConsumableDropTypes = [
+  "backup3",
+  "sake4"
+];
 
 globalThis.NindouConfig = {
   weaponCooldownMs,

@@ -37,6 +37,10 @@ const itemSlotGap = ${configModule.itemSlotGap};
 const defaultConsumableDisableMs = ${configModule.defaultConsumableDisableMs};
 const defaultConsumableInvincibleMs = ${configModule.defaultConsumableInvincibleMs};
 const sake4MoveSkillFreeMs = ${configModule.sake4MoveSkillFreeMs};
+const mapItemDropChance = ${configModule.mapItemDropChance};
+const mapItemDropTypes = ${toLiteral(configModule.mapItemDropTypes)};
+const mapGoldDropTypes = ${toLiteral(configModule.mapGoldDropTypes)};
+const mapConsumableDropTypes = ${toLiteral(configModule.mapConsumableDropTypes)};
 
 globalThis.NindouConfig = {
   weaponCooldownMs,

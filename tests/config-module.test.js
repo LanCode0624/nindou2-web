@@ -36,6 +36,10 @@ test("config ES module stays in sync with legacy config constants", async () => 
   assert.equal(configModule.defaultConsumableDisableMs, contextValue(context, "defaultConsumableDisableMs"));
   assert.equal(configModule.defaultConsumableInvincibleMs, contextValue(context, "defaultConsumableInvincibleMs"));
   assert.equal(configModule.sake4MoveSkillFreeMs, contextValue(context, "sake4MoveSkillFreeMs"));
+  assert.equal(configModule.mapItemDropChance, contextValue(context, "mapItemDropChance"));
+  assert.deepEqual(configModule.mapItemDropTypes, plain(contextValue(context, "mapItemDropTypes")));
+  assert.deepEqual(configModule.mapGoldDropTypes, plain(contextValue(context, "mapGoldDropTypes")));
+  assert.deepEqual(configModule.mapConsumableDropTypes, plain(contextValue(context, "mapConsumableDropTypes")));
 });
 
 test("config bridge section is generated from module workflow", () => {
