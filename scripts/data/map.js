@@ -168,13 +168,32 @@ function buildEvilCastleObjectsModule(layout, { internalCellCoord } = {}) {
 }
 
 function summarizeMapObjectBuilders(legacyBuilders = {}) {
+  const dryRunDeps = {
+    internalCellCoord: ({ x, y }) => ({ x, y }),
+    objectHp,
+  };
+  const summarizeBuilderCounts = (builders = {}) => Object.fromEntries(
+    Object.entries(builders).map(([key, builder]) => {
+      try {
+        const objects = builder?.(dryRunDeps);
+        return [key, Array.isArray(objects) ? objects.length : null];
+      } catch {
+        return [key, null];
+      }
+    }),
+  );
   const moduleKeys = Object.keys(mapObjectBuilders);
   const legacyKeys = Object.keys(legacyBuilders);
+  const moduleObjectCounts = summarizeBuilderCounts(mapObjectBuilders);
+  const legacyObjectCounts = summarizeBuilderCounts(legacyBuilders);
   return {
     moduleKeys,
     legacyKeys,
+    moduleObjectCounts,
+    legacyObjectCounts,
     isSynced: moduleKeys.length === legacyKeys.length
-      && moduleKeys.every((key, index) => key === legacyKeys[index]),
+      && moduleKeys.every((key, index) => key === legacyKeys[index])
+      && JSON.stringify(moduleObjectCounts) === JSON.stringify(legacyObjectCounts),
   };
 }
 

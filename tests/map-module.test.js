@@ -32,6 +32,7 @@ test("map ES module stays in sync with legacy map object builders", async () => 
 
   assert.equal(summary.isSynced, true);
   assert.deepEqual(summary.moduleKeys, Object.keys(legacyBuilders));
+  assert.deepEqual(plain(summary.moduleObjectCounts), plain(summary.legacyObjectCounts));
 
   for (const [mapKey, mapDefinition] of context.roomMapDefinitionEntries()) {
     context.state.roomMapKey = mapKey;
