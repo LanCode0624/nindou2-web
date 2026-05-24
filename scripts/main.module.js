@@ -118,6 +118,12 @@ globalThis.NindouModuleProbeSummary = {
   unsynced: unsyncedProbeKeys.length,
   unsyncedKeys: unsyncedProbeKeys,
 };
+globalThis.getNindouModuleProbeReport = () => ({
+  meta: globalThis.NindouModuleProbeMeta,
+  summary: globalThis.NindouModuleProbeSummary,
+  warnings: globalThis.NindouModuleProbeWarnings,
+  probe: globalThis.NindouModuleProbe,
+});
 
 for (const entry of globalThis.NindouModuleProbeWarnings) {
   console.warn(entry.warning);

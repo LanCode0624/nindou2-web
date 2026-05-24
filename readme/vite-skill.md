@@ -203,5 +203,6 @@ map 資料日常流程：
 - `scripts/main.module.js` 也會輸出 `globalThis.NindouModuleProbeSummary`，含 `total/synced/unsynced/unsyncedKeys`，可在 browser console 快速判斷是否全部同步。
 - `scripts/main.module.js` 也會輸出 `globalThis.NindouModuleProbeWarnings`（array），每筆含 `key` 與 `warning`，可直接給工具或自動化讀取，不必解析 console 文字。
 - `scripts/main.module.js` 也會輸出 `globalThis.NindouModuleProbeMeta`，目前含 `version` 與 `sectionKeys`，供後續 probe schema 演進時做相容性判斷。
+- `scripts/main.module.js` 也會輸出 `globalThis.getNindouModuleProbeReport()`，一次回傳 `{ meta, summary, warnings, probe }`。
 - 每個 module 都要有 `summarize*()` helper，供 browser probe 和 Node test 比對。
 - 如果 browser probe 和 Node test 不一致，優先相信 browser probe，因為 browser 裡 top-level `const` / `let` 不一定掛在 `globalThis`。
