@@ -14,6 +14,10 @@ test("rule mode ES module stays in sync with legacy rule mode behavior", async (
   const summary = ruleModesModule.summarizeRuleModeProfiles(contextValue(context, "modeRuleProfiles"));
 
   assert.equal(summary.isSynced, true);
+  assert.deepEqual(summary.moduleWeaponKeysByMode.modified, ["weapon4", "weapon6", "weapon7", "weapon8"]);
+  assert.deepEqual(plain(summary.legacyWeaponKeysByMode.modified), ["weapon4", "weapon6", "weapon7", "weapon8"]);
+  assert.deepEqual(summary.moduleNinjutsuKeysByMode.modified, Object.keys(ruleModesModule.modeRuleProfiles.modified.ninjutsu));
+  assert.deepEqual(plain(summary.legacyNinjutsuKeysByMode.modified), Object.keys(ruleModesModule.modeRuleProfiles.modified.ninjutsu));
   assert.deepEqual(ruleModesModule.modeRuleProfiles.modified.weapons, plain(contextValue(context, "modeRuleProfiles.modified.weapons")));
   assert.equal(ruleModesModule.currentRuleModeKey({ deathModeKey: "death_command" }), context.currentRuleModeKey());
   assert.equal(ruleModesModule.weaponDamageForMode("weapon4", 999, { deathModeKey: "death_command" }), context.weaponDamageForMode("weapon4", 999));

@@ -98,10 +98,29 @@ export function attackNinjuRule(type, stateLike = {}) {
 export function summarizeRuleModeProfiles(legacyProfiles = {}) {
   const moduleModes = Object.keys(modeRuleProfiles);
   const legacyModes = Object.keys(legacyProfiles);
+  const moduleWeaponKeysByMode = Object.fromEntries(
+    moduleModes.map((mode) => [mode, Object.keys(modeRuleProfiles[mode]?.weapons || {})]),
+  );
+  const legacyWeaponKeysByMode = Object.fromEntries(
+    legacyModes.map((mode) => [mode, Object.keys(legacyProfiles[mode]?.weapons || {})]),
+  );
+  const moduleNinjutsuKeysByMode = Object.fromEntries(
+    moduleModes.map((mode) => [mode, Object.keys(modeRuleProfiles[mode]?.ninjutsu || {})]),
+  );
+  const legacyNinjutsuKeysByMode = Object.fromEntries(
+    legacyModes.map((mode) => [mode, Object.keys(legacyProfiles[mode]?.ninjutsu || {})]),
+  );
+  const modeOrderSynced = moduleModes.length === legacyModes.length
+    && moduleModes.every((mode, index) => mode === legacyModes[index]);
+  const weaponKeysSynced = JSON.stringify(moduleWeaponKeysByMode) === JSON.stringify(legacyWeaponKeysByMode);
+  const ninjutsuKeysSynced = JSON.stringify(moduleNinjutsuKeysByMode) === JSON.stringify(legacyNinjutsuKeysByMode);
   return {
     moduleModes,
     legacyModes,
-    isSynced: moduleModes.length === legacyModes.length
-      && moduleModes.every((mode, index) => mode === legacyModes[index]),
+    moduleWeaponKeysByMode,
+    legacyWeaponKeysByMode,
+    moduleNinjutsuKeysByMode,
+    legacyNinjutsuKeysByMode,
+    isSynced: modeOrderSynced && weaponKeysSynced && ninjutsuKeysSynced,
   };
 }
