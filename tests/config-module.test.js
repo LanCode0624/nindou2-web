@@ -28,6 +28,14 @@ test("config ES module stays in sync with legacy config constants", async () => 
   assert.deepEqual(configModule.genkiButtonRect, plain(contextValue(context, "genkiButtonRect")));
   assert.deepEqual(configModule.kakkiButtonRect, plain(contextValue(context, "kakkiButtonRect")));
   assert.deepEqual(configModule.shinkiButtonRect, plain(contextValue(context, "shinkiButtonRect")));
+  assert.equal(configModule.itemSlotStartX, contextValue(context, "itemSlotStartX"));
+  assert.equal(configModule.itemSlotY, contextValue(context, "itemSlotY"));
+  assert.equal(configModule.itemSlotW, contextValue(context, "itemSlotW"));
+  assert.equal(configModule.itemSlotH, contextValue(context, "itemSlotH"));
+  assert.equal(configModule.itemSlotGap, contextValue(context, "itemSlotGap"));
+  assert.equal(configModule.defaultConsumableDisableMs, contextValue(context, "defaultConsumableDisableMs"));
+  assert.equal(configModule.defaultConsumableInvincibleMs, contextValue(context, "defaultConsumableInvincibleMs"));
+  assert.equal(configModule.sake4MoveSkillFreeMs, contextValue(context, "sake4MoveSkillFreeMs"));
 });
 
 test("config bridge section is generated from module workflow", () => {

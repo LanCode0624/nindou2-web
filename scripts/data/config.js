@@ -109,14 +109,6 @@ const mapItemDropChance = 0.4;
 const mapItemDropTypes = ["chest", "vase", "barrel", "hay"];
 const mapGoldDropTypes = ["hay"];
 const mapConsumableDropTypes = ["backup3", "sake4"];
-const itemSlotStartX = 510;
-const itemSlotY = 558;
-const itemSlotW = 38;
-const itemSlotH = 34;
-const itemSlotGap = 6;
-const defaultConsumableDisableMs = 1500;
-const defaultConsumableInvincibleMs = 1500;
-const sake4MoveSkillFreeMs = 15000;
 
 // NINDOU_CONFIG_BRIDGE_START
 // AUTO-GENERATED SECTION.
@@ -399,6 +391,14 @@ const shinkiButtonRect = {
   "w": 65,
   "h": 30
 };
+const itemSlotStartX = 510;
+const itemSlotY = 558;
+const itemSlotW = 38;
+const itemSlotH = 34;
+const itemSlotGap = 6;
+const defaultConsumableDisableMs = 1500;
+const defaultConsumableInvincibleMs = 1500;
+const sake4MoveSkillFreeMs = 15000;
 
 globalThis.NindouConfig = {
   weaponCooldownMs,

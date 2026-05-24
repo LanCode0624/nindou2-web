@@ -29,6 +29,14 @@ const hotBloodButtonRect = ${toLiteral(configModule.hotBloodButtonRect)};
 const genkiButtonRect = ${toLiteral(configModule.genkiButtonRect)};
 const kakkiButtonRect = ${toLiteral(configModule.kakkiButtonRect)};
 const shinkiButtonRect = ${toLiteral(configModule.shinkiButtonRect)};
+const itemSlotStartX = ${configModule.itemSlotStartX};
+const itemSlotY = ${configModule.itemSlotY};
+const itemSlotW = ${configModule.itemSlotW};
+const itemSlotH = ${configModule.itemSlotH};
+const itemSlotGap = ${configModule.itemSlotGap};
+const defaultConsumableDisableMs = ${configModule.defaultConsumableDisableMs};
+const defaultConsumableInvincibleMs = ${configModule.defaultConsumableInvincibleMs};
+const sake4MoveSkillFreeMs = ${configModule.sake4MoveSkillFreeMs};
 
 globalThis.NindouConfig = {
   weaponCooldownMs,

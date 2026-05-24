@@ -13,6 +13,14 @@ export const hotBloodButtonRect = { x: 656, y: 600, w: 65, h: 30 };
 export const genkiButtonRect = { x: 730, y: 600, w: 65, h: 30 };
 export const kakkiButtonRect = { x: 804, y: 600, w: 65, h: 30 };
 export const shinkiButtonRect = { x: 878, y: 600, w: 65, h: 30 };
+export const itemSlotStartX = 510;
+export const itemSlotY = 558;
+export const itemSlotW = 38;
+export const itemSlotH = 34;
+export const itemSlotGap = 6;
+export const defaultConsumableDisableMs = 1500;
+export const defaultConsumableInvincibleMs = 1500;
+export const sake4MoveSkillFreeMs = 15000;
 
 export const ninjutsuRuleProfiles = {
   modified: {
