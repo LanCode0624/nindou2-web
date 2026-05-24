@@ -119,6 +119,7 @@ globalThis.NindouModuleProbeWarnings = unsyncedProbeKeys.map((key) => ({
   warning: probeSections[key]?.warning || `Module probe is out of sync: ${key}`,
 }));
 globalThis.NindouModuleProbeSummary = {
+  generatedAt: new Date().toISOString(),
   total: probeKeys.length,
   synced: probeKeys.length - unsyncedProbeKeys.length,
   unsynced: unsyncedProbeKeys.length,

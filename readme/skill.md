@@ -775,7 +775,7 @@ For multi-step tasks, state a brief plan:
 - `scripts/main.module.js` keeps probe-only behavior.
 - Probe domains are now defined in a single `probeSections` table (legacy source + summarize helper + warning text).
 - `globalThis.NindouModuleProbe` and warning checks are generated from `probeSections`, so new domains should be added there only.
-- `scripts/main.module.js` now also exposes `globalThis.NindouModuleProbeSummary` (`total/synced/unsynced/syncedKeys/unsyncedKeys`) for quick browser-side sync checks.
+- `scripts/main.module.js` now also exposes `globalThis.NindouModuleProbeSummary` (`generatedAt`, `total/synced/unsynced/syncedKeys/unsyncedKeys`) for quick browser-side sync checks.
 - `syncedKeys` and `unsyncedKeys` are sorted in probe summary to keep diagnostics deterministic.
 - `getNindouModuleProbeReport({ keysOnly: true })` follows the same sorted key order for stable plain-text diffs.
 - `scripts/main.module.js` now also exposes `globalThis.isNindouModuleProbeSynced` as a quick boolean sync gate.
