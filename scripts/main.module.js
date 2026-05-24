@@ -104,6 +104,10 @@ globalThis.NindouModuleProbe = Object.fromEntries(
 
 const probeKeys = Object.keys(globalThis.NindouModuleProbe);
 const unsyncedProbeKeys = probeKeys.filter((key) => !globalThis.NindouModuleProbe[key]?.isSynced);
+globalThis.NindouModuleProbeWarnings = unsyncedProbeKeys.map((key) => ({
+  key,
+  warning: probeSections[key]?.warning || `Module probe is out of sync: ${key}`,
+}));
 globalThis.NindouModuleProbeSummary = {
   total: probeKeys.length,
   synced: probeKeys.length - unsyncedProbeKeys.length,
@@ -111,8 +115,6 @@ globalThis.NindouModuleProbeSummary = {
   unsyncedKeys: unsyncedProbeKeys,
 };
 
-for (const [key, section] of Object.entries(probeSections)) {
-  if (!globalThis.NindouModuleProbe[key]?.isSynced) {
-    console.warn(section.warning);
-  }
+for (const entry of globalThis.NindouModuleProbeWarnings) {
+  console.warn(entry.warning);
 }

@@ -776,3 +776,4 @@ For multi-step tasks, state a brief plan:
 - Probe domains are now defined in a single `probeSections` table (legacy source + summarize helper + warning text).
 - `globalThis.NindouModuleProbe` and warning checks are generated from `probeSections`, so new domains should be added there only.
 - `scripts/main.module.js` now also exposes `globalThis.NindouModuleProbeSummary` for quick browser-side sync checks.
+- `scripts/main.module.js` also exposes `globalThis.NindouModuleProbeWarnings` for structured unsynced warning entries.
