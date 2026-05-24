@@ -42,6 +42,17 @@ export const mapItemDropChance = 0.4;
 export const mapItemDropTypes = ["chest", "vase", "barrel", "hay"];
 export const mapGoldDropTypes = ["hay"];
 export const mapConsumableDropTypes = ["backup3", "sake4"];
+export const ui = {
+  top: 0,
+  bottomTop: 542,
+  bottomHeight: 138,
+  leftPanelW: 446,
+  midX: 446,
+};
+export const startingAreas = {
+  blue: { xMin: 2, xMax: 3, yMin: 3, yMax: 7 },
+  grey: { xMin: 16, xMax: 17, yMin: 3, yMax: 7 },
+};
 
 export const ninjutsuRuleProfiles = {
   modified: {

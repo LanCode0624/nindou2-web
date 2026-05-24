@@ -382,6 +382,27 @@ const mapConsumableDropTypes = [
   "backup3",
   "sake4"
 ];
+const ui = {
+  "top": 0,
+  "bottomTop": 542,
+  "bottomHeight": 138,
+  "leftPanelW": 446,
+  "midX": 446
+};
+const startingAreas = {
+  "blue": {
+    "xMin": 2,
+    "xMax": 3,
+    "yMin": 3,
+    "yMax": 7
+  },
+  "grey": {
+    "xMin": 16,
+    "xMax": 17,
+    "yMin": 3,
+    "yMax": 7
+  }
+};
 const soulCombatGainSteps = 5.4;
 const soulDeathGainSteps = 27;
 const ninjuChainGap = 500;
@@ -422,17 +443,3 @@ globalThis.NindouConfig = {
 // NINDOU_CONFIG_BRIDGE_END
 
 const countdownTotalMs = 2500;
-
-const ui = {
-  top: 0,
-  bottomTop: 542,
-  bottomHeight: 138,
-  leftPanelW: 446,
-  midX: 446,
-};
-
-const startingAreas = {
-  // Internal grid coordinates. Display coordinates are converted elsewhere.
-  blue: { xMin: 2, xMax: 3, yMin: 3, yMax: 7 },
-  grey: { xMin: 16, xMax: 17, yMin: 3, yMax: 7 },
-};

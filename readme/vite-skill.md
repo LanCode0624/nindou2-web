@@ -30,7 +30,7 @@
 - 目前 production build 會轉換 18 個 modules。
 - 想用本機 Vite server 玩/測，可雙擊 repo 根目錄的 `啟動遊戲.cmd`。黑色視窗需保持開著，關掉 server 就停止。
 - `weapons` 已切成單一來源：只手改 `scripts/data/weapons.module.mjs`，再跑 `npm run sync:weapons` 產生 `scripts/data/weapons.js`。
-- `config` 已先切一段單一來源：`ninjutsuRuleProfiles + attackNinjuOutcomeTables + 六顆忍術按鈕 rect + itemSlot/defaultConsumable 常數 + mapItemDrop 常數 + soul/ninjuChain 常數 + 核心戰鬥常數(weapon/maxSkill/objectHp/maxHp/collision) + 開局/重生常數(hold/charge/respawn/unit) + 移動殘影常數(ARRIVE/PREARRIVE) + NindouConfig` 段落由 `scripts/data/config.module.mjs` 回填，改完要跑 `npm run sync:config-nindou`。
+- `config` 已先切一段單一來源：`ninjutsuRuleProfiles + attackNinjuOutcomeTables + 六顆忍術按鈕 rect + itemSlot/defaultConsumable 常數 + mapItemDrop 常數 + soul/ninjuChain 常數 + 核心戰鬥常數(weapon/maxSkill/objectHp/maxHp/collision) + 開局/重生常數(hold/charge/respawn/unit) + 移動殘影常數(ARRIVE/PREARRIVE) + 版面/出生區常數(ui/startingAreas) + NindouConfig` 段落由 `scripts/data/config.module.mjs` 回填，改完要跑 `npm run sync:config-nindou`。
 - `ninjutsu-definitions` 已切成單一來源：只手改 `scripts/data/ninjutsu-definitions.module.mjs`，再跑 `npm run sync:ninjutsu-definitions` 產生 `scripts/data/ninjutsu-definitions.js`。
 - `locales` 已切成單一來源：只手改 `scripts/data/locales.module.mjs`，再跑 `npm run sync:locales` 產生 `scripts/data/locales.js`。
 - `map` 已切成單一來源：只手改 `scripts/data/map.module.mjs`，再跑 `npm run sync:map` 產生 `scripts/data/map.js`。
