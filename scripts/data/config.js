@@ -118,13 +118,6 @@ const defaultConsumableDisableMs = 1500;
 const defaultConsumableInvincibleMs = 1500;
 const sake4MoveSkillFreeMs = 15000;
 
-const moneyDartButtonRect = { x: 508, y: 600, w: 65, h: 30 };
-const steelButtonRect = { x: 582, y: 600, w: 65, h: 30 };
-const hotBloodButtonRect = { x: 656, y: 600, w: 65, h: 30 };
-const genkiButtonRect = { x: 730, y: 600, w: 65, h: 30 };
-const kakkiButtonRect = { x: 804, y: 600, w: 65, h: 30 };
-const shinkiButtonRect = { x: 878, y: 600, w: 65, h: 30 };
-
 // NINDOU_CONFIG_BRIDGE_START
 // AUTO-GENERATED SECTION.
 // Source: scripts/data/config.module.mjs
@@ -369,6 +362,42 @@ const attackNinjuOutcomeTables = {
       "hitDisableMs": 10000
     }
   ]
+};
+const moneyDartButtonRect = {
+  "x": 508,
+  "y": 600,
+  "w": 65,
+  "h": 30
+};
+const steelButtonRect = {
+  "x": 582,
+  "y": 600,
+  "w": 65,
+  "h": 30
+};
+const hotBloodButtonRect = {
+  "x": 656,
+  "y": 600,
+  "w": 65,
+  "h": 30
+};
+const genkiButtonRect = {
+  "x": 730,
+  "y": 600,
+  "w": 65,
+  "h": 30
+};
+const kakkiButtonRect = {
+  "x": 804,
+  "y": 600,
+  "w": 65,
+  "h": 30
+};
+const shinkiButtonRect = {
+  "x": 878,
+  "y": 600,
+  "w": 65,
+  "h": 30
 };
 
 globalThis.NindouConfig = {

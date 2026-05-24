@@ -23,6 +23,12 @@ function buildBridgeBlock(configModule) {
 // Run: npm run sync:config-nindou
 const ninjutsuRuleProfiles = ${profileLiteral};
 const attackNinjuOutcomeTables = ${toLiteral(configModule.attackNinjuOutcomeTables)};
+const moneyDartButtonRect = ${toLiteral(configModule.moneyDartButtonRect)};
+const steelButtonRect = ${toLiteral(configModule.steelButtonRect)};
+const hotBloodButtonRect = ${toLiteral(configModule.hotBloodButtonRect)};
+const genkiButtonRect = ${toLiteral(configModule.genkiButtonRect)};
+const kakkiButtonRect = ${toLiteral(configModule.kakkiButtonRect)};
+const shinkiButtonRect = ${toLiteral(configModule.shinkiButtonRect)};
 
 globalThis.NindouConfig = {
   weaponCooldownMs,

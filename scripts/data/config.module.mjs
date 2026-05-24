@@ -7,6 +7,12 @@ export const tachiMasterSkillMax = 18;
 export const soulStepsPerLevel = 27;
 export const soulMaxLevel = 4;
 export const ninjuFollowupMoveAllowance = 3;
+export const moneyDartButtonRect = { x: 508, y: 600, w: 65, h: 30 };
+export const steelButtonRect = { x: 582, y: 600, w: 65, h: 30 };
+export const hotBloodButtonRect = { x: 656, y: 600, w: 65, h: 30 };
+export const genkiButtonRect = { x: 730, y: 600, w: 65, h: 30 };
+export const kakkiButtonRect = { x: 804, y: 600, w: 65, h: 30 };
+export const shinkiButtonRect = { x: 878, y: 600, w: 65, h: 30 };
 
 export const ninjutsuRuleProfiles = {
   modified: {
