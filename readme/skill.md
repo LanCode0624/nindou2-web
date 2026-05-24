@@ -773,5 +773,5 @@ For multi-step tasks, state a brief plan:
 ### 2026-05-24 Vite probe maintenance
 
 - `scripts/main.module.js` keeps probe-only behavior.
-- Repeated `if (!isSynced) console.warn(...)` blocks were consolidated into a single table-driven loop via `probeSections`.
-- When adding/removing probe domains, update both `globalThis.NindouModuleProbe` fields and `probeSections` in the same commit.
+- Probe domains are now defined in a single `probeSections` table (legacy source + summarize helper + warning text).
+- `globalThis.NindouModuleProbe` and warning checks are generated from `probeSections`, so new domains should be added there only.
