@@ -368,6 +368,13 @@ export function summarizeConfigConstants(legacy = {}) {
     roomMapKeys: Object.keys(roomMapDefinitions),
     ui,
     startingAreas,
+    itemSlotRect: {
+      x: itemSlotStartX,
+      y: itemSlotY,
+      w: itemSlotW,
+      h: itemSlotH,
+      gap: itemSlotGap,
+    },
   };
   const legacyResult = {
     weaponCooldownMs: legacy.weaponCooldownMs,
@@ -388,6 +395,13 @@ export function summarizeConfigConstants(legacy = {}) {
     roomMapKeys: Object.keys(legacy.roomMapDefinitions || {}),
     ui: legacy.ui,
     startingAreas: legacy.startingAreas,
+    itemSlotRect: {
+      x: legacy.itemSlotStartX,
+      y: legacy.itemSlotY,
+      w: legacy.itemSlotW,
+      h: legacy.itemSlotH,
+      gap: legacy.itemSlotGap,
+    },
   };
   return {
     moduleResult,

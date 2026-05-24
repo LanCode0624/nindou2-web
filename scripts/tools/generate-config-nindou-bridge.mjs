@@ -93,6 +93,11 @@ globalThis.NindouConfig = {
   roomMapDefinitions,
   ui,
   startingAreas,
+  itemSlotStartX,
+  itemSlotY,
+  itemSlotW,
+  itemSlotH,
+  itemSlotGap,
   ninjutsuRuleProfiles,
 };
 ${endMarker}`;

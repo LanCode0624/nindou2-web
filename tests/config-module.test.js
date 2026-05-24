@@ -22,6 +22,20 @@ test("config ES module stays in sync with legacy config constants", async () => 
   assert.deepEqual(plain(summary.legacyResult.grid), plain(contextValue(context, "grid")));
   assert.deepEqual(plain(summary.moduleResult.ui), plain(contextValue(context, "ui")));
   assert.deepEqual(plain(summary.legacyResult.ui), plain(contextValue(context, "ui")));
+  assert.deepEqual(plain(summary.moduleResult.itemSlotRect), {
+    x: contextValue(context, "itemSlotStartX"),
+    y: contextValue(context, "itemSlotY"),
+    w: contextValue(context, "itemSlotW"),
+    h: contextValue(context, "itemSlotH"),
+    gap: contextValue(context, "itemSlotGap"),
+  });
+  assert.deepEqual(plain(summary.legacyResult.itemSlotRect), {
+    x: contextValue(context, "itemSlotStartX"),
+    y: contextValue(context, "itemSlotY"),
+    w: contextValue(context, "itemSlotW"),
+    h: contextValue(context, "itemSlotH"),
+    gap: contextValue(context, "itemSlotGap"),
+  });
   assert.equal(configModule.weaponCooldownMs, contextValue(context, "weaponCooldownMs"));
   assert.equal(configModule.weaponDamage, contextValue(context, "weaponDamage"));
   assert.equal(configModule.objectHp, contextValue(context, "objectHp"));
