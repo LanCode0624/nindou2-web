@@ -111,6 +111,7 @@ globalThis.NindouModuleProbeMeta = {
   sectionCount: probeKeys.length,
   syncedCount: syncedProbeKeys.length,
   unsyncedCount: unsyncedProbeKeys.length,
+  hasUnsynced: unsyncedProbeKeys.length > 0,
   generatedAt: new Date().toISOString(),
 };
 globalThis.NindouModuleProbeWarnings = unsyncedProbeKeys.map((key) => ({
