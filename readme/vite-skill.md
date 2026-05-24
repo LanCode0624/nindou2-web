@@ -202,6 +202,7 @@ map 資料日常流程：
 - 新增或移除 probe domain 時，只改 `probeSections` 一處，不要再分開維護多份 key 清單。
 - `scripts/main.module.js` 也會輸出 `globalThis.NindouModuleProbeSummary`，含 `total/synced/unsynced/syncedKeys/unsyncedKeys`，可在 browser console 快速判斷是否全部同步。
 - `scripts/main.module.js` 會對 `syncedKeys/unsyncedKeys` 做排序，確保報表順序穩定、便於比對。
+- `globalThis.getNindouModuleProbeReport({ keysOnly: true })` 取得的 key 陣列也會沿用同樣排序規則，方便直接做文字 diff。
 - `scripts/main.module.js` 也會輸出 `globalThis.isNindouModuleProbeSynced`（boolean），可直接做流程 gating。
 - `scripts/main.module.js` 也會輸出 `globalThis.NindouModuleProbeWarnings`（array），每筆含 `key` 與 `warning`，可直接給工具或自動化讀取，不必解析 console 文字。
 - `scripts/main.module.js` 也會輸出 `globalThis.NindouModuleProbeMeta`，目前含 `version`、`sectionKeys`、`sectionCount`、`syncedCount`、`unsyncedCount`、`generatedAt`，供後續 probe schema 演進與診斷時間點判斷。
