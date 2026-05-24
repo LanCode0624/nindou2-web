@@ -126,7 +126,7 @@ globalThis.NindouModuleProbeSummary = {
 };
 globalThis.isNindouModuleProbeSynced = unsyncedProbeKeys.length === 0;
 globalThis.getNindouModuleProbeReport = (options = {}) => {
-  const includeProbe = options.includeProbe !== false;
+  const includeProbe = options.includeProbe !== false || options.keysOnly === true;
   const includeMeta = options.includeMeta !== false;
   const onlyUnsynced = options.onlyUnsynced === true;
   const keysOnly = options.keysOnly === true;
