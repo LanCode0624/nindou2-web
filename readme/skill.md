@@ -778,4 +778,4 @@ For multi-step tasks, state a brief plan:
 - `scripts/main.module.js` now also exposes `globalThis.NindouModuleProbeSummary` for quick browser-side sync checks.
 - `scripts/main.module.js` also exposes `globalThis.NindouModuleProbeWarnings` for structured unsynced warning entries.
 - `scripts/main.module.js` now also exposes `globalThis.NindouModuleProbeMeta` (`version`, `sectionKeys`) for probe schema tracking.
-- `scripts/main.module.js` now also exposes `globalThis.getNindouModuleProbeReport()` returning `{ meta, summary, warnings, probe }`.
+- `scripts/main.module.js` now also exposes `globalThis.getNindouModuleProbeReport(options)`; pass `{ includeProbe: false }` for a lightweight report without the full `probe` object.
