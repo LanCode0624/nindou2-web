@@ -120,11 +120,17 @@ globalThis.NindouModuleProbeSummary = {
 };
 globalThis.getNindouModuleProbeReport = (options = {}) => {
   const includeProbe = options.includeProbe !== false;
+  const onlyUnsynced = options.onlyUnsynced === true;
+  const probePayload = onlyUnsynced
+    ? Object.fromEntries(
+      globalThis.NindouModuleProbeSummary.unsyncedKeys.map((key) => [key, globalThis.NindouModuleProbe[key]]),
+    )
+    : globalThis.NindouModuleProbe;
   return {
     meta: globalThis.NindouModuleProbeMeta,
     summary: globalThis.NindouModuleProbeSummary,
     warnings: globalThis.NindouModuleProbeWarnings,
-    ...(includeProbe ? { probe: globalThis.NindouModuleProbe } : {}),
+    ...(includeProbe ? { probe: probePayload } : {}),
   };
 };
 
