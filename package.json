@@ -9,6 +9,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "check": "node --check game.js",
     "sync:weapons": "node scripts/tools/generate-weapons-classic.mjs",
+    "sync:config-nindou": "node scripts/tools/generate-config-nindou-bridge.mjs",
     "sync:ninjutsu-definitions": "node scripts/tools/generate-ninjutsu-definitions-classic.mjs",
     "sync:locales": "node scripts/tools/generate-locales-classic.mjs",
     "sync:map": "node scripts/tools/generate-map-classic.mjs",

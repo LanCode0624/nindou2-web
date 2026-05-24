@@ -22,3 +22,11 @@ test("config ES module stays in sync with legacy config constants", async () => 
   assert.equal(configModule.maxSkill, contextValue(context, "maxSkill"));
   assert.deepEqual(configModule.ninjutsuRuleProfiles, plain(contextValue(context, "ninjutsuRuleProfiles")));
 });
+
+test("config bridge section is generated from module workflow", () => {
+  const fs = require("node:fs");
+  const configText = fs.readFileSync(path.join(repoRoot, "scripts", "data", "config.js"), "utf8");
+  assert.equal(configText.includes("// NINDOU_CONFIG_BRIDGE_START"), true);
+  assert.equal(configText.includes("// NINDOU_CONFIG_BRIDGE_END"), true);
+  assert.equal(configText.includes("Run: npm run sync:config-nindou"), true);
+});

@@ -125,203 +125,220 @@ const genkiButtonRect = { x: 730, y: 600, w: 65, h: 30 };
 const kakkiButtonRect = { x: 804, y: 600, w: 65, h: 30 };
 const shinkiButtonRect = { x: 878, y: 600, w: 65, h: 30 };
 
+// NINDOU_CONFIG_BRIDGE_START
+// AUTO-GENERATED SECTION.
+// Source: scripts/data/config.module.mjs
+// Run: npm run sync:config-nindou
 const ninjutsuRuleProfiles = {
-  modified: {
-    moneyDart: {
-      cost: 0,
-      damage: 70,
-      readyMs: 200,
-      postThrowNinjuLockMs: 200,
+  "modified": {
+    "moneyDart": {
+      "cost": 0,
+      "damage": 70,
+      "readyMs": 200,
+      "postThrowNinjuLockMs": 200
     },
-    steel: {
-      cost: 6,
-      castDurationMs: 1500,
-      durationMs: 15000,
-      defenseMultiplier: 1.7,
+    "steel": {
+      "cost": 6,
+      "castDurationMs": 1500,
+      "durationMs": 15000,
+      "defenseMultiplier": 1.7
     },
-    hotBlood: {
-      cost: 6,
-      castDurationMs: 1500,
-      durationMs: 15000,
-      weaponDamageMultiplier: 2,
+    "hotBlood": {
+      "cost": 6,
+      "castDurationMs": 1500,
+      "durationMs": 15000,
+      "weaponDamageMultiplier": 2
     },
-    genki: {
-      cost: 2,
-      castDurationMs: 1500,
-      healAmount: 0,
-      effect: "steelNoDefense",
+    "genki": {
+      "cost": 2,
+      "castDurationMs": 1500,
+      "healAmount": 0,
+      "effect": "steelNoDefense"
     },
-    kakki: {
-      available: false,
-      cost: 6,
-      castDurationMs: 1500,
-      healAmount: 100,
-      effect: "selfHeal",
+    "kakki": {
+      "available": false,
+      "cost": 6,
+      "castDurationMs": 1500,
+      "healAmount": 100,
+      "effect": "selfHeal"
     },
-    shinki: {
-      available: false,
-      cost: 10,
-      castDurationMs: 1500,
-      healAmount: 100,
-      effect: "teamHeal",
+    "shinki": {
+      "available": false,
+      "cost": 10,
+      "castDurationMs": 1500,
+      "healAmount": 100,
+      "effect": "teamHeal"
     },
-    flash: {
-      cost: 0, // 閃光
-      castDurationMs: 1500,
-      hitChance: 0.6,
-      damage: 50,
-      missDisableMs: 1500,
-      hitDisableMs: 3500,
+    "flash": {
+      "cost": 0,
+      "castDurationMs": 1500,
+      "hitChance": 0.6,
+      "damage": 50,
+      "missDisableMs": 1500,
+      "hitDisableMs": 3500
     },
-    wildfire: {
-      cost: 0,
-      castDurationMs: 1500,
-      hitChance: 0.6,
-      damage: 50,
-      missDisableMs: 1500,
-      hitDisableMs: 3500,
+    "wildfire": {
+      "cost": 0,
+      "castDurationMs": 1500,
+      "hitChance": 0.6,
+      "damage": 50,
+      "missDisableMs": 1500,
+      "hitDisableMs": 3500
     },
-    death: {
-      cost: 7,
-      castDurationMs: 1500,
-      hitChance: 0.6,
-      damage: 50,
-      missDisableMs: 1500,
-      hitDisableMs: 3500,
+    "death": {
+      "cost": 7,
+      "castDurationMs": 1500,
+      "hitChance": 0.6,
+      "damage": 50,
+      "missDisableMs": 1500,
+      "hitDisableMs": 3500
     },
-    freeze: {
-      cost: 7,
-      castDurationMs: 1500,
-      hitChance: 0.35,
-      damage: 50,
-      missDisableMs: 1500,
-      hitDisableMs: 10000,
+    "freeze": {
+      "cost": 7,
+      "castDurationMs": 1500,
+      "hitChance": 0.35,
+      "damage": 50,
+      "missDisableMs": 1500,
+      "hitDisableMs": 10000
     },
-    angel: {
-      cost: 7,
-      castDurationMs: 1720,
-      hitChance: 0.6,
-      damage: 100,
-      missDisableMs: 1500,
-      hitDisableMs: 3500,
+    "angel": {
+      "cost": 7,
+      "castDurationMs": 1720,
+      "hitChance": 0.6,
+      "damage": 100,
+      "missDisableMs": 1500,
+      "hitDisableMs": 3500
     },
-    mouryo: {
-      cost: 7,
-      castDurationMs: 1720,
-      hitChance: 0.6,
-      damage: 145,
-      missDisableMs: 1500,
-      hitDisableMs: 3500,
+    "mouryo": {
+      "cost": 7,
+      "castDurationMs": 1720,
+      "hitChance": 0.6,
+      "damage": 145,
+      "missDisableMs": 1500,
+      "hitDisableMs": 3500
     },
-    seven: {
-      cost: 7,
-      castDurationMs: 1720,
-      damage: 130,
+    "seven": {
+      "cost": 7,
+      "castDurationMs": 1720,
+      "damage": 130
     },
-    clone: {
-      cost: 10,
-      castDurationMs: 1600,
-    },
+    "clone": {
+      "cost": 10,
+      "castDurationMs": 1600
+    }
   },
-  original: {
-    moneyDart: {
-      cost: 0,
-      damage: 100,
-      readyMs: 250,
-      postThrowNinjuLockMs: 250,
+  "original": {
+    "moneyDart": {
+      "cost": 0,
+      "damage": 100,
+      "readyMs": 250,
+      "postThrowNinjuLockMs": 250
     },
-    steel: {
-      cost: 7,
-      castDurationMs: 1500,
-      durationMs: 15000,
-      defenseMultiplier: 2,
+    "steel": {
+      "cost": 7,
+      "castDurationMs": 1500,
+      "durationMs": 15000,
+      "defenseMultiplier": 2
     },
-    hotBlood: {
-      cost: 7,
-      castDurationMs: 1500,
-      durationMs: 15000,
-      weaponDamageMultiplier: 2,
+    "hotBlood": {
+      "cost": 7,
+      "castDurationMs": 1500,
+      "durationMs": 15000,
+      "weaponDamageMultiplier": 2
     },
-    genki: {
-      available: false,
-      cost: 3,
-      castDurationMs: 1500,
-      healAmount: 50,
-      effect: "selfHeal",
+    "genki": {
+      "available": false,
+      "cost": 3,
+      "castDurationMs": 1500,
+      "healAmount": 50,
+      "effect": "selfHeal"
     },
-    kakki: {
-      available: false,
-      cost: 6,
-      castDurationMs: 1500,
-      healAmount: 100,
-      effect: "selfHeal",
+    "kakki": {
+      "available": false,
+      "cost": 6,
+      "castDurationMs": 1500,
+      "healAmount": 100,
+      "effect": "selfHeal"
     },
-    shinki: {
-      available: false,
-      cost: 10,
-      castDurationMs: 1500,
-      healAmount: 100,
-      effect: "teamHeal",
+    "shinki": {
+      "available": false,
+      "cost": 10,
+      "castDurationMs": 1500,
+      "healAmount": 100,
+      "effect": "teamHeal"
     },
-    flash: {
-      cost: 0,
-      castDurationMs: 1500,
-      hitChance: 0.3,
-      damage: 50,
-      missDisableMs: 1500,
-      hitDisableMs: 3500,
+    "flash": {
+      "cost": 0,
+      "castDurationMs": 1500,
+      "hitChance": 0.3,
+      "damage": 50,
+      "missDisableMs": 1500,
+      "hitDisableMs": 3500
     },
-    wildfire: {
-      cost: 0,
-      castDurationMs: 1500,
-      hitChance: 0.6,
-      damage: 50,
-      missDisableMs: 1500,
-      hitDisableMs: 3500,
+    "wildfire": {
+      "cost": 0,
+      "castDurationMs": 1500,
+      "hitChance": 0.6,
+      "damage": 50,
+      "missDisableMs": 1500,
+      "hitDisableMs": 3500
     },
-    death: {
-      cost: 7,
-      castDurationMs: 1500,
-      hitChance: 0.6,
-      damage: 50,
-      missDisableMs: 1500,
-      hitDisableMs: 3500,
+    "death": {
+      "cost": 7,
+      "castDurationMs": 1500,
+      "hitChance": 0.6,
+      "damage": 50,
+      "missDisableMs": 1500,
+      "hitDisableMs": 3500
     },
-    freeze: {
-      cost: 7,
-      castDurationMs: 1500,
-      hitChance: 0.35,
-      damage: 50,
-      missDisableMs: 1500,
-      hitDisableMs: 10000,
+    "freeze": {
+      "cost": 7,
+      "castDurationMs": 1500,
+      "hitChance": 0.35,
+      "damage": 50,
+      "missDisableMs": 1500,
+      "hitDisableMs": 10000
     },
-    angel: {
-      cost: 7,
-      castDurationMs: 1720,
-      hitChance: 0.6,
-      damage: 100,
-      missDisableMs: 1500,
-      hitDisableMs: 3500,
+    "angel": {
+      "cost": 7,
+      "castDurationMs": 1720,
+      "hitChance": 0.6,
+      "damage": 100,
+      "missDisableMs": 1500,
+      "hitDisableMs": 3500
     },
-    mouryo: {
-      cost: 7,
-      castDurationMs: 1720,
-      hitChance: 0.6,
-      damage: 145,
-      missDisableMs: 1500,
-      hitDisableMs: 3500,
+    "mouryo": {
+      "cost": 7,
+      "castDurationMs": 1720,
+      "hitChance": 0.6,
+      "damage": 145,
+      "missDisableMs": 1500,
+      "hitDisableMs": 3500
     },
-    seven: {
-      cost: 7,
-      castDurationMs: 1720,
-      damage: 130,
+    "seven": {
+      "cost": 7,
+      "castDurationMs": 1720,
+      "damage": 130
     },
-    clone: {
-      cost: 10,
-      castDurationMs: 1600,
-    },
-  },
+    "clone": {
+      "cost": 10,
+      "castDurationMs": 1600
+    }
+  }
 };
+
+globalThis.NindouConfig = {
+  weaponCooldownMs,
+  weaponDamage,
+  objectHp,
+  maxSkill,
+  tachiMasterSkillMax,
+  soulStepsPerLevel,
+  soulMaxLevel,
+  ninjuFollowupMoveAllowance,
+  ninjutsuRuleProfiles,
+};
+// NINDOU_CONFIG_BRIDGE_END
 
 const attackNinjuOutcomeTables = {
   wildfire: [
@@ -339,17 +356,6 @@ const attackNinjuOutcomeTables = {
   ],
 };
 
-globalThis.NindouConfig = {
-  weaponCooldownMs,
-  weaponDamage,
-  objectHp,
-  maxSkill,
-  tachiMasterSkillMax,
-  soulStepsPerLevel,
-  soulMaxLevel,
-  ninjuFollowupMoveAllowance,
-  ninjutsuRuleProfiles,
-};
 const countdownTotalMs = 2500;
 
 const ui = {
