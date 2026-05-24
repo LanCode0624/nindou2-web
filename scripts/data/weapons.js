@@ -283,12 +283,27 @@ const weaponFrames = Object.fromEntries(weaponDefinitions.map((weapon) => [
 function summarizeWeaponCatalog(legacyWeapons = []) {
   const legacyKeys = legacyWeapons.map((weapon) => weapon.key);
   const moduleKeys = weaponDefinitions.map((weapon) => weapon.key);
+  const moduleMeta = weaponDefinitions.map((weapon) => ({
+    key: weapon.key,
+    area: weapon.area,
+    cooldownMs: weapon.cooldownMs,
+    damage: weapon.damage,
+  }));
+  const legacyMeta = legacyWeapons.map((weapon) => ({
+    key: weapon.key,
+    area: weapon.area,
+    cooldownMs: weapon.cooldownMs,
+    damage: weapon.damage,
+  }));
   return {
     defaultKey: defaultWeaponKey,
     moduleKeys,
     legacyKeys,
+    moduleMeta,
+    legacyMeta,
     isSynced: moduleKeys.length === legacyKeys.length
-      && moduleKeys.every((key, index) => key === legacyKeys[index]),
+      && moduleKeys.every((key, index) => key === legacyKeys[index])
+      && JSON.stringify(moduleMeta) === JSON.stringify(legacyMeta),
   };
 }
 

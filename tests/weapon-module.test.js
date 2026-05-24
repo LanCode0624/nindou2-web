@@ -18,6 +18,7 @@ test("weapon ES module stays in sync with legacy weapon data", async () => {
   const summary = weaponsModule.summarizeWeaponCatalog(legacyWeapons);
 
   assert.equal(summary.isSynced, true);
+  assert.deepEqual(plain(summary.moduleMeta), plain(summary.legacyMeta));
   assert.equal(configModule.weaponCooldownMs, contextValue(context, "weaponCooldownMs"));
   assert.deepEqual(summary.moduleKeys, JSON.parse(JSON.stringify(legacyWeapons.map((weapon) => weapon.key))));
   assert.equal(summary.defaultKey, contextValue(context, "defaultWeaponKey"));
