@@ -58,6 +58,7 @@ npm run build
 - Vite / ES module 遷移細節以 [`readme/vite-skill.md`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/readme/vite-skill.md) 為準。只要改 Vite、module mirror、legacy bridge、`scripts/main.module.js`、Vite 測試或啟動方式，都要同步更新該文件。
 - 目前建議暫停無目標地新增 mirror module；如果是新增模式、武器、地圖，優先照既有 runtime 開發，必要時同步補 module mirror 與 probe。
 - 武器資料已改成「module 單一來源」：請只手改 `scripts/data/weapons.module.mjs`，再跑 `npm run sync:weapons` 產生 `scripts/data/weapons.js`。
+- ninjutsu-definitions 資料已改成「module 單一來源」：請只手改 `scripts/data/ninjutsu-definitions.module.mjs`，再跑 `npm run sync:ninjutsu-definitions` 產生 `scripts/data/ninjutsu-definitions.js`。
 - locales 資料已改成「module 單一來源」：請只手改 `scripts/data/locales.module.mjs`，再跑 `npm run sync:locales` 產生 `scripts/data/locales.js`。
 - map 資料已改成「module 單一來源」：請只手改 `scripts/data/map.module.mjs`，再跑 `npm run sync:map` 產生 `scripts/data/map.js`。
 - rule-modes 資料已改成「module 單一來源」：請只手改 `scripts/data/rule-modes.module.mjs`，再跑 `npm run sync:rule-modes` 產生 `scripts/data/rule-modes.js`。
@@ -173,6 +174,7 @@ game.js                                -> 尚未 module 化；不要直接全量
 - 行為先放 `scripts/systems/*`，不要把流程全部堆回 `game.js`。
 - 如果對應 `.module.mjs` 已存在，新增或調整純資料/純 helper 時要同步考慮 module mirror、legacy `globalThis.Nindou*` bridge、`scripts/main.module.js` probe 與 `tests/*-module.test.js`。
 - 武器資料調整後固定流程：改 `scripts/data/weapons.module.mjs` -> 跑 `npm run sync:weapons` -> 跑 `npm test`。
+- ninjutsu-definitions 資料調整後固定流程：改 `scripts/data/ninjutsu-definitions.module.mjs` -> 跑 `npm run sync:ninjutsu-definitions` -> 跑 `npm test`。
 - locales 資料調整後固定流程：改 `scripts/data/locales.module.mjs` -> 跑 `npm run sync:locales` -> 跑 `npm test`。
 - map 資料調整後固定流程：改 `scripts/data/map.module.mjs` -> 跑 `npm run sync:map` -> 跑 `npm test`。
 - rule-modes 資料調整後固定流程：改 `scripts/data/rule-modes.module.mjs` -> 跑 `npm run sync:rule-modes` -> 跑 `npm test`。
