@@ -107,6 +107,7 @@ const unsyncedProbeKeys = probeKeys.filter((key) => !globalThis.NindouModuleProb
 globalThis.NindouModuleProbeMeta = {
   version: 1,
   sectionKeys: probeKeys,
+  generatedAt: new Date().toISOString(),
 };
 globalThis.NindouModuleProbeWarnings = unsyncedProbeKeys.map((key) => ({
   key,
