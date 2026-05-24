@@ -79,9 +79,6 @@ function roomMapDefinitionEntries() {
   return Object.entries(roomMapDefinitions);
 }
 
-const maxHp = 300;
-const collisionDamage = 40; //衝撞傷害
-
 // NINDOU_CONFIG_BRIDGE_START
 // AUTO-GENERATED SECTION.
 // Source: scripts/data/config.module.mjs
@@ -404,6 +401,8 @@ const respawnPointerDuration = 1000;
 const playerUnitId = 1;
 const unitsPerTeam = 3;
 const aiSkillRegenPerSecond = 0.42;
+const maxHp = 300;
+const collisionDamage = 40;
 const ARRIVE_FRAME_MS = 65;
 const ARRIVE_TOTAL = 325;
 const PREARRIVE_FRAME_MS = 70;

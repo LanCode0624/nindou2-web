@@ -27,6 +27,8 @@ test("config ES module stays in sync with legacy config constants", async () => 
   assert.equal(configModule.playerUnitId, contextValue(context, "playerUnitId"));
   assert.equal(configModule.unitsPerTeam, contextValue(context, "unitsPerTeam"));
   assert.equal(configModule.aiSkillRegenPerSecond, contextValue(context, "aiSkillRegenPerSecond"));
+  assert.equal(configModule.maxHp, contextValue(context, "maxHp"));
+  assert.equal(configModule.collisionDamage, contextValue(context, "collisionDamage"));
   assert.equal(configModule.ARRIVE_FRAME_MS, contextValue(context, "ARRIVE_FRAME_MS"));
   assert.equal(configModule.ARRIVE_TOTAL, contextValue(context, "ARRIVE_TOTAL"));
   assert.equal(configModule.PREARRIVE_FRAME_MS, contextValue(context, "PREARRIVE_FRAME_MS"));
