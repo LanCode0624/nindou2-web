@@ -139,6 +139,7 @@ globalThis.getNindouModuleProbeReport = (options = {}) => {
     ? Object.keys(probePayload)
     : probePayload;
   return {
+    optionsUsed: { includeMeta, includeProbe, onlyUnsynced, keysOnly },
     ...(includeMeta ? { meta: globalThis.NindouModuleProbeMeta } : {}),
     summary: globalThis.NindouModuleProbeSummary,
     warnings: globalThis.NindouModuleProbeWarnings,
