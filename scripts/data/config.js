@@ -100,10 +100,6 @@ const unitsPerTeam = 3;
 const aiSkillRegenPerSecond = 0.42;
 const soulStepsPerLevel = 27;
 const soulMaxLevel = 4;
-const soulCombatGainSteps = soulStepsPerLevel / 5;
-const soulDeathGainSteps = soulStepsPerLevel;
-const ninjuChainGap = 500;
-const ninjuChainMaxGap = 500;
 const ninjuFollowupMoveAllowance = 3;
 
 // NINDOU_CONFIG_BRIDGE_START
@@ -409,6 +405,10 @@ const mapConsumableDropTypes = [
   "backup3",
   "sake4"
 ];
+const soulCombatGainSteps = 5.4;
+const soulDeathGainSteps = 27;
+const ninjuChainGap = 500;
+const ninjuChainMaxGap = 500;
 
 globalThis.NindouConfig = {
   weaponCooldownMs,

@@ -58,7 +58,7 @@ npm run build
 - Vite / ES module 遷移細節以 [`readme/vite-skill.md`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/readme/vite-skill.md) 為準。只要改 Vite、module mirror、legacy bridge、`scripts/main.module.js`、Vite 測試或啟動方式，都要同步更新該文件。
 - 目前建議暫停無目標地新增 mirror module；如果是新增模式、武器、地圖，優先照既有 runtime 開發，必要時同步補 module mirror 與 probe。
 - 武器資料已改成「module 單一來源」：請只手改 `scripts/data/weapons.module.mjs`，再跑 `npm run sync:weapons` 產生 `scripts/data/weapons.js`。
-- config 的 `ninjutsuRuleProfiles + attackNinjuOutcomeTables + 六顆忍術按鈕 rect + itemSlot/defaultConsumable 常數 + mapItemDrop 常數 + NindouConfig` 區段已改成 module 回填：請改 `scripts/data/config.module.mjs` 後跑 `npm run sync:config-nindou` 更新 `scripts/data/config.js` 的 bridge 區段。
+- config 的 `ninjutsuRuleProfiles + attackNinjuOutcomeTables + 六顆忍術按鈕 rect + itemSlot/defaultConsumable 常數 + mapItemDrop 常數 + soul/ninjuChain 常數 + NindouConfig` 區段已改成 module 回填：請改 `scripts/data/config.module.mjs` 後跑 `npm run sync:config-nindou` 更新 `scripts/data/config.js` 的 bridge 區段。
 - ninjutsu-definitions 資料已改成「module 單一來源」：請只手改 `scripts/data/ninjutsu-definitions.module.mjs`，再跑 `npm run sync:ninjutsu-definitions` 產生 `scripts/data/ninjutsu-definitions.js`。
 - locales 資料已改成「module 單一來源」：請只手改 `scripts/data/locales.module.mjs`，再跑 `npm run sync:locales` 產生 `scripts/data/locales.js`。
 - map 資料已改成「module 單一來源」：請只手改 `scripts/data/map.module.mjs`，再跑 `npm run sync:map` 產生 `scripts/data/map.js`。

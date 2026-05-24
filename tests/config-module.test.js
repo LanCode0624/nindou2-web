@@ -40,6 +40,10 @@ test("config ES module stays in sync with legacy config constants", async () => 
   assert.deepEqual(configModule.mapItemDropTypes, plain(contextValue(context, "mapItemDropTypes")));
   assert.deepEqual(configModule.mapGoldDropTypes, plain(contextValue(context, "mapGoldDropTypes")));
   assert.deepEqual(configModule.mapConsumableDropTypes, plain(contextValue(context, "mapConsumableDropTypes")));
+  assert.equal(configModule.soulCombatGainSteps, contextValue(context, "soulCombatGainSteps"));
+  assert.equal(configModule.soulDeathGainSteps, contextValue(context, "soulDeathGainSteps"));
+  assert.equal(configModule.ninjuChainGap, contextValue(context, "ninjuChainGap"));
+  assert.equal(configModule.ninjuChainMaxGap, contextValue(context, "ninjuChainMaxGap"));
 });
 
 test("config bridge section is generated from module workflow", () => {
