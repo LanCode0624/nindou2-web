@@ -303,6 +303,7 @@ const mapConsumableDropTypes = [
   "backup3",
   "sake4"
 ];
+const countdownTotalMs = 2500;
 const ui = {
   "top": 0,
   "bottomTop": 542,
@@ -502,5 +503,3 @@ globalThis.NindouConfig = {
   ninjutsuRuleProfiles,
 };
 // NINDOU_CONFIG_BRIDGE_END
-
-const countdownTotalMs = 2500;
