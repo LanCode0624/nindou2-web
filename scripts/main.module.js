@@ -109,6 +109,7 @@ globalThis.NindouModuleProbeMeta = {
   version: 1,
   sectionKeys: probeKeys,
   sectionCount: probeKeys.length,
+  syncedCount: syncedProbeKeys.length,
   unsyncedCount: unsyncedProbeKeys.length,
   generatedAt: new Date().toISOString(),
 };
