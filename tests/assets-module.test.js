@@ -38,6 +38,8 @@ test("asset ES module stays in sync with legacy asset data", async () => {
   assert.equal(summary.isSynced, true);
   assert.deepEqual(summary.soundKeys, Object.keys(legacyAssets.soundSources));
   assert.deepEqual(summary.imageKeys, Object.keys(legacyAssets.imageSources));
+  assert.deepEqual(summary.attackNinjuConfigKeys, Object.keys(legacyAssets.attackNinjuConfigs));
+  assert.deepEqual(summary.specialNinjuConfigKeys, Object.keys(legacyAssets.specialNinjuConfigs));
   assert.ok(context.__audioSources.includes("assets/sounds/bgm/忍2大廳.mp3"));
   assert.ok(context.__audioSources.includes(summary.defaultBattleBgmSrc));
 });
