@@ -501,6 +501,12 @@ globalThis.NindouConfig = {
   soulMaxLevel,
   ninjuFollowupMoveAllowance,
   countdownTotalMs,
+  grid,
+  battleMapDrawInset,
+  defaultRoomMapKey,
+  roomMapDefinitions,
+  ui,
+  startingAreas,
   ninjutsuRuleProfiles,
 };
 // NINDOU_CONFIG_BRIDGE_END

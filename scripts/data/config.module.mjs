@@ -362,6 +362,12 @@ export function summarizeConfigConstants(legacy = {}) {
     modifiedNinjutsuKeys: Object.keys(ninjutsuRuleProfiles.modified || {}),
     originalNinjutsuKeys: Object.keys(ninjutsuRuleProfiles.original || {}),
     countdownTotalMs,
+    grid,
+    battleMapDrawInset,
+    defaultRoomMapKey,
+    roomMapKeys: Object.keys(roomMapDefinitions),
+    ui,
+    startingAreas,
   };
   const legacyResult = {
     weaponCooldownMs: legacy.weaponCooldownMs,
@@ -376,6 +382,12 @@ export function summarizeConfigConstants(legacy = {}) {
     modifiedNinjutsuKeys: Object.keys(legacy.ninjutsuRuleProfiles?.modified || {}),
     originalNinjutsuKeys: Object.keys(legacy.ninjutsuRuleProfiles?.original || {}),
     countdownTotalMs: legacy.countdownTotalMs,
+    grid: legacy.grid,
+    battleMapDrawInset: legacy.battleMapDrawInset,
+    defaultRoomMapKey: legacy.defaultRoomMapKey,
+    roomMapKeys: Object.keys(legacy.roomMapDefinitions || {}),
+    ui: legacy.ui,
+    startingAreas: legacy.startingAreas,
   };
   return {
     moduleResult,
