@@ -491,6 +491,7 @@ const moneyDartShootFrames = {
 };
 
 globalThis.NindouAssets = {
+  defaultRoomBgmSrc: "assets/sounds/bgm/忍2大廳.mp3",
   defaultBattleBgmSrc,
   soundSources,
   imageSources,

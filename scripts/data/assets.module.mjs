@@ -351,6 +351,7 @@ function sourceLengthsByKey(value) {
 
 export function summarizeAssetCatalog(legacy = {}) {
   const moduleSummary = {
+    defaultRoomBgmSrc,
     defaultBattleBgmSrc,
     soundKeys: keysOf(soundSources),
     imageKeys: keysOf(imageSources),
@@ -368,6 +369,7 @@ export function summarizeAssetCatalog(legacy = {}) {
     attackNinjuConfigKeys,
   };
   const legacySummary = {
+    defaultRoomBgmSrc: legacy.defaultRoomBgmSrc,
     defaultBattleBgmSrc: legacy.defaultBattleBgmSrc,
     soundKeys: keysOf(legacy.soundSources),
     imageKeys: keysOf(legacy.imageSources),
