@@ -79,11 +79,6 @@ function roomMapDefinitionEntries() {
   return Object.entries(roomMapDefinitions);
 }
 
-// 移動殘影動畫時間常數；系統層用 ARRIVE_TOTAL 判斷移動中狀態。
-const ARRIVE_FRAME_MS = 65;
-const ARRIVE_TOTAL = ARRIVE_FRAME_MS * 5;
-const PREARRIVE_FRAME_MS = 70;
-const PREARRIVE_TOTAL = PREARRIVE_FRAME_MS * 2;
 const maxHp = 300;
 const collisionDamage = 40; //衝撞傷害
 
@@ -409,6 +404,10 @@ const respawnPointerDuration = 1000;
 const playerUnitId = 1;
 const unitsPerTeam = 3;
 const aiSkillRegenPerSecond = 0.42;
+const ARRIVE_FRAME_MS = 65;
+const ARRIVE_TOTAL = 325;
+const PREARRIVE_FRAME_MS = 70;
+const PREARRIVE_TOTAL = 140;
 
 globalThis.NindouConfig = {
   weaponCooldownMs,

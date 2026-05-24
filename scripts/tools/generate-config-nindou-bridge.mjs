@@ -60,6 +60,10 @@ const respawnPointerDuration = ${configModule.respawnPointerDuration};
 const playerUnitId = ${configModule.playerUnitId};
 const unitsPerTeam = ${configModule.unitsPerTeam};
 const aiSkillRegenPerSecond = ${configModule.aiSkillRegenPerSecond};
+const ARRIVE_FRAME_MS = ${configModule.ARRIVE_FRAME_MS};
+const ARRIVE_TOTAL = ${configModule.ARRIVE_TOTAL};
+const PREARRIVE_FRAME_MS = ${configModule.PREARRIVE_FRAME_MS};
+const PREARRIVE_TOTAL = ${configModule.PREARRIVE_TOTAL};
 
 globalThis.NindouConfig = {
   weaponCooldownMs,
