@@ -22,6 +22,7 @@ function buildBridgeBlock(configModule) {
 // Source: scripts/data/config.module.mjs
 // Run: npm run sync:config-nindou
 const ninjutsuRuleProfiles = ${profileLiteral};
+const attackNinjuOutcomeTables = ${toLiteral(configModule.attackNinjuOutcomeTables)};
 
 globalThis.NindouConfig = {
   weaponCooldownMs,

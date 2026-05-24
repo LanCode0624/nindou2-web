@@ -206,6 +206,22 @@ export const ninjutsuRuleProfiles = {
   },
 };
 
+export const attackNinjuOutcomeTables = {
+  wildfire: [
+    { chance: 0.3, damage: 50, headEffect: "flashHitHead" },
+    { chance: 0.2, damage: 100, headEffect: "wildfireMiddleHitHead" },
+  ],
+  death: [
+    { chance: 0.0, damage: 9999, headEffect: "flashHitHead" },
+    { chance: 0.0, damage: 9999, headEffect: "deathMiddleHitHead" },
+    { chance: 0.0, damage: 9999, headEffect: "deathBigHitHead" },
+    { chance: 0.08, damage: 9999, headEffect: "deathNinjuSuccess" },
+  ],
+  freeze: [
+    { chance: 0.35, damage: 50, headEffect: "flashHitHead", hitDisableMs: 10000 },
+  ],
+};
+
 export function summarizeConfigConstants(legacy = {}) {
   const moduleResult = {
     weaponCooldownMs,

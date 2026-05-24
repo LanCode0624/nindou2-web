@@ -21,6 +21,7 @@ test("config ES module stays in sync with legacy config constants", async () => 
   assert.equal(configModule.objectHp, contextValue(context, "objectHp"));
   assert.equal(configModule.maxSkill, contextValue(context, "maxSkill"));
   assert.deepEqual(configModule.ninjutsuRuleProfiles, plain(contextValue(context, "ninjutsuRuleProfiles")));
+  assert.deepEqual(configModule.attackNinjuOutcomeTables, plain(contextValue(context, "attackNinjuOutcomeTables")));
 });
 
 test("config bridge section is generated from module workflow", () => {
