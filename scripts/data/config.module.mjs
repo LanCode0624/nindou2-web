@@ -1,4 +1,83 @@
 // Keep this module small while the runtime still uses classic scripts.
+export const grid = {
+  cols: 22,
+  rows: 12,
+  cell: 44.5,
+  left: -9,
+  top: 5,
+};
+export const battleMapDrawInset = {
+  left: 5,
+  top: 5,
+  right: 5,
+  bottom: 5,
+};
+export const defaultRoomMapKey = "country-10";
+export const roomMapDefinitions = {
+  "country-10": {
+    label: "鄉野之十",
+    groundImageKey: "arena",
+    fallbackImageKey: "bg",
+    objectLayout: "country-10",
+    coordinateBottomInternalY: 10,
+    playableInternalYMin: 1,
+    playableInternalYMax: 10,
+  },
+  "evil-castle-1": {
+    label: "極惡城之一",
+    groundImageKey: "evilCastleGround",
+    maskImageKey: "evilCastleMask",
+    battleBgmSrc: "assets/sounds/bgm/忍2鬼島戰鬥.mp3",
+    objectLayout: "evil-castle-1",
+    coordinateBottomInternalY: 11,
+    playableInternalYMin: 2,
+    playableInternalYMax: 11,
+    blockedDisplayCells: ["1,1", "18,1", "1,10", "18,10", "1,18", "18,18"],
+    startingDisplayCellsBySlot: {
+      blue: {
+        1: { x: 9, y: 3 },
+        2: { x: 8, y: 1 },
+        3: { x: 9, y: 1 },
+        4: { x: 10, y: 1 },
+      },
+      grey: {
+        1: { x: 6, y: 9 },
+        2: { x: 8, y: 8 },
+        3: { x: 11, y: 8 },
+        4: { x: 13, y: 9 },
+      },
+    },
+  },
+  "evil-castle-2": {
+    label: "極惡城之二",
+    groundImageKey: "evilCastle2Ground",
+    maskImageKey: "evilCastle2Mask",
+    battleBgmSrc: "assets/sounds/bgm/忍2鬼島戰鬥.mp3",
+    objectLayout: "evil-castle-2",
+    coordinateBottomInternalY: 11,
+    playableInternalYMin: 2,
+    playableInternalYMax: 11,
+    blockedDisplayCells: ["1,1", "18,1", "1,10", "18,10", "1,18", "18,18"],
+    startingDisplayCellsBySlot: {
+      blue: {
+        1: { x: 9, y: 3 },
+        2: { x: 8, y: 1 },
+        3: { x: 9, y: 1 },
+        4: { x: 10, y: 1 },
+      },
+      grey: {
+        1: { x: 6, y: 9 },
+        2: { x: 8, y: 8 },
+        3: { x: 11, y: 8 },
+        4: { x: 13, y: 9 },
+      },
+    },
+  },
+};
+export function roomMapDefinitionEntries() {
+  return Object.entries(roomMapDefinitions);
+}
+
 export const weaponCooldownMs = 1000;
 export const weaponDamage = 50;
 export const objectHp = 100;

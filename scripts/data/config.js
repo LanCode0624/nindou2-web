@@ -1,83 +1,4 @@
 ﻿// Shared gameplay constants. Keep this file data-only so it can move to Phaser later.
-const grid = {
-  cols: 22,
-  rows: 12,
-  cell: 44.5, // 地圖整體縮放：數字變大會等比例放大背景格、物件、角色位置。
-  left: -9, // 地圖整體 X 位置：數字變大往右；放大後可用負數讓左右平均裁切。
-  top: 5, // 地圖整體 Y 位置：數字變大往下；目前讓上排樹貼近上緣。
-};
-const battleMapDrawInset = {
-  left: 5, // 地圖背景左邊界：數字越小越往左。
-  top: 5, // 地圖背景上邊界：數字越小越往上，讓上方 HUD 蓋在地圖物件上。
-  right: 5, // 地圖背景右邊界：數字越小越往右。
-  bottom: 5, // 地圖背景下邊界：數字越小越往下。
-};
-const defaultRoomMapKey = "country-10";
-const roomMapDefinitions = {
-  "country-10": {
-    label: "鄉野之十",
-    groundImageKey: "arena",
-    fallbackImageKey: "bg",
-    objectLayout: "country-10",
-    coordinateBottomInternalY: 10,
-    playableInternalYMin: 1,
-    playableInternalYMax: 10,
-  },
-  "evil-castle-1": {
-    label: "極惡城之一",
-    groundImageKey: "evilCastleGround",
-    maskImageKey: "evilCastleMask",
-    battleBgmSrc: "assets/sounds/bgm/忍2鬼島戰鬥.mp3",
-    objectLayout: "evil-castle-1",
-    coordinateBottomInternalY: 11,
-    playableInternalYMin: 2,
-    playableInternalYMax: 11,
-    blockedDisplayCells: ["1,1", "18,1", "1,10", "18,10", "1,18", "18,18"],
-    startingDisplayCellsBySlot: {
-      blue: {
-        1: { x: 9, y: 3 },
-        2: { x: 8, y: 1 },
-        3: { x: 9, y: 1 },
-        4: { x: 10, y: 1 },
-      },
-      grey: {
-        1: { x: 6, y: 9 },
-        2: { x: 8, y: 8 },
-        3: { x: 11, y: 8 },
-        4: { x: 13, y: 9 },
-      },
-    },
-  },
-  "evil-castle-2": {
-    label: "極惡城之二",
-    groundImageKey: "evilCastle2Ground",
-    maskImageKey: "evilCastle2Mask",
-    battleBgmSrc: "assets/sounds/bgm/忍2鬼島戰鬥.mp3",
-    objectLayout: "evil-castle-2",
-    coordinateBottomInternalY: 11,
-    playableInternalYMin: 2,
-    playableInternalYMax: 11,
-    blockedDisplayCells: ["1,1", "18,1", "1,10", "18,10", "1,18", "18,18"],
-    startingDisplayCellsBySlot: {
-      blue: {
-        1: { x: 9, y: 3 },
-        2: { x: 8, y: 1 },
-        3: { x: 9, y: 1 },
-        4: { x: 10, y: 1 },
-      },
-      grey: {
-        1: { x: 6, y: 9 },
-        2: { x: 8, y: 8 },
-        3: { x: 11, y: 8 },
-        4: { x: 13, y: 9 },
-      },
-    },
-  },
-};
-
-function roomMapDefinitionEntries() {
-  return Object.entries(roomMapDefinitions);
-}
 
 // NINDOU_CONFIG_BRIDGE_START
 // AUTO-GENERATED SECTION.
@@ -403,6 +324,146 @@ const startingAreas = {
     "yMax": 7
   }
 };
+const grid = {
+  "cols": 22,
+  "rows": 12,
+  "cell": 44.5,
+  "left": -9,
+  "top": 5
+};
+const battleMapDrawInset = {
+  "left": 5,
+  "top": 5,
+  "right": 5,
+  "bottom": 5
+};
+const defaultRoomMapKey = "country-10";
+const roomMapDefinitions = {
+  "country-10": {
+    "label": "鄉野之十",
+    "groundImageKey": "arena",
+    "fallbackImageKey": "bg",
+    "objectLayout": "country-10",
+    "coordinateBottomInternalY": 10,
+    "playableInternalYMin": 1,
+    "playableInternalYMax": 10
+  },
+  "evil-castle-1": {
+    "label": "極惡城之一",
+    "groundImageKey": "evilCastleGround",
+    "maskImageKey": "evilCastleMask",
+    "battleBgmSrc": "assets/sounds/bgm/忍2鬼島戰鬥.mp3",
+    "objectLayout": "evil-castle-1",
+    "coordinateBottomInternalY": 11,
+    "playableInternalYMin": 2,
+    "playableInternalYMax": 11,
+    "blockedDisplayCells": [
+      "1,1",
+      "18,1",
+      "1,10",
+      "18,10",
+      "1,18",
+      "18,18"
+    ],
+    "startingDisplayCellsBySlot": {
+      "blue": {
+        "1": {
+          "x": 9,
+          "y": 3
+        },
+        "2": {
+          "x": 8,
+          "y": 1
+        },
+        "3": {
+          "x": 9,
+          "y": 1
+        },
+        "4": {
+          "x": 10,
+          "y": 1
+        }
+      },
+      "grey": {
+        "1": {
+          "x": 6,
+          "y": 9
+        },
+        "2": {
+          "x": 8,
+          "y": 8
+        },
+        "3": {
+          "x": 11,
+          "y": 8
+        },
+        "4": {
+          "x": 13,
+          "y": 9
+        }
+      }
+    }
+  },
+  "evil-castle-2": {
+    "label": "極惡城之二",
+    "groundImageKey": "evilCastle2Ground",
+    "maskImageKey": "evilCastle2Mask",
+    "battleBgmSrc": "assets/sounds/bgm/忍2鬼島戰鬥.mp3",
+    "objectLayout": "evil-castle-2",
+    "coordinateBottomInternalY": 11,
+    "playableInternalYMin": 2,
+    "playableInternalYMax": 11,
+    "blockedDisplayCells": [
+      "1,1",
+      "18,1",
+      "1,10",
+      "18,10",
+      "1,18",
+      "18,18"
+    ],
+    "startingDisplayCellsBySlot": {
+      "blue": {
+        "1": {
+          "x": 9,
+          "y": 3
+        },
+        "2": {
+          "x": 8,
+          "y": 1
+        },
+        "3": {
+          "x": 9,
+          "y": 1
+        },
+        "4": {
+          "x": 10,
+          "y": 1
+        }
+      },
+      "grey": {
+        "1": {
+          "x": 6,
+          "y": 9
+        },
+        "2": {
+          "x": 8,
+          "y": 8
+        },
+        "3": {
+          "x": 11,
+          "y": 8
+        },
+        "4": {
+          "x": 13,
+          "y": 9
+        }
+      }
+    }
+  }
+};
+function roomMapDefinitionEntries() {
+  return Object.entries(roomMapDefinitions);
+}
 const soulCombatGainSteps = 5.4;
 const soulDeathGainSteps = 27;
 const ninjuChainGap = 500;

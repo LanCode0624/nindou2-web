@@ -43,6 +43,13 @@ const mapGoldDropTypes = ${toLiteral(configModule.mapGoldDropTypes)};
 const mapConsumableDropTypes = ${toLiteral(configModule.mapConsumableDropTypes)};
 const ui = ${toLiteral(configModule.ui)};
 const startingAreas = ${toLiteral(configModule.startingAreas)};
+const grid = ${toLiteral(configModule.grid)};
+const battleMapDrawInset = ${toLiteral(configModule.battleMapDrawInset)};
+const defaultRoomMapKey = ${toLiteral(configModule.defaultRoomMapKey)};
+const roomMapDefinitions = ${toLiteral(configModule.roomMapDefinitions)};
+function roomMapDefinitionEntries() {
+  return Object.entries(roomMapDefinitions);
+}
 const soulCombatGainSteps = ${configModule.soulCombatGainSteps};
 const soulDeathGainSteps = ${configModule.soulDeathGainSteps};
 const ninjuChainGap = ${configModule.ninjuChainGap};
