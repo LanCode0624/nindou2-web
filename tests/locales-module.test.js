@@ -16,6 +16,9 @@ test("locales ES module stays in sync with legacy locale data", async () => {
   const summary = localesModule.summarizeLocaleCatalog(legacyLocale);
 
   assert.equal(summary.isSynced, true);
+  assert.deepEqual(summary.moduleValueKinds, summary.legacyValueKinds);
+  assert.equal(summary.moduleValueKinds.resultHeaders, "array");
+  assert.equal(summary.moduleValueKinds.countdownStart, "string");
   assert.deepEqual(localesModule.roomLocaleText, plain(legacyLocale));
   assert.deepEqual(localesModule.roomControlModeLabels, plain(contextValue(context, "roomControlModeLabels")));
   assert.equal(localesModule.localizedControlModeLabel("ai_tachi_master"), contextValue(context, 'localizedControlModeLabel("ai_tachi_master")'));

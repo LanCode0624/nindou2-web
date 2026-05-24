@@ -168,13 +168,24 @@ const roomLocaleText = {
 };
 
 function summarizeLocaleCatalog(legacyLocale = {}) {
+  const valueKindsByKey = (locale) => Object.fromEntries(
+    Object.entries(locale || {}).map(([key, value]) => {
+      if (Array.isArray(value)) return [key, "array"];
+      return [key, typeof value];
+    }),
+  );
   const moduleKeys = Object.keys(roomLocaleText);
   const legacyKeys = Object.keys(legacyLocale);
+  const moduleValueKinds = valueKindsByKey(roomLocaleText);
+  const legacyValueKinds = valueKindsByKey(legacyLocale);
   return {
     moduleKeys,
     legacyKeys,
+    moduleValueKinds,
+    legacyValueKinds,
     isSynced: moduleKeys.length === legacyKeys.length
-      && moduleKeys.every((key, index) => key === legacyKeys[index]),
+      && moduleKeys.every((key, index) => key === legacyKeys[index])
+      && JSON.stringify(moduleValueKinds) === JSON.stringify(legacyValueKinds),
   };
 }
 
