@@ -361,6 +361,7 @@ export function summarizeConfigConstants(legacy = {}) {
     ninjutsuModes: Object.keys(ninjutsuRuleProfiles),
     modifiedNinjutsuKeys: Object.keys(ninjutsuRuleProfiles.modified || {}),
     originalNinjutsuKeys: Object.keys(ninjutsuRuleProfiles.original || {}),
+    countdownTotalMs,
   };
   const legacyResult = {
     weaponCooldownMs: legacy.weaponCooldownMs,
@@ -374,6 +375,7 @@ export function summarizeConfigConstants(legacy = {}) {
     ninjutsuModes: Object.keys(legacy.ninjutsuRuleProfiles || {}),
     modifiedNinjutsuKeys: Object.keys(legacy.ninjutsuRuleProfiles?.modified || {}),
     originalNinjutsuKeys: Object.keys(legacy.ninjutsuRuleProfiles?.original || {}),
+    countdownTotalMs: legacy.countdownTotalMs,
   };
   return {
     moduleResult,

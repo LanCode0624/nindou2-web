@@ -16,6 +16,8 @@ test("config ES module stays in sync with legacy config constants", async () => 
   const summary = configModule.summarizeConfigConstants(legacyConfig);
 
   assert.equal(summary.isSynced, true);
+  assert.equal(summary.moduleResult.countdownTotalMs, contextValue(context, "countdownTotalMs"));
+  assert.equal(summary.legacyResult.countdownTotalMs, contextValue(context, "countdownTotalMs"));
   assert.equal(configModule.weaponCooldownMs, contextValue(context, "weaponCooldownMs"));
   assert.equal(configModule.weaponDamage, contextValue(context, "weaponDamage"));
   assert.equal(configModule.objectHp, contextValue(context, "objectHp"));

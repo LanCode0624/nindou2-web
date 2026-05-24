@@ -86,6 +86,7 @@ globalThis.NindouConfig = {
   soulStepsPerLevel,
   soulMaxLevel,
   ninjuFollowupMoveAllowance,
+  countdownTotalMs,
   ninjutsuRuleProfiles,
 };
 ${endMarker}`;

@@ -500,6 +500,7 @@ globalThis.NindouConfig = {
   soulStepsPerLevel,
   soulMaxLevel,
   ninjuFollowupMoveAllowance,
+  countdownTotalMs,
   ninjutsuRuleProfiles,
 };
 // NINDOU_CONFIG_BRIDGE_END
