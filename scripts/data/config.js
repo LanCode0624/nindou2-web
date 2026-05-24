@@ -79,8 +79,6 @@ function roomMapDefinitionEntries() {
   return Object.entries(roomMapDefinitions);
 }
 
-const maxSkill = 18; // 18
-const tachiMasterSkillMax = 18;
 const holdSeconds = 0;
 const chargePerSecond = 18 / 6.5;
 // 移動殘影動畫時間常數；系統層用 ARRIVE_TOTAL 判斷移動中狀態。
@@ -89,18 +87,12 @@ const ARRIVE_TOTAL = ARRIVE_FRAME_MS * 5;
 const PREARRIVE_FRAME_MS = 70;
 const PREARRIVE_TOTAL = PREARRIVE_FRAME_MS * 2;
 const maxHp = 300;
-const weaponDamage = 50;
 const collisionDamage = 40; //衝撞傷害
-const weaponCooldownMs = 1000;
-const objectHp = 100;
 const respawnMs = 3000;
 const respawnPointerDuration = 1000;
 const playerUnitId = 1;
 const unitsPerTeam = 3;
 const aiSkillRegenPerSecond = 0.42;
-const soulStepsPerLevel = 27;
-const soulMaxLevel = 4;
-const ninjuFollowupMoveAllowance = 3;
 
 // NINDOU_CONFIG_BRIDGE_START
 // AUTO-GENERATED SECTION.
@@ -409,6 +401,14 @@ const soulCombatGainSteps = 5.4;
 const soulDeathGainSteps = 27;
 const ninjuChainGap = 500;
 const ninjuChainMaxGap = 500;
+const weaponCooldownMs = 1000;
+const weaponDamage = 50;
+const objectHp = 100;
+const maxSkill = 18;
+const tachiMasterSkillMax = 18;
+const soulStepsPerLevel = 27;
+const soulMaxLevel = 4;
+const ninjuFollowupMoveAllowance = 3;
 
 globalThis.NindouConfig = {
   weaponCooldownMs,

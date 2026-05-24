@@ -45,6 +45,14 @@ const soulCombatGainSteps = ${configModule.soulCombatGainSteps};
 const soulDeathGainSteps = ${configModule.soulDeathGainSteps};
 const ninjuChainGap = ${configModule.ninjuChainGap};
 const ninjuChainMaxGap = ${configModule.ninjuChainMaxGap};
+const weaponCooldownMs = ${configModule.weaponCooldownMs};
+const weaponDamage = ${configModule.weaponDamage};
+const objectHp = ${configModule.objectHp};
+const maxSkill = ${configModule.maxSkill};
+const tachiMasterSkillMax = ${configModule.tachiMasterSkillMax};
+const soulStepsPerLevel = ${configModule.soulStepsPerLevel};
+const soulMaxLevel = ${configModule.soulMaxLevel};
+const ninjuFollowupMoveAllowance = ${configModule.ninjuFollowupMoveAllowance};
 
 globalThis.NindouConfig = {
   weaponCooldownMs,
