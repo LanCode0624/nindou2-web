@@ -15,6 +15,7 @@ test("ninjutsu ES module stays in sync with legacy ninjutsu data", async () => {
   const summary = ninjutsuModule.summarizeNinjutsuCatalog(legacyCatalog);
 
   assert.equal(summary.isSynced, true);
+  assert.deepEqual(plain(summary.moduleMeta), plain(summary.legacyMeta));
   assert.deepEqual(ninjutsuModule.ninjuCatalog, plain(legacyCatalog));
   assert.deepEqual(ninjutsuModule.ninjuEditorCatalog, plain(contextValue(context, "ninjuEditorCatalog")));
   assert.deepEqual(ninjutsuModule.defaultNinjuLoadout, plain(contextValue(context, "defaultNinjuLoadout")));

@@ -26,14 +26,27 @@ const ninjuEditorCatalog = [...ninjuCatalog].sort((a, b) => (
 ));
 const defaultNinjuLoadout = ["moneyDart", "steel", "hotBlood", "genki", "flash", "death"];
 
+function toNinjutsuMeta(catalog = []) {
+  return catalog.map((ninju) => ({
+    type: ninju.type,
+    group: ninju.group,
+    editorRow: ninju.editorRow,
+  }));
+}
+
 function summarizeNinjutsuCatalog(legacyCatalog = []) {
   const moduleTypes = ninjuCatalog.map((ninju) => ninju.type);
   const legacyTypes = legacyCatalog.map((ninju) => ninju.type);
+  const moduleMeta = toNinjutsuMeta(ninjuCatalog);
+  const legacyMeta = toNinjutsuMeta(legacyCatalog);
   return {
     moduleTypes,
     legacyTypes,
+    moduleMeta,
+    legacyMeta,
     isSynced: moduleTypes.length === legacyTypes.length
-      && moduleTypes.every((type, index) => type === legacyTypes[index]),
+      && moduleTypes.every((type, index) => type === legacyTypes[index])
+      && JSON.stringify(moduleMeta) === JSON.stringify(legacyMeta),
   };
 }
 
