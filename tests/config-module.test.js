@@ -20,6 +20,13 @@ test("config ES module stays in sync with legacy config constants", async () => 
   assert.equal(configModule.weaponDamage, contextValue(context, "weaponDamage"));
   assert.equal(configModule.objectHp, contextValue(context, "objectHp"));
   assert.equal(configModule.maxSkill, contextValue(context, "maxSkill"));
+  assert.equal(configModule.holdSeconds, contextValue(context, "holdSeconds"));
+  assert.equal(configModule.chargePerSecond, contextValue(context, "chargePerSecond"));
+  assert.equal(configModule.respawnMs, contextValue(context, "respawnMs"));
+  assert.equal(configModule.respawnPointerDuration, contextValue(context, "respawnPointerDuration"));
+  assert.equal(configModule.playerUnitId, contextValue(context, "playerUnitId"));
+  assert.equal(configModule.unitsPerTeam, contextValue(context, "unitsPerTeam"));
+  assert.equal(configModule.aiSkillRegenPerSecond, contextValue(context, "aiSkillRegenPerSecond"));
   assert.deepEqual(configModule.ninjutsuRuleProfiles, plain(contextValue(context, "ninjutsuRuleProfiles")));
   assert.deepEqual(configModule.attackNinjuOutcomeTables, plain(contextValue(context, "attackNinjuOutcomeTables")));
   assert.deepEqual(configModule.moneyDartButtonRect, plain(contextValue(context, "moneyDartButtonRect")));

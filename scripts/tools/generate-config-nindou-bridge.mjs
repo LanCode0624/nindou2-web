@@ -53,6 +53,13 @@ const tachiMasterSkillMax = ${configModule.tachiMasterSkillMax};
 const soulStepsPerLevel = ${configModule.soulStepsPerLevel};
 const soulMaxLevel = ${configModule.soulMaxLevel};
 const ninjuFollowupMoveAllowance = ${configModule.ninjuFollowupMoveAllowance};
+const holdSeconds = ${configModule.holdSeconds};
+const chargePerSecond = ${configModule.chargePerSecond};
+const respawnMs = ${configModule.respawnMs};
+const respawnPointerDuration = ${configModule.respawnPointerDuration};
+const playerUnitId = ${configModule.playerUnitId};
+const unitsPerTeam = ${configModule.unitsPerTeam};
+const aiSkillRegenPerSecond = ${configModule.aiSkillRegenPerSecond};
 
 globalThis.NindouConfig = {
   weaponCooldownMs,
