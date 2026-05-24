@@ -779,4 +779,4 @@ For multi-step tasks, state a brief plan:
 - `scripts/main.module.js` now also exposes `globalThis.isNindouModuleProbeSynced` as a quick boolean sync gate.
 - `scripts/main.module.js` also exposes `globalThis.NindouModuleProbeWarnings` for structured unsynced warning entries.
 - `scripts/main.module.js` now also exposes `globalThis.NindouModuleProbeMeta` (`version`, `sectionKeys`, `sectionCount`, `syncedCount`, `unsyncedCount`, `generatedAt`) for probe schema and diagnostics timestamp tracking.
-- `scripts/main.module.js` now also exposes `globalThis.getNindouModuleProbeReport(options)`; pass `{ includeProbe: false }` for a lightweight report, or `{ onlyUnsynced: true }` to return only unsynced probe sections.
+- `scripts/main.module.js` now also exposes `globalThis.getNindouModuleProbeReport(options)`; use `{ includeProbe: false }` for a lightweight report, `{ onlyUnsynced: true }` for unsynced sections only, or `{ keysOnly: true }` for probe keys only.

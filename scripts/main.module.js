@@ -128,16 +128,20 @@ globalThis.isNindouModuleProbeSynced = unsyncedProbeKeys.length === 0;
 globalThis.getNindouModuleProbeReport = (options = {}) => {
   const includeProbe = options.includeProbe !== false;
   const onlyUnsynced = options.onlyUnsynced === true;
+  const keysOnly = options.keysOnly === true;
   const probePayload = onlyUnsynced
     ? Object.fromEntries(
       globalThis.NindouModuleProbeSummary.unsyncedKeys.map((key) => [key, globalThis.NindouModuleProbe[key]]),
     )
     : globalThis.NindouModuleProbe;
+  const normalizedProbe = keysOnly
+    ? Object.keys(probePayload)
+    : probePayload;
   return {
     meta: globalThis.NindouModuleProbeMeta,
     summary: globalThis.NindouModuleProbeSummary,
     warnings: globalThis.NindouModuleProbeWarnings,
-    ...(includeProbe ? { probe: probePayload } : {}),
+    ...(includeProbe ? { probe: normalizedProbe } : {}),
   };
 };
 
