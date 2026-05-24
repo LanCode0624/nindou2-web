@@ -769,3 +769,9 @@ For multi-step tasks, state a brief plan:
 2. [Step] -> verify: [check]
 3. [Step] -> verify: [check]
 ```
+
+### 2026-05-24 Vite probe maintenance
+
+- `scripts/main.module.js` keeps probe-only behavior.
+- Repeated `if (!isSynced) console.warn(...)` blocks were consolidated into a single table-driven loop via `probeSections`.
+- When adding/removing probe domains, update both `globalThis.NindouModuleProbe` fields and `probeSections` in the same commit.

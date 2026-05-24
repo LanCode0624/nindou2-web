@@ -198,5 +198,6 @@ map 資料日常流程：
 - module 版優先使用依賴注入：`stateLike`、`gridLike`、`mapDefinition`、`imageMap`、callbacks。
 - classic script 保持目前遊戲行為，只補 `globalThis.Nindou*` bridge。
 - `scripts/main.module.js` 只做 probe，不接管流程。
+- `scripts/main.module.js` 的 probe warning 已改為表驅動迴圈（`probeSections`）；新增或移除 probe 欄位時，同步更新這張表即可，避免重複 `if (!isSynced)` 區塊。
 - 每個 module 都要有 `summarize*()` helper，供 browser probe 和 Node test 比對。
 - 如果 browser probe 和 Node test 不一致，優先相信 browser probe，因為 browser 裡 top-level `const` / `let` 不一定掛在 `globalThis`。

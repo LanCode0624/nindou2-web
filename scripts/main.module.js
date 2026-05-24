@@ -15,6 +15,25 @@ import { summarizeMovementHelpers } from "./systems/movement.module.mjs";
 import { summarizeAiProfileHelpers } from "./systems/ai.module.mjs";
 import { summarizeCombatHelpers } from "./systems/combat.module.mjs";
 
+const probeSections = [
+  ["config", "Config module probe is out of sync with legacy config constants."],
+  ["weapons", "Weapon module probe is out of sync with legacy weaponDefinitions."],
+  ["ninjutsu", "Ninjutsu module probe is out of sync with legacy ninjuCatalog."],
+  ["locales", "Locales module probe is out of sync with legacy roomLocaleText."],
+  ["ruleModes", "Rule modes module probe is out of sync with legacy modeRuleProfiles."],
+  ["maps", "Map module probe is out of sync with legacy mapObjectBuilders."],
+  ["assets", "Asset module probe is out of sync with legacy asset data."],
+  ["appearance", "Appearance module probe is out of sync with legacy appearance helpers."],
+  ["stateHelpers", "State helper module probe is out of sync with legacy state helpers."],
+  ["grid", "Grid module probe is out of sync with legacy grid helpers."],
+  ["audio", "Audio module probe is out of sync with legacy audio helpers."],
+  ["match", "Match module probe is out of sync with legacy match flow."],
+  ["consumables", "Consumables module probe is out of sync with legacy consumable helpers."],
+  ["movement", "Movement module probe is out of sync with legacy movement helpers."],
+  ["ai", "AI module probe is out of sync with legacy AI profile helpers."],
+  ["combat", "Combat module probe is out of sync with legacy combat helpers."],
+];
+
 const legacyConfig = globalThis.NindouConfig || {};
 const legacyWeapons = globalThis.NindouWeapons?.definitions || [];
 const legacyNinjutsu = globalThis.NindouNinjutsu?.catalog || [];
@@ -50,51 +69,8 @@ globalThis.NindouModuleProbe = {
   combat: summarizeCombatHelpers(legacyCombat),
 };
 
-if (!globalThis.NindouModuleProbe.config.isSynced) {
-  console.warn("Config module probe is out of sync with legacy config constants.");
-}
-if (!globalThis.NindouModuleProbe.weapons.isSynced) {
-  console.warn("Weapon module probe is out of sync with legacy weaponDefinitions.");
-}
-if (!globalThis.NindouModuleProbe.ninjutsu.isSynced) {
-  console.warn("Ninjutsu module probe is out of sync with legacy ninjuCatalog.");
-}
-if (!globalThis.NindouModuleProbe.locales.isSynced) {
-  console.warn("Locales module probe is out of sync with legacy roomLocaleText.");
-}
-if (!globalThis.NindouModuleProbe.ruleModes.isSynced) {
-  console.warn("Rule modes module probe is out of sync with legacy modeRuleProfiles.");
-}
-if (!globalThis.NindouModuleProbe.maps.isSynced) {
-  console.warn("Map module probe is out of sync with legacy mapObjectBuilders.");
-}
-if (!globalThis.NindouModuleProbe.assets.isSynced) {
-  console.warn("Asset module probe is out of sync with legacy asset data.");
-}
-if (!globalThis.NindouModuleProbe.appearance.isSynced) {
-  console.warn("Appearance module probe is out of sync with legacy appearance helpers.");
-}
-if (!globalThis.NindouModuleProbe.stateHelpers.isSynced) {
-  console.warn("State helper module probe is out of sync with legacy state helpers.");
-}
-if (!globalThis.NindouModuleProbe.grid.isSynced) {
-  console.warn("Grid module probe is out of sync with legacy grid helpers.");
-}
-if (!globalThis.NindouModuleProbe.audio.isSynced) {
-  console.warn("Audio module probe is out of sync with legacy audio helpers.");
-}
-if (!globalThis.NindouModuleProbe.match.isSynced) {
-  console.warn("Match module probe is out of sync with legacy match flow.");
-}
-if (!globalThis.NindouModuleProbe.consumables.isSynced) {
-  console.warn("Consumables module probe is out of sync with legacy consumable helpers.");
-}
-if (!globalThis.NindouModuleProbe.movement.isSynced) {
-  console.warn("Movement module probe is out of sync with legacy movement helpers.");
-}
-if (!globalThis.NindouModuleProbe.ai.isSynced) {
-  console.warn("AI module probe is out of sync with legacy AI profile helpers.");
-}
-if (!globalThis.NindouModuleProbe.combat.isSynced) {
-  console.warn("Combat module probe is out of sync with legacy combat helpers.");
+for (const [key, warning] of probeSections) {
+  if (!globalThis.NindouModuleProbe[key]?.isSynced) {
+    console.warn(warning);
+  }
 }
