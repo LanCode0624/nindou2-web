@@ -103,8 +103,8 @@ globalThis.NindouModuleProbe = Object.fromEntries(
 );
 
 const probeKeys = Object.keys(globalThis.NindouModuleProbe);
-const unsyncedProbeKeys = probeKeys.filter((key) => !globalThis.NindouModuleProbe[key]?.isSynced);
-const syncedProbeKeys = probeKeys.filter((key) => globalThis.NindouModuleProbe[key]?.isSynced);
+const unsyncedProbeKeys = probeKeys.filter((key) => !globalThis.NindouModuleProbe[key]?.isSynced).sort();
+const syncedProbeKeys = probeKeys.filter((key) => globalThis.NindouModuleProbe[key]?.isSynced).sort();
 globalThis.NindouModuleProbeMeta = {
   version: 1,
   sectionKeys: probeKeys,
