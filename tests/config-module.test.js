@@ -53,6 +53,7 @@ test("config ES module stays in sync with legacy config constants", async () => 
   assert.deepEqual(configModule.mapItemDropTypes, plain(contextValue(context, "mapItemDropTypes")));
   assert.deepEqual(configModule.mapGoldDropTypes, plain(contextValue(context, "mapGoldDropTypes")));
   assert.deepEqual(configModule.mapConsumableDropTypes, plain(contextValue(context, "mapConsumableDropTypes")));
+  assert.equal(configModule.countdownTotalMs, contextValue(context, "countdownTotalMs"));
   assert.deepEqual(configModule.grid, plain(contextValue(context, "grid")));
   assert.deepEqual(configModule.battleMapDrawInset, plain(contextValue(context, "battleMapDrawInset")));
   assert.equal(configModule.defaultRoomMapKey, contextValue(context, "defaultRoomMapKey"));

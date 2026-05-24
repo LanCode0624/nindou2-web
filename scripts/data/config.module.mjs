@@ -121,6 +121,7 @@ export const mapItemDropChance = 0.4;
 export const mapItemDropTypes = ["chest", "vase", "barrel", "hay"];
 export const mapGoldDropTypes = ["hay"];
 export const mapConsumableDropTypes = ["backup3", "sake4"];
+export const countdownTotalMs = 2500;
 export const ui = {
   top: 0,
   bottomTop: 542,

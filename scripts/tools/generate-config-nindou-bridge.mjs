@@ -41,6 +41,7 @@ const mapItemDropChance = ${configModule.mapItemDropChance};
 const mapItemDropTypes = ${toLiteral(configModule.mapItemDropTypes)};
 const mapGoldDropTypes = ${toLiteral(configModule.mapGoldDropTypes)};
 const mapConsumableDropTypes = ${toLiteral(configModule.mapConsumableDropTypes)};
+const countdownTotalMs = ${configModule.countdownTotalMs};
 const ui = ${toLiteral(configModule.ui)};
 const startingAreas = ${toLiteral(configModule.startingAreas)};
 const grid = ${toLiteral(configModule.grid)};
