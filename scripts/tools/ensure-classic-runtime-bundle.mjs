@@ -29,6 +29,15 @@ export function isBundleStaleFromStats(bundleMtimeMs, sourceMtimeMsList) {
 
 export async function shouldRebuildClassicRuntimeBundle() {
   const bundlePath = repoFile(CLASSIC_RUNTIME_BUNDLE_PATH);
+  if (CLASSIC_RUNTIME_SCRIPT_PATHS.length === 0) {
+    try {
+      await access(bundlePath);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   try {
     await access(bundlePath);
   } catch {
@@ -57,7 +66,9 @@ export async function ensureClassicRuntimeBundle({ quiet = false } = {}) {
     }
     return {
       rebuilt: false,
-      bundlePath: CLASSIC_RUNTIME_BUNDLE_PATH,
+      bundlePath: CLASSIC_RUNTIME_SCRIPT_PATHS.length === 0 ? null : CLASSIC_RUNTIME_BUNDLE_PATH,
+      scriptCount: CLASSIC_RUNTIME_SCRIPT_PATHS.length,
+      skipped: CLASSIC_RUNTIME_SCRIPT_PATHS.length === 0,
     };
   }
 

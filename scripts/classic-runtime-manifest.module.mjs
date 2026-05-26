@@ -1,6 +1,4 @@
-export const CLASSIC_RUNTIME_SCRIPT_PATHS = Object.freeze([
-  "game.js",
-]);
+export const CLASSIC_RUNTIME_SCRIPT_PATHS = Object.freeze([]);
 
 export const CORE_RULE_SCRIPT_PATHS = Object.freeze([
   "scripts/data/config.js",

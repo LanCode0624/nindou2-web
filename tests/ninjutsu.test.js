@@ -76,6 +76,30 @@ test("ported attack ninjutsu spend soul instead of skill", () => {
   }
 });
 
+test("death command blocks genki kakki and shinki use", () => {
+  for (const useNinju of ["useGenkiNinju", "useKakkiNinju", "useShinkiNinju"]) {
+    const unit = {
+      id: 1,
+      name: "blue1",
+      team: "blue",
+      alive: true,
+      hp: 100,
+      maxHp: 300,
+      skill: 20,
+    };
+    const context = loadCombatRules({
+      state: { deathModeKey: "death_command", units: [unit], objects: [], projectiles: [], moneyDartCasts: [] },
+      selectedUnit: () => unit,
+      canControlUnit: () => true,
+    });
+
+    context[useNinju]();
+
+    assert.equal(unit.skill, 20);
+    assert.equal(unit.ninju, undefined);
+  }
+});
+
 test("clone ninjutsu teleports the caster and creates two pass-through decoys", () => {
   const unit = {
     id: 1,

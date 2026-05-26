@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {
   CLASSIC_RUNTIME_BUNDLE_PATH,
   loadClassicRuntime,
+  loadClassicRuntimeScripts,
 } from "../scripts/load-classic-runtime.module.mjs";
 import { CLASSIC_RUNTIME_SCRIPT_PATHS } from "../scripts/classic-runtime-manifest.module.mjs";
 
@@ -50,45 +51,42 @@ function makeBundleFailureDocument() {
   return fakeDocument;
 }
 
-test("loadClassicRuntime prefers bundle without falling back to per-script load", async () => {
+test("loadClassicRuntime skips bundle when runtime manifest is empty", async () => {
   const previousDocument = global.document;
   const fakeDocument = makeFakeDocument();
   global.document = fakeDocument;
   try {
     const result = await loadClassicRuntime();
-    assert.equal(result.mode, "bundle");
-    assert.deepEqual(result.loaded, [CLASSIC_RUNTIME_BUNDLE_PATH]);
-    assert.deepEqual(fakeDocument.loaded, [CLASSIC_RUNTIME_BUNDLE_PATH]);
+    assert.equal(result.mode, "none");
+    assert.deepEqual(result.loaded, []);
+    assert.deepEqual(fakeDocument.loaded, []);
   } finally {
     global.document = previousDocument;
   }
 });
 
-test("loadClassicRuntime falls back to per-script loading only when explicitly allowed", async () => {
+test("loadClassicRuntime ignores fallback when runtime manifest is empty", async () => {
   const previousDocument = global.document;
   const fakeDocument = makeBundleFailureDocument();
   global.document = fakeDocument;
   try {
     const result = await loadClassicRuntime({ allowScriptFallback: true });
-    assert.equal(result.mode, "scripts");
+    assert.equal(result.mode, "none");
     assert.deepEqual(result.loaded, CLASSIC_RUNTIME_SCRIPT_PATHS);
-    assert.equal(fakeDocument.loaded[0], CLASSIC_RUNTIME_BUNDLE_PATH);
-    assert.deepEqual(fakeDocument.loaded.slice(1), CLASSIC_RUNTIME_SCRIPT_PATHS);
+    assert.deepEqual(fakeDocument.loaded, []);
   } finally {
     global.document = previousDocument;
   }
 });
 
-test("loadClassicRuntime fails fast when bundle load fails without explicit fallback", async () => {
+test("loadClassicRuntimeScripts can still load explicit legacy script lists", async () => {
   const previousDocument = global.document;
-  const fakeDocument = makeBundleFailureDocument();
+  const fakeDocument = makeFakeDocument();
   global.document = fakeDocument;
   try {
-    await assert.rejects(
-      () => loadClassicRuntime(),
-      /Classic runtime bundle load failed: scripts\/generated\/classic-runtime\.bundle\.js/,
-    );
-    assert.deepEqual(fakeDocument.loaded, [CLASSIC_RUNTIME_BUNDLE_PATH]);
+    const explicitPaths = ["scripts/data/config.js", "scripts/data/rule-modes.js"];
+    await loadClassicRuntimeScripts(explicitPaths);
+    assert.deepEqual(fakeDocument.loaded, explicitPaths);
   } finally {
     global.document = previousDocument;
   }

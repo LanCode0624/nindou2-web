@@ -137,7 +137,7 @@ export const roomLocaleText = {
   reset: "重來",
   cancel: "取消",
   save: "儲存",
-  topHudName: "皇天不負工具人",
+  topHudName: "玩家",
   topHudLevel: "99段",
   topHudRole: "夜遊神",
   cellLabel: "座標",

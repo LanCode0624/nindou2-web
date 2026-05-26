@@ -9,10 +9,7 @@ import {
 } from "../scripts/classic-runtime-manifest.module.mjs";
 
 test("classic runtime manifest keeps stable entry order", () => {
-  assert.equal(CLASSIC_RUNTIME_SCRIPT_PATHS[0], "game.js");
-  assert.equal(CLASSIC_RUNTIME_SCRIPT_PATHS.at(-1), "game.js");
-  assert.equal(CLASSIC_RUNTIME_SCRIPT_PATHS.includes("game.js"), true);
-  assert.equal(CLASSIC_RUNTIME_SCRIPT_PATHS.includes("scripts/systems/ninjutsu.js"), false);
+  assert.deepEqual(CLASSIC_RUNTIME_SCRIPT_PATHS, []);
 });
 
 test("classic runtime manifest has no duplicate script paths", () => {

@@ -84,6 +84,7 @@ test("installAppBootstrapGlobals wires startup helpers and room inventory callba
     updateRuleModeUi: () => calls.push("ruleUi"),
     updateRoomMapUi: () => calls.push("mapUi"),
     draw: () => calls.push("draw"),
+    startDrawLoop: () => calls.push("startDrawLoop"),
   };
 
   installAppBootstrapGlobals(target);
@@ -96,5 +97,5 @@ test("installAppBootstrapGlobals wires startup helpers and room inventory callba
   assert.equal(state.deathModeKey, "death_command");
   await target.startGameApp();
   assert.equal(state.onRoomInventoryChanged, target.renderRoomShopBag);
-  assert.deepEqual(calls.slice(-6), ["loadImages", "ruleUi", "deathUi", "mapUi", "volume", "reset", "bgm", "draw"].slice(-6));
+  assert.deepEqual(calls.slice(-6), ["loadImages", "ruleUi", "deathUi", "mapUi", "volume", "reset", "bgm", "startDrawLoop"].slice(-6));
 });

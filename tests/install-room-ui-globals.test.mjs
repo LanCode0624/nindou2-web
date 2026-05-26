@@ -31,6 +31,18 @@ function element({ value = "", dataset = {}, hidden = true } = {}) {
   };
 }
 
+function roomCard(team, slot) {
+  const avatar = element({ hidden: false });
+  const eye = element({ hidden: false });
+  const card = element({ dataset: { team, slot: String(slot) }, hidden: false });
+  card.querySelector = (selector) => {
+    if (selector === ".room-avatar") return avatar;
+    if (selector === ".room-avatar-eye") return eye;
+    return null;
+  };
+  return { card, avatar, eye };
+}
+
 function baseTarget(overrides = {}) {
   const state = { ruleModeKey: "original", deathModeKey: "death_heal", roomMapKey: "country-10", roomItemSlots: [] };
   const storage = new Map();
@@ -78,7 +90,7 @@ function baseTarget(overrides = {}) {
   return target;
 }
 
-test("installRoomUiGlobals provides saved loadout before game.js initializes runtime state", () => {
+test("installRoomUiGlobals provides saved loadout before game globals initialize runtime state", () => {
   const target = baseTarget({ NindouRuntimeState: undefined });
   target.__storage.set("nindou2.ninjuLoadout", JSON.stringify(["heal1", null, "support1", null, null, null]));
   installRoomUiGlobals(target);
@@ -132,4 +144,67 @@ test("selected room values are resolved from live DOM controls", () => {
   assert.equal(target.selectedWeaponKey("blue", 1), "weapon3");
   assert.equal(target.selectedHpValue("blue", 1), 450);
   assert.equal(target.selectedSkillValue("blue", 1), 30);
+});
+
+test("all room cards can resolve and preview custom looks across teams", () => {
+  const blueControl = element({ value: "player", dataset: { team: "blue", slot: "1" } });
+  const greyControl = element({ value: "player", dataset: { team: "grey", slot: "1" } });
+  const blueLook = element({ value: "zhaohuo", dataset: { team: "blue", slot: "1" } });
+  const greyLook = element({ value: "__team_default__", dataset: { team: "grey", slot: "1" } });
+  const blueCard = roomCard("blue", 1);
+  const greyCard = roomCard("grey", 1);
+  const target = baseTarget({
+    lookDefinitions: {
+      default: { roomAvatarSrc: "blue.png", roomAvatarEyeSrc: "blue-eye.png", spriteSet: "blue" },
+      red: { roomAvatarSrc: "red.png", roomAvatarEyeSrc: "red-eye.png", spriteSet: "redBlue" },
+      zhaohuo: { roomAvatarSrc: "zhaohuo.png", roomAvatarEyeSrc: null, spriteSet: "zhaohuo" },
+    },
+    roomLocaleText: { defaultLookOption: "預設外觀", redLookOption: "赤組", zhaohuoLookOption: "趙活" },
+    lookDefinitionByKey(key) { return this.lookDefinitions[key] || this.lookDefinitions.default; },
+    baseLookDefinitionForTeam(team) {
+      return team === "grey"
+        ? { roomAvatarSrc: "grey.png", roomAvatarEyeSrc: "grey-eye.png", spriteSet: "grey" }
+        : this.lookDefinitions.default;
+    },
+  });
+  target.__allSelectors.set(".room-control-select", [blueControl, greyControl]);
+  target.__allSelectors.set(".room-look-select", [blueLook, greyLook]);
+  target.__allSelectors.set(".room-player-card", [blueCard.card, greyCard.card]);
+
+  installRoomUiGlobals(target);
+  target.setupLookSelects();
+
+  assert.equal(target.selectedLookKey("blue", 1), "zhaohuo");
+  assert.equal(target.selectedLookKey("grey", 1), "__team_default__");
+
+  target.updateRoomLookCard("blue", 1);
+  target.updateRoomLookCard("grey", 1);
+  assert.equal(blueCard.avatar.src, "zhaohuo.png");
+  assert.equal(blueCard.eye.style.display, "none");
+  assert.equal(greyCard.avatar.src, "grey.png");
+  assert.equal(greyCard.eye.src, "grey-eye.png");
+});
+
+test("ai red look stays forced even when a room card selects another appearance", () => {
+  const control = element({ value: "ai_red", dataset: { team: "grey", slot: "1" } });
+  const look = element({ value: "__team_default__", dataset: { team: "grey", slot: "1" } });
+  const greyCard = roomCard("grey", 1);
+  const target = baseTarget({
+    lookDefinitions: {
+      default: { roomAvatarSrc: "blue.png", roomAvatarEyeSrc: "blue-eye.png" },
+      red: { roomAvatarSrc: "red.png", roomAvatarEyeSrc: "red-eye.png" },
+    },
+    lookDefinitionByKey(key) { return this.lookDefinitions[key] || this.lookDefinitions.default; },
+    baseLookDefinitionForTeam: () => ({ roomAvatarSrc: "grey.png", roomAvatarEyeSrc: "grey-eye.png" }),
+  });
+  target.__allSelectors.set(".room-control-select", [control]);
+  target.__allSelectors.set(".room-look-select", [look]);
+  target.__allSelectors.set(".room-player-card", [greyCard.card]);
+
+  installRoomUiGlobals(target);
+  target.updateRoomLookCard("grey", 1);
+
+  assert.equal(target.selectedLookKey("grey", 1), "red");
+  assert.equal(greyCard.avatar.src, "red.png");
+  assert.equal(greyCard.eye.src, "red-eye.png");
 });

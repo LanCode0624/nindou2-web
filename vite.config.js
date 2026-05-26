@@ -42,7 +42,7 @@ function copyLegacyRuntime() {
     },
     async closeBundle() {
       await mkdir(outDir, { recursive: true });
-      for (const entry of ["assets", "scripts", "game.js", "index.html", "style.css"]) {
+      for (const entry of ["assets", "scripts", "index.html", "style.css"]) {
         const target = resolve(outDir, entry);
         await copyEntry(resolve(root, entry), target);
       }

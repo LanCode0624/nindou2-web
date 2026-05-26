@@ -2,6 +2,7 @@ import { resolveRuntimeState } from "./runtime-state-access.module.mjs";
 
 const NINJU_LOADOUT_STORAGE_KEY = "nindou2.ninjuLoadout";
 const ROOM_SKILL_INPUT_MAX = 9999;
+const TEAM_DEFAULT_LOOK_KEY = "__team_default__";
 
 function query(target, selector) {
   return target.document?.querySelector?.(selector) || null;
@@ -98,6 +99,13 @@ function localStorageFor(target) {
 }
 
 export function installRoomUiGlobals(target = globalThis) {
+  const selectedLookKey = (team, slot) => {
+    if (selectedControlMode(team, slot) === "ai_red") return "red";
+    const value = scopedLook(target, team, slot)?.value;
+    if (target.lookDefinitions?.[value]) return value;
+    return team === "blue" ? "default" : TEAM_DEFAULT_LOOK_KEY;
+  };
+
   const setupWeaponSelects = () => {
     const selects = weaponSelects(target);
     if (selects.length === 0) return;
@@ -115,9 +123,10 @@ export function installRoomUiGlobals(target = globalThis) {
   const updateRoomLookCard = (team, slot) => {
     const card = roomCards(target).find((element) => element.dataset.team === team && Number(element.dataset.slot) === slot);
     if (!card) return;
-    const look = selectedControlMode(team, slot) === "ai_red"
-      ? target.lookDefinitionByKey("red")
-      : (team === "blue" ? target.lookDefinitionByKey(selectedLookKey(team, slot)) : target.baseLookDefinitionForTeam(team));
+    const lookKey = selectedLookKey(team, slot);
+    const look = lookKey === TEAM_DEFAULT_LOOK_KEY
+      ? target.baseLookDefinitionForTeam(team)
+      : target.lookDefinitionByKey(lookKey);
     const avatarEl = card.querySelector(".room-avatar");
     const eyeEl = card.querySelector(".room-avatar-eye");
     if (avatarEl) avatarEl.src = look.roomAvatarSrc;
@@ -138,14 +147,22 @@ export function installRoomUiGlobals(target = globalThis) {
   const setupLookSelects = () => {
     const selects = lookSelects(target);
     if (selects.length === 0) return;
-    const optionsHtml = Object.entries(target.lookDefinitions || {}).map(([key, look]) => {
+    const defaultLabel = target.roomLocaleText?.defaultLookOption || target.roomLocale?.()?.defaultLookOption || "預設外觀";
+    const optionsHtml = [
+      `<option value="${TEAM_DEFAULT_LOOK_KEY}">${defaultLabel}</option>`,
+      ...Object.entries(target.lookDefinitions || {}).map(([key, look]) => {
       const label = target.roomLocaleText?.[look.labelKey] || look.label || key;
       return `<option value="${key}">${label}</option>`;
-    }).join("");
+      }),
+    ].join("");
     selects.forEach((select) => {
-      const previousValue = select.value || "default";
+      const team = select.dataset.team;
+      const previousValue = select.value || (team === "blue" ? "default" : TEAM_DEFAULT_LOOK_KEY);
       select.innerHTML = optionsHtml;
-      select.value = target.lookDefinitions?.[previousValue] ? previousValue : "default";
+      const fallbackValue = team === "blue" ? "default" : TEAM_DEFAULT_LOOK_KEY;
+      select.value = previousValue === TEAM_DEFAULT_LOOK_KEY || target.lookDefinitions?.[previousValue]
+        ? previousValue
+        : fallbackValue;
       select.onchange = () => updateRoomLookCard(select.dataset.team, Number(select.dataset.slot));
     });
   };
@@ -244,13 +261,6 @@ export function installRoomUiGlobals(target = globalThis) {
     const value = Number(skillInputs(target).find((element) => element.dataset.team === team && Number(element.dataset.slot) === slot)?.value);
     if (!Number.isFinite(value)) return target.maxSkill;
     return target.clamp(Math.round(value), 0, ROOM_SKILL_INPUT_MAX);
-  };
-
-  const selectedLookKey = (team, slot) => {
-    if (selectedControlMode(team, slot) === "ai_red") return "red";
-    if (team !== "blue") return "default";
-    const value = scopedLook(target, team, slot)?.value;
-    return target.lookDefinitions?.[value] ? value : "default";
   };
 
   const setupRuleModeSelect = () => {

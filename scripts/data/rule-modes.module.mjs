@@ -71,12 +71,6 @@ export function healNinjuRule(type, stateLike = {}) {
       available: true,
     };
   }
-  if (type === "genki" && currentRuleModeKey(stateLike) === "modified") {
-    return {
-      ...baseRule,
-      available: baseRule.available !== false,
-    };
-  }
   return {
     ...baseRule,
     available: false,

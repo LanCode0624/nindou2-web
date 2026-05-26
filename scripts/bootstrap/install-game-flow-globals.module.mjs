@@ -48,6 +48,8 @@ export function installGameFlowGlobals(target = globalThis) {
     target.resetGame();
     target.syncBgm();
     target.startBgm();
+    if (typeof target.startDrawLoop === "function") target.startDrawLoop();
+    else target.draw?.();
   };
 
   const returnToRoom = () => {

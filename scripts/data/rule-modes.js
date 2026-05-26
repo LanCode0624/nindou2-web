@@ -74,12 +74,6 @@ function healNinjuRule(type) {
       available: true,
     };
   }
-  if (type === "genki" && currentRuleModeKey(state) === "modified") {
-    return {
-      ...baseRule,
-      available: baseRule.available !== false,
-    };
-  }
   return {
     ...baseRule,
     available: false,

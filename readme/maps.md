@@ -26,7 +26,7 @@
 - 地圖素材：`scripts/data/assets.js -> imageSources`
 - 地圖物件：`scripts/data/map.js -> buildMapObjects()`
 - 座標/阻擋：`scripts/systems/grid.js -> currentRoomMapDefinition()`、`isPermanentObstacle()`
-- 圖層順序：`game.js -> draw()`、`drawBackdrop()`、`drawMapMaskOverlay()`、`drawMapObjects()`
+- 圖層順序：`scripts/bootstrap/install-game-globals.module.mjs -> draw()`、`drawBackdrop()`、`drawMapMaskOverlay()`、`drawMapObjects()`
 
 目前地圖：
 

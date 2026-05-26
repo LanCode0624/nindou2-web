@@ -27,6 +27,9 @@ test("modified 模式使用調整後的武器與忍術數值", () => {
   assert.equal(context.specialNinjuRule("clone").cost, 10);
   assert.equal(context.healNinjuRule("kakki").cost, 6);
   assert.equal(context.healNinjuRule("genki").effect, "steelNoDefense");
+  assert.equal(context.healNinjuRule("genki").available, false);
+  assert.equal(context.healNinjuRule("kakki").available, false);
+  assert.equal(context.healNinjuRule("shinki").available, false);
 });
 
 test("original 模式使用原版覆蓋數值", () => {

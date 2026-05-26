@@ -32,6 +32,8 @@ test("appearance ES module stays in sync with legacy appearance helpers", async 
   assert.equal(summary.isSynced, true);
   assert.equal(appearanceModule.lookDefinitionByKey("missing").spriteSet, "blue");
   assert.equal(appearanceModule.unitLookDefinition({ team: "grey", controlMode: "ai_red" }).spriteSet, "redBlue");
+  assert.equal(appearanceModule.unitLookDefinition({ team: "grey", appearanceKey: "__team_default__" }).spriteSet, "grey");
+  assert.equal(appearanceModule.unitLookDefinition({ team: "grey", appearanceKey: "zhaohuo" }).spriteSet, "zhaohuo");
 
   const imageMap = { eyesFront: "front", eyeSide: "side", redEyesFront: "red-front", redEyeSide: "red-side" };
   assert.equal(appearanceModule.unitEyeFrontSprite({ team: "blue", controlMode: "ai_red" }, imageMap), "red-front");

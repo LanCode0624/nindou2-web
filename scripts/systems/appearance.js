@@ -1,4 +1,6 @@
 // ===== Appearance =====
+const TEAM_DEFAULT_LOOK_KEY = "__team_default__";
+
 function lookDefinitionByKey(key) {
   return lookDefinitions[key] || lookDefinitions.default;
 }
@@ -10,7 +12,8 @@ function baseLookDefinitionForTeam(team) {
 function unitLookDefinition(unit) {
   if (!unit) return baseLookDefinitionForTeam("blue");
   if (unit.controlMode === "ai_red" || unit.appearanceKey === "red") return lookDefinitionByKey("red");
-  if (unit.team !== "blue") return baseLookDefinitionForTeam(unit.team);
+  if (unit.appearanceKey === TEAM_DEFAULT_LOOK_KEY) return baseLookDefinitionForTeam(unit.team);
+  if (unit.team !== "blue") return unit.appearanceKey ? (lookDefinitions[unit.appearanceKey] || baseLookDefinitionForTeam(unit.team)) : baseLookDefinitionForTeam(unit.team);
   return lookDefinitionByKey(unit.appearanceKey || "default");
 }
 

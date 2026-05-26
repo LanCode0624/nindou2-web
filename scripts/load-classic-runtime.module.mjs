@@ -29,6 +29,12 @@ export async function loadClassicRuntimeScripts(paths = CLASSIC_RUNTIME_SCRIPT_P
 }
 
 export async function loadClassicRuntime({ allowScriptFallback = false } = {}) {
+  if (CLASSIC_RUNTIME_SCRIPT_PATHS.length === 0) {
+    return {
+      mode: "none",
+      loaded: [],
+    };
+  }
   if (!hasScriptLoaded(CLASSIC_RUNTIME_BUNDLE_PATH)) {
     try {
       await loadScriptSequential(CLASSIC_RUNTIME_BUNDLE_PATH);

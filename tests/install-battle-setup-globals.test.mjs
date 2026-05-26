@@ -34,7 +34,7 @@ test("installBattleSetupGlobals wires reset and starting unit helpers", () => {
     internalCellCoord: (cell) => cell,
     selectedControlMode: (team) => (team === "blue" ? "player" : "ai_red"),
     selectedWeaponKey: () => "weapon1",
-    selectedLookKey: () => "default",
+    selectedLookKey: (team) => (team === "blue" ? "zhaohuo" : "__team_default__"),
     selectedHpValue: () => 300,
     selectedSkillValue: () => 18,
     buildMapObjects: () => [{ id: "map" }],
@@ -53,6 +53,8 @@ test("installBattleSetupGlobals wires reset and starting unit helpers", () => {
   assert.equal(state.inRoom, false);
   assert.deepEqual(state.objects, [{ id: "map" }]);
   assert.equal(state.units.length, 2);
+  assert.equal(state.units[0].appearanceKey, "zhaohuo");
+  assert.equal(state.units[1].appearanceKey, "__team_default__");
   assert.equal(state.units[0].name, "青1");
   assert.equal(state.units[1].controlMode, "ai_red");
   assert.equal(calls.includes("開始。"), true);

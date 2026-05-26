@@ -54,16 +54,16 @@
 
 - 掉落設定：[`scripts/data/config.js`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/scripts/data/config.js)
   `mapItemDropChance`、`mapItemDropTypes`、`mapGoldDropTypes`
-- 單位資料：[`game.js`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/game.js:384)
+- 單位資料：[`scripts/bootstrap/install-battle-setup-globals.module.mjs`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/scripts/bootstrap/install-battle-setup-globals.module.mjs)
   `items`、`itemSlots`、`gold`
-- HUD：[`scripts/systems/hud-renderer.js`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/scripts/systems/hud-renderer.js)
+- HUD：[`scripts/bootstrap/install-hud-renderer-globals.module.mjs`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/scripts/bootstrap/install-hud-renderer-globals.module.mjs)
   `drawInventoryHud()`、`drawInventoryItemHud()`、`itemIconByType()`
 - 道具流程：[`scripts/systems/consumables.js`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/scripts/systems/consumables.js)
   `useItemSlot(index)`、`addInventoryItem()`、`removeInventoryItem()`、`updateConsumables()`、`requestConsumableUse()`、`executeConsumableItem()`
 - 掉落流程：`scripts/systems/combat.js -> damageObject()` 內呼叫 `scripts/systems/consumables.js -> maybeGrantMapItem(object, attacker)`
-- 房間商店：`game.js -> purchaseShopItem(itemEl)` 會把已實作商品直接加入 `state.roomItemSlots`
-- 房間商店重畫：`scripts/systems/consumables.js -> notifyRoomInventoryChanged()` 只觸發 `state.onRoomInventoryChanged` hook；實際 DOM 重畫仍由 `game.js -> renderRoomShopBag()` 負責。
-- 使用動畫：`scripts/systems/consumables.js -> startConsumableUseEffect(unit, now)` 建立 `state.consumableEffects`，`scripts/systems/effects-renderer.js -> drawConsumableEffects(now)` 繪製 `regen_sp`
+- 房間商店：`scripts/bootstrap/install-room-ui-globals.module.mjs -> purchaseShopItem(itemEl)` 會把已實作商品直接加入 `state.roomItemSlots`
+- 房間商店重畫：`scripts/systems/consumables.js -> notifyRoomInventoryChanged()` 只觸發 `state.onRoomInventoryChanged` hook；實際 DOM 重畫由 `scripts/bootstrap/install-room-ui-globals.module.mjs -> renderRoomShopBag()` 負責。
+- 使用動畫：`scripts/systems/consumables.js -> startConsumableUseEffect(unit, now)` 建立 `state.consumableEffects`，`scripts/bootstrap/install-effects-renderer-globals.module.mjs -> drawConsumableEffects(now)` 繪製 `regen_sp`
 - 神水目前實際效果函式：`scripts/systems/consumables.js -> useBackupItem()`
 - 神酒目前實際效果函式：`scripts/systems/consumables.js -> useSakeItem()`
 - 移動免耗判定：`scripts/systems/movement.js -> skillMove()`

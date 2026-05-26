@@ -674,6 +674,7 @@ html[lang="en"] .room-title-select {
   border: 0;
   padding: 0;
   background: transparent;
+  z-index: 3;
 }
 
 .battle-start-btn img {
@@ -695,6 +696,7 @@ html[lang="en"] .room-title-select {
   color: #f7e8a9;
   font-size: 15px;
   font-weight: 900;
+  z-index: 3;
 }
 
 .room-map-select:focus {

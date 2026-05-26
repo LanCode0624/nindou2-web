@@ -1,4 +1,4 @@
-// Asset paths and frame buffers. Loading still happens in game.js for now.
+// Asset paths and frame buffers. Loading happens through module bootstrap now.
 function createLoopingBgm(src) {
   const audio = new Audio(src);
   audio.preload = "auto";

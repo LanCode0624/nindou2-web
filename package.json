@@ -2,7 +2,6 @@
   "name": "2-c-users-lane6-onedrive-desktop",
   "version": "1.0.0",
   "description": "",
-  "main": "game.js",
   "scripts": {
     "dev": "node scripts/tools/ensure-classic-runtime-bundle.mjs --quiet && vite --host 127.0.0.1",
     "serve:game": "node scripts/tools/serve-game.mjs",
@@ -10,7 +9,7 @@
     "build": "node scripts/tools/ensure-classic-runtime-bundle.mjs --quiet && vite build",
     "preview": "node scripts/tools/ensure-classic-runtime-bundle.mjs --quiet && vite preview --host 127.0.0.1",
     "verify:vite": "node scripts/tools/verify-vite-runtime.mjs",
-    "check": "node --check game.js",
+    "check": "node --check scripts/bootstrap/install-game-globals.module.mjs",
     "sync:weapons": "node scripts/tools/sync-bridge.mjs --key weapons",
     "sync:config-nindou": "node scripts/tools/sync-bridge.mjs --key config-nindou",
     "sync:ninjutsu-definitions": "node scripts/tools/sync-bridge.mjs --key ninjutsu-definitions",

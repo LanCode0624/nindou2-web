@@ -17,6 +17,17 @@ export async function buildClassicRuntimeBundle({
   scriptPaths = CLASSIC_RUNTIME_SCRIPT_PATHS,
   outputRelativePath = CLASSIC_RUNTIME_BUNDLE_PATH,
 } = {}) {
+  const outputPath = path.join(repoRoot, outputRelativePath);
+  if (scriptPaths.length === 0) {
+    await fs.rm(outputPath, { force: true });
+    return {
+      outputRelativePath,
+      scriptCount: 0,
+      bytes: 0,
+      skipped: true,
+    };
+  }
+
   const chunks = [
     "// AUTO-GENERATED FILE.",
     "// Source: scripts/tools/build-classic-runtime-bundle.mjs",
@@ -45,7 +56,6 @@ export async function buildClassicRuntimeBundle({
   chunks.push("})();");
   chunks.push("");
   const output = chunks.join("\n");
-  const outputPath = path.join(repoRoot, outputRelativePath);
   await fs.mkdir(path.dirname(outputPath), { recursive: true });
   await fs.writeFile(outputPath, output, "utf8");
   return {

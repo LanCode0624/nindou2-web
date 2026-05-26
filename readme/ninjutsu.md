@@ -11,9 +11,9 @@
 - 定義與編輯排序：`scripts/data/ninjutsu-definitions.js -> ninjuCatalog`、`ninjuEditorCatalog`、`defaultNinjuLoadout`
 - 素材與特效：`scripts/data/assets.js -> attackNinjuConfigs`、`specialNinjuConfigs`
 - 規則查詢：`scripts/data/rule-modes.js`
-- 施放流程：`scripts/systems/ninjutsu.js`
-- HUD 按鈕：`scripts/systems/hud-renderer.js -> drawNinjuSlot()`、`currentNinjuButtonList()`
-- 編輯 UI：`game.js -> renderNinjuEditor()`、`style.css`
+- 施放流程：`scripts/bootstrap/install-ninjutsu-globals.module.mjs`
+- HUD 按鈕：`scripts/bootstrap/install-hud-renderer-globals.module.mjs -> drawNinjuSlot()`、`currentNinjuButtonList()`
+- 編輯 UI：`scripts/bootstrap/install-room-ui-globals.module.mjs -> renderNinjuEditor()`、`style.css`
 - 整理表：`readme/ninjutsu-table.csv`
 
 ---
@@ -50,9 +50,9 @@
 - `steel`、`hotBlood`、`genki`、`kakki`、`shinki` 走一般狀態/回復忍術流程。
 - `deathModeKey` 目前分 `death_command` / `death_heal`，房間預設是 `death_heal`。
 - `death_heal` 會額外放開 `genki`、`kakki`、`shinki`。
-- `death_command` 預設禁用回血，但 `忍2修改 + genki` 例外，維持可用且沿用修改版那組效果/消耗。
+- `death_command` 禁用 `genki`、`kakki`、`shinki`；沒有 `忍2修改 + genki` 例外。
 - `moneyDart` 走獨立準備與直線即時命中流程，規則看 `moneyDartRule()`；它沒有飛行速度設定，丟出當下若敵人在同列/同行且中間無阻擋就直接命中。
-- `activeMoneyDartCast(unit)` 在 `scripts/systems/ninjutsu.js`，供 combat / HUD / 繪圖查詢角色是否仍在錢鏢出手動畫中。
+- `activeMoneyDartCast(unit)` 在 `scripts/bootstrap/install-ninjutsu-globals.module.mjs`，供 combat / HUD / 繪圖查詢角色是否仍在錢鏢出手動畫中。
 - 攻擊系忍術走 `attackNinjuConfigs` + `attackNinjuRule(type)`；施放門檻主要是魂，不是技量。
 - `moneyDart` 目前仍會檢查並扣除 `rule.cost`。
 - `moneyDart` 在忍術施放中或 chain gap 排程時，只有第一次成功排入才扣 `rule.cost`；已經 queued 時重按不能再扣技。
@@ -116,6 +116,6 @@
 
 ## 6. 驗證
 
-- 忍術資料或流程改動後至少跑 `node --check .\game.js`。
+- 忍術資料或流程改動後至少跑 `npm run check`。
 - 涉及忍術規則、分身、錢鏢、回血時，跑 `node --test .\tests\ninjutsu.test.js`。
 - 能跑完整回歸時，跑 `npm test`。

@@ -34,6 +34,7 @@ test("installGameFlowGlobals wires room, map, rule, and restart helpers", () => 
     resetGame: () => calls.push("reset"),
     syncBgm: () => calls.push("syncBgm"),
     startBgm: () => calls.push("startBgm"),
+    startDrawLoop: () => calls.push("startDrawLoop"),
     syncRoomInventoryFromPlayerUnit: () => calls.push("syncInventory"),
     clearDragState: () => calls.push("clearDrag"),
     renderRoomCards: () => calls.push("cards"),
@@ -52,6 +53,7 @@ test("installGameFlowGlobals wires room, map, rule, and restart helpers", () => 
   target.startBattleFromRoom();
   assert.equal(state.inRoom, false);
   assert.equal(calls.includes("remove:room-mode"), true);
+  assert.equal(calls.includes("startDrawLoop"), true);
 
   target.startRestartHold({ code: "KeyR" });
   target.updateRestartHold(4500);

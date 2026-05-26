@@ -14,6 +14,7 @@ import { installCombatGlobals } from "./bootstrap/install-combat-globals.module.
 import { installConfigGlobals } from "./bootstrap/install-config-globals.module.mjs";
 import { installConsumablesGlobals } from "./bootstrap/install-consumables-globals.module.mjs";
 import { installEffectsRendererGlobals } from "./bootstrap/install-effects-renderer-globals.module.mjs";
+import { installGameGlobals } from "./bootstrap/install-game-globals.module.mjs";
 import { installGameFlowGlobals } from "./bootstrap/install-game-flow-globals.module.mjs";
 import { installGridGlobals } from "./bootstrap/install-grid-globals.module.mjs";
 import { installHudRendererGlobals } from "./bootstrap/install-hud-renderer-globals.module.mjs";
@@ -69,6 +70,8 @@ export const REQUIRED_CLASSIC_GLOBALS = Object.freeze([
   "NindouUnitRenderer",
   "NindouAi",
   "NindouCombat",
+  "NindouRuntimeState",
+  "NindouGame",
 ]);
 
 function documentRuntimeMode(target) {
@@ -108,6 +111,7 @@ export async function bootstrapRuntime({
     installAppearanceGlobals(target);
     installWeaponGlobals(target);
     installNinjutsuGlobals(target);
+    installGameGlobals(target);
     installRenderTuningGlobals(target);
     installLocaleGlobals(target);
     installMapGlobals(target);

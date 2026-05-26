@@ -20,14 +20,14 @@
 
 ## 2. 目前狀態
 
-目前是過渡期，不是全面 ES module 化：
+目前是過渡期，不是把所有 `.js` 都改名成 `.mjs`：
 
 - 目前建議先暫停繼續拆 helper。Vite 骨架與 module mirror 已足夠支援後續開發；短期如果要做幾十種模式、武器、地圖，優先回到玩法內容。
 - 已加入 Vite skeleton：`npm run dev`、`npm run build`、`npm run preview`。
 - `index.html` 已收斂成單一 `type="module"` entry（`scripts/main.module.js`）。
-- classic runtime scripts 改由 `scripts/load-classic-runtime.module.mjs` 依 `scripts/classic-runtime-manifest.module.mjs` 順序動態載入。
-- 舊 runtime 仍由 classic scripts 執行；module 版目前是 mirror / probe，不接管主遊戲流程。
-- `vite.config.js` 目前只打包 module entry，並複製 `assets/`、`scripts/`、`game.js`、`index.html`、`style.css` 到 `dist/`。
+- runtime 目前由 `scripts/runtime-bootstrap.module.mjs` 依序安裝 module globals；`scripts/classic-runtime-manifest.module.mjs` 的 runtime script 清單目前是空陣列。
+- `scripts/load-classic-runtime.module.mjs` 保留相容入口；manifest 為空時回傳 `mode: "none"`，不載入 classic bundle。
+- `vite.config.js` 目前只打包 module entry，並複製 `assets/`、`scripts/`、`index.html`、`style.css` 到 `dist/`。
 - 目前 production build 會轉換 18 個 modules。
 - 想用本機 Vite server 玩/測，可雙擊 repo 根目錄的 `啟動遊戲.cmd`。黑色視窗需保持開著，關掉 server 就停止。
 - `weapons` 已切成單一來源：只手改 `scripts/data/weapons.module.mjs`，再跑 `npm run sync:weapons` 產生 `scripts/data/weapons.js`。
@@ -87,9 +87,9 @@
 - `scripts/systems/audio.module.mjs`
 - `scripts/systems/match.module.mjs`
 - `scripts/systems/consumables.module.mjs`
-- `scripts/systems/movement.module.mjs`：目前只 mirror 低風險移動 helper，`skillMove()` 主流程仍留在 classic runtime。
-- `scripts/systems/ai.module.mjs`：目前只 mirror AI profile、AI 類型判斷、太刀達人魂/移動 readiness、紅組幾何 helper，`updateAi()` 主流程仍留在 classic runtime。
-- `scripts/systems/combat.module.mjs`：目前只 mirror 武器傷害、範圍格、方向選擇、命中收集、揮砍紀錄 helper，`attack()` / `attackCell()` / 扣血破物件流程仍留在 classic runtime。
+- `scripts/systems/movement.module.mjs`：移動 helper 的 importable module；實際 runtime 由 `scripts/bootstrap/install-movement-globals.module.mjs` 安裝。
+- `scripts/systems/ai.module.mjs`：AI profile/helper 的 importable module；實際 runtime 由 `scripts/bootstrap/install-ai-globals.module.mjs` 安裝。
+- `scripts/systems/combat.module.mjs`：武器傷害、範圍、命中 helper 的 importable module；實際 runtime 由 `scripts/bootstrap/install-combat-globals.module.mjs` 安裝。
 
 ### Legacy bridges
 
@@ -177,14 +177,13 @@ npm run sync:bridges:dry-run
 
 目前建議先停在這個邊界：
 
-1. 不再繼續為了轉換而拆更多 helper。
-2. 保留 Vite dev/build、module mirror、legacy bridge、同步測試，作為後續安全網。
-3. 如果短期目標是新增模式、武器、地圖，照既有 classic runtime 開發即可；必要時同步補 module mirror。
-4. 如果之後要正式推進 ES module 化，先選一條 runtime 接管路線，不要再只做旁路 mirror。
-5. 第一條正式接管路線建議從低副作用入口開始，例如讓某個資料/純 helper 呼叫點改用 module import，再移除對應 legacy 依賴。
-6. `skillMove()`、`updateAi()`、`attack()`、`attackCell()`、`ninjutsu` 都是高副作用流程；目前 movement/combat/AI/ninjutsu 已由 module installer 接管。
-7. 測試逐步從 `script-loader.js` 改成直接 import module；同時保留少量 legacy sync 測試，直到 classic scripts 移除。
-8. 已完成：`index.html` 的 classic scripts 已收斂成單一 module entry。
+1. 不再為了轉換而無差別改名所有 `.js`。
+2. 保留 Vite dev/build、module installer、legacy bridge、同步測試，作為後續安全網。
+3. 如果短期目標是新增模式、武器、地圖，優先改 module 單一來源或現有 installer；不要新增 classic runtime script。
+4. 如果之後要正式推進 ES module 化，優先把仍被測試或 bridge 依賴的 classic `.js` 改成 generated bridge 或 importable module。
+5. `skillMove()`、`updateAi()`、`attack()`、`attackCell()`、`ninjutsu`、`draw()` 都是高副作用流程；目前已由 module installer 接管。
+6. 測試逐步從 `script-loader.js` 改成直接 import module；同時保留少量 legacy sync 測試，直到 classic bridge 可以移除。
+7. 已完成：`index.html` 的 classic scripts 已收斂成單一 module entry，classic runtime manifest 目前為空。
 
 武器資料日常流程：
 
@@ -206,9 +205,9 @@ map 資料日常流程：
 
 暫時不要做：
 
-- 不要直接把 `game.js` 全量改成 module。
+- 不要再把 `game.js` 當 runtime 入口；runtime state 與 `draw()` 現在在 `scripts/bootstrap/install-game-globals.module.mjs`。
 - 不要繼續無目標地新增 mirror module。
-- 不要移除 classic scripts 載入順序。
+- 不要新增 classic runtime manifest entry。
 - 不要刪 bridge，除非對應 runtime 已正式改用 import。
 - 不要讓 module import 時建立 `Audio`、讀 DOM、啟動主迴圈或修改全域 `state`。
 
@@ -222,7 +221,7 @@ map 資料日常流程：
 - `scripts/runtime-bootstrap.module.mjs` 現在是 module entry 的統一啟動層：可解析 runtime mode（classic/module）、執行 classic runtime 載入、檢查必要 globals、再跑 probe。
 - `globalThis.NindouRuntimeBootstrap` 會保留啟動診斷（`mode`、`loadedScriptCount`、`missingGlobals`、`isReady`）。
 - classic runtime script order 目前集中在 `scripts/classic-runtime-manifest.module.mjs`；Node 測試端使用相同子集合定義（core/combat/ai）避免流程漂移。
-- 新增 `scripts/tools/build-classic-runtime-bundle.mjs`，把 classic runtime 34 支腳本產生為單一 `scripts/generated/classic-runtime.bundle.js`；module entry 會優先載入這個 bundle，失敗才 fallback 多檔載入。
+- Historical: `scripts/tools/build-classic-runtime-bundle.mjs` originally produced `scripts/generated/classic-runtime.bundle.js` for the classic runtime. With an empty runtime manifest, this tool now removes/skips the generated bundle output.
 - `scripts/tools/verify-vite-runtime.mjs` 提供 Vite 端到端健康檢查：同時驗證 `vite dev` 與 `vite preview`（含 build），檢查 `NindouRuntimeBootstrap`/`NindouModuleProbe`/console error，再自動關閉 server。
 - `verify:vite` 會先自動重建 classic runtime bundle，再做 dev/preview 雙路徑檢查。
 - `scripts/main.module.js` 的 probe 改為單一 `probeSections` 定義：每個 domain 同時定義 `legacy` 來源、`summarize` 函式、`warning` 文字；`globalThis.NindouModuleProbe` 與 warning 迴圈都由這張表產生。
@@ -328,7 +327,7 @@ map 資料日常流程：
 
 ## 2026-05-25 Classic runtime bundle-only loading
 
-- `scripts/load-classic-runtime.module.mjs` now treats `scripts/generated/classic-runtime.bundle.js` as the primary and expected runtime artifact.
+- Historical: `scripts/load-classic-runtime.module.mjs` previously treated `scripts/generated/classic-runtime.bundle.js` as the primary runtime artifact. With an empty runtime manifest, it returns `mode: "none"`.
 - Default behavior is now bundle-only loading; missing bundle fails fast with an explicit error.
 - Legacy multi-script loading is still available only when `allowScriptFallback: true` is explicitly passed to `loadClassicRuntime()`.
 - `scripts/runtime-bootstrap.module.mjs` now defaults to `allowScriptFallback = false`, so runtime drift cannot be hidden by implicit script fallback.
@@ -594,11 +593,21 @@ map 資料日常流程：
 - `tests/install-ai-globals.test.mjs` now covers AI side effects; bundle tests now assert `ai.js` is absent.
 - Browser smoke verified battle AI through module `updateAi()`: an `ai_beginner` unit attacked an adjacent player from 300 to 250 HP, canvas remained nonblank, and there were no page/console errors.
 
+## 2026-05-26 Game runtime switched to module install
+
+- Added `scripts/bootstrap/install-game-globals.module.mjs` for DOM references, runtime `state`, `NindouRuntimeState`, room ninjutsu editor state, `draw()`, and `NindouGame`.
+- `scripts/runtime-bootstrap.module.mjs` installs game globals before the remaining bootstrap installers.
+- `scripts/classic-runtime-manifest.module.mjs` now has an empty runtime script list; `loadClassicRuntime()` returns `mode: "none"`.
+- Classic bundle output is skipped when the manifest is empty; stale `scripts/generated/classic-runtime.bundle.js` is removed instead of keeping a zero-entry wrapper.
+- Added `tests/install-game-globals.test.mjs`; bundle/manifest/load tests now assert `game.js` is absent from runtime loading.
+- Superseded on 2026-05-26 cleanup: `game.js` and generated `scripts/generated/classic-runtime.bundle.js` were removed from the checkout.
+- Verified with `npm test`, `npm run verify:vite`, and browser smoke: room loads, battle starts, canvas is nonblank, `loadedScriptCount` is `0`, and `loadMode` is `none`.
+
 ## 2026-05-26 Ninjutsu runtime switched to module install
 
 - Expanded `scripts/bootstrap/install-ninjutsu-globals.module.mjs` from data-only install to full ninjutsu runtime install: `updateNinju()`, status ninjutsu, attack ninjutsu, money dart, clone, chain/gap helpers, and invincibility/status checks.
 - `scripts/runtime-bootstrap.module.mjs` now installs ninjutsu globals before loading the remaining classic bundle.
-- `scripts/classic-runtime-manifest.module.mjs` no longer includes `scripts/systems/ninjutsu.js`; the generated classic bundle now contains 1 runtime script: `game.js`.
+- At this step, `scripts/classic-runtime-manifest.module.mjs` no longer included `scripts/systems/ninjutsu.js`; it was later superseded by the 2026-05-26 game runtime install, which leaves the manifest empty.
 - Bundle tests now assert `ninjutsu.js` is absent; existing `tests/ninjutsu.test.js` continues to cover the installed global behavior.
 - Browser smoke verified battle ninjutsu through module globals: steel applied, money dart hit an enemy, clone created 2 decoys, canvas remained nonblank, and there were no page/console errors.
 
@@ -633,7 +642,7 @@ map 資料日常流程：
 - Attempting to remove `scripts/systems/movement.js` from `CLASSIC_RUNTIME_SCRIPT_PATHS` made real battle movement stop working.
 - Root cause: the movement installer exposes helper functions, but the current battle input/runtime still relies on the classic executable movement flow for skill spending, trails, collision side effects, and drag completion.
 - Superseded on 2026-05-26: the installer now includes the full side-effecting movement flow and `movement.js` is no longer in the runtime bundle.
-- After changing runtime manifest entries, rebuild `scripts/generated/classic-runtime.bundle.js`; launcher and Vite verification use the generated bundle path.
+- After changing runtime manifest entries, run `npm run verify:vite`; with an empty manifest the bundle output is skipped.
 
 ## 2026-05-25 AI/Combat runtime rollback note
 
@@ -648,9 +657,9 @@ map 資料日常流程：
 
 ## 2026-05-25 Bundle-first runtime loading
 
-- Classic runtime loading now goes through `scripts/generated/classic-runtime.bundle.js` by default.
-- `scripts/load-classic-runtime.module.mjs` only falls back to per-script loading when `allowScriptFallback: true` is explicitly requested.
-- `tests/load-classic-runtime.test.mjs` now pins three cases: bundle success, explicit fallback, and fail-fast bundle error.
+- Historical: classic runtime loading went through `scripts/generated/classic-runtime.bundle.js` by default.
+- Superseded on 2026-05-26: empty manifest returns `mode: "none"`; explicit per-script loading remains only as a compatibility helper.
+- `tests/load-classic-runtime.test.mjs` now pins empty-manifest behavior and explicit legacy script loading.
 
 ## 2026-05-25 Module bootstrap owns app start
 
@@ -660,7 +669,7 @@ map 資料日常流程：
 
 ## 2026-05-25 Automatic classic bundle refresh
 
-- Added `scripts/tools/ensure-classic-runtime-bundle.mjs` to rebuild `scripts/generated/classic-runtime.bundle.js` only when the manifest or any bundled classic runtime source is newer than the current bundle.
+- Added `scripts/tools/ensure-classic-runtime-bundle.mjs`; with an empty manifest it skips/removes classic bundle output.
 - `serve-game.mjs` now runs this bundle freshness check before starting the lightweight local server.
 - `vite.config.js` now runs the same check at build start, and `package.json` `dev/build/preview` scripts also call it before invoking Vite.
 - Added `tests/ensure-classic-runtime-bundle.test.mjs` to pin the stale-check source list and timestamp logic.

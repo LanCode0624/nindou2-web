@@ -85,7 +85,8 @@ export function installAppBootstrapGlobals(target = globalThis) {
       target.applyVolumeControls?.();
       target.resetGame?.();
       target.startBgm?.();
-      target.draw?.();
+      if (typeof target.startDrawLoop === "function") target.startDrawLoop();
+      else target.draw?.();
     });
   };
 
