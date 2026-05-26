@@ -240,13 +240,13 @@ export const ninjutsuRuleProfiles = {
       postThrowNinjuLockMs: 250,
     },
     steel: {
-      cost: 7,
+      cost: 6,
       castDurationMs: 1500,
       durationMs: 15000,
       defenseMultiplier: 2,
     },
     hotBlood: {
-      cost: 7,
+      cost: 6,
       castDurationMs: 1500,
       durationMs: 15000,
       weaponDamageMultiplier: 2,

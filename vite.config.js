@@ -1,34 +1,50 @@
 import { defineConfig } from "vite";
-import { copyFileSync, existsSync, mkdirSync, readdirSync, rmSync, statSync } from "node:fs";
+import { copyFile, mkdir, readdir, stat } from "node:fs/promises";
 import { resolve } from "node:path";
+import { ensureClassicRuntimeBundle } from "./scripts/tools/ensure-classic-runtime-bundle.mjs";
 
 function copyLegacyRuntime() {
   const root = process.cwd();
   const outDir = resolve(root, "dist");
 
-  function copyEntry(source, target) {
-    const stats = statSync(source);
+  async function copyFileWithRetry(source, target, attempts = 6) {
+    for (let attempt = 1; attempt <= attempts; attempt += 1) {
+      try {
+        await copyFile(source, target);
+        return;
+      } catch (error) {
+        const isBusy = error && (error.code === "EBUSY" || error.code === "EPERM");
+        if (!isBusy || attempt === attempts) {
+          throw error;
+        }
+        await new Promise((resolveWait) => setTimeout(resolveWait, 30 * attempt));
+      }
+    }
+  }
+
+  async function copyEntry(source, target) {
+    const stats = await stat(source);
     if (stats.isDirectory()) {
-      mkdirSync(target, { recursive: true });
-      for (const child of readdirSync(source)) {
-        copyEntry(resolve(source, child), resolve(target, child));
+      await mkdir(target, { recursive: true });
+      for (const child of await readdir(source)) {
+        await copyEntry(resolve(source, child), resolve(target, child));
       }
       return;
     }
-    mkdirSync(resolve(target, ".."), { recursive: true });
-    copyFileSync(source, target);
+    await mkdir(resolve(target, ".."), { recursive: true });
+    await copyFileWithRetry(source, target);
   }
 
   return {
     name: "copy-legacy-runtime",
-    closeBundle() {
-      mkdirSync(outDir, { recursive: true });
+    async buildStart() {
+      await ensureClassicRuntimeBundle({ quiet: true });
+    },
+    async closeBundle() {
+      await mkdir(outDir, { recursive: true });
       for (const entry of ["assets", "scripts", "game.js", "index.html", "style.css"]) {
         const target = resolve(outDir, entry);
-        if (existsSync(target)) {
-          rmSync(target, { recursive: true, force: true });
-        }
-        copyEntry(resolve(root, entry), target);
+        await copyEntry(resolve(root, entry), target);
       }
     },
   };
@@ -39,7 +55,7 @@ export default defineConfig({
   plugins: [copyLegacyRuntime()],
   build: {
     outDir: "dist",
-    emptyOutDir: true,
+    emptyOutDir: false,
     rollupOptions: {
       input: resolve(__dirname, "scripts/main.module.js"),
     },

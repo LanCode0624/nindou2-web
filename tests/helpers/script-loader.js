@@ -2,6 +2,30 @@ const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
 
+const CORE_RULE_SCRIPT_PATHS = Object.freeze([
+  "scripts/data/config.js",
+  "scripts/data/rule-modes.js",
+]);
+
+const COMBAT_RULE_SCRIPT_PATHS = Object.freeze([
+  "scripts/data/config.js",
+  "scripts/data/weapons.js",
+  "scripts/data/ninjutsu-definitions.js",
+  "scripts/data/locales.js",
+  "scripts/data/rule-modes.js",
+  "scripts/systems/grid.js",
+  "scripts/systems/state-helpers.js",
+  "scripts/systems/ninjutsu.js",
+  "scripts/systems/consumables.js",
+  "scripts/systems/combat.js",
+]);
+
+const AI_RULE_SCRIPT_PATHS = Object.freeze([
+  ...COMBAT_RULE_SCRIPT_PATHS,
+  "scripts/systems/movement.js",
+  "scripts/systems/ai.js",
+]);
+
 const repoRoot = path.resolve(__dirname, "..", "..");
 
 function createGameContext(overrides = {}) {
@@ -46,44 +70,17 @@ function contextValue(context, expression) {
 
 function loadCoreRules(overrides = {}) {
   const context = createGameContext(overrides);
-  return loadScripts(context, [
-    "scripts/data/config.js",
-    "scripts/data/rule-modes.js",
-  ]);
+  return loadScripts(context, CORE_RULE_SCRIPT_PATHS);
 }
 
 function loadCombatRules(overrides = {}) {
   const context = createGameContext(overrides);
-  return loadScripts(context, [
-    "scripts/data/config.js",
-    "scripts/data/weapons.js",
-    "scripts/data/ninjutsu-definitions.js",
-    "scripts/data/locales.js",
-    "scripts/data/rule-modes.js",
-    "scripts/systems/grid.js",
-    "scripts/systems/state-helpers.js",
-    "scripts/systems/ninjutsu.js",
-    "scripts/systems/consumables.js",
-    "scripts/systems/combat.js",
-  ]);
+  return loadScripts(context, COMBAT_RULE_SCRIPT_PATHS);
 }
 
 function loadAiRules(overrides = {}) {
   const context = createGameContext(overrides);
-  return loadScripts(context, [
-    "scripts/data/config.js",
-    "scripts/data/weapons.js",
-    "scripts/data/ninjutsu-definitions.js",
-    "scripts/data/locales.js",
-    "scripts/data/rule-modes.js",
-    "scripts/systems/grid.js",
-    "scripts/systems/state-helpers.js",
-    "scripts/systems/ninjutsu.js",
-    "scripts/systems/consumables.js",
-    "scripts/systems/combat.js",
-    "scripts/systems/movement.js",
-    "scripts/systems/ai.js",
-  ]);
+  return loadScripts(context, AI_RULE_SCRIPT_PATHS);
 }
 
 module.exports = {

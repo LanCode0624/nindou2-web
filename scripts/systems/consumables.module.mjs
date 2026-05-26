@@ -97,6 +97,28 @@ export function addGold(unit, amount = 1) {
   return true;
 }
 
+export function maybeGrantMapItem(object, unit, callbacks = {}) {
+  if (!object || !unit || !unit.alive) return false;
+  const dropChance = callbacks.mapItemDropChance ?? 0;
+  if (Math.random() > dropChance) return false;
+  const goldDropTypes = callbacks.mapGoldDropTypes || [];
+  if (goldDropTypes.includes(object.type)) {
+    addGold(unit, 1);
+    callbacks.setMessage?.(`${unit.name} 獲得 1 金。`);
+    return true;
+  }
+  const itemDropTypes = callbacks.mapItemDropTypes || [];
+  if (!itemDropTypes.includes(object.type)) return false;
+  const consumableTypes = Array.isArray(callbacks.mapConsumableDropTypes) && callbacks.mapConsumableDropTypes.length > 0
+    ? callbacks.mapConsumableDropTypes
+    : ["backup3"];
+  const itemType = consumableTypes[Math.floor(Math.random() * consumableTypes.length)] || "backup3";
+  if (!addInventoryItem(unit, itemType, 1)) return false;
+  callbacks.playSound?.("takeDart");
+  callbacks.setMessage?.(`${unit.name} 獲得${itemLabel(itemType)}。`);
+  return true;
+}
+
 export function applyConsumableUseDefault(unit, now, options = {}) {
   const disableMs = options.defaultConsumableDisableMs ?? defaultConsumableDisableMs;
   const invincibleMs = options.defaultConsumableInvincibleMs ?? defaultConsumableInvincibleMs;
@@ -129,7 +151,11 @@ export function applySake4MoveSkillFree(unit, now, options = {}) {
   unit.buffAuraType = "sake4";
 }
 
-export function executeConsumableItem(stateLike, unit, type, now, queue = [], chainMoves = 0, callbacks = {}) {
+export function executeConsumableItem(stateLike, unit, type, now, queue = [], chainMoves = 0, pendingNinjutsu = [], callbacks = {}) {
+  if (!Array.isArray(pendingNinjutsu)) {
+    callbacks = pendingNinjutsu || {};
+    pendingNinjutsu = [];
+  }
   restoreConsumableSkill(unit, callbacks);
   if (type === "sake4") {
     applySake4MoveSkillFree(unit, now, callbacks);
@@ -143,6 +169,7 @@ export function executeConsumableItem(stateLike, unit, type, now, queue = [], ch
     duration: callbacks.defaultConsumableDisableMs ?? defaultConsumableDisableMs,
     queue,
     chainMoves,
+    pendingNinjutsu,
   };
   callbacks.playSound?.("spUp");
   callbacks.setMessage?.(type === "sake4"
@@ -174,7 +201,7 @@ export function requestConsumableUse(stateLike, unit, type, slotIndex = -1, call
   }
   removeInventoryItem(unit, type, 1, slotIndex);
   syncRoomInventoryFromPlayerUnit(stateLike, unit);
-  executeConsumableItem(stateLike, unit, type, now, [], 0, callbacks);
+  executeConsumableItem(stateLike, unit, type, now, [], 0, [], callbacks);
   return true;
 }
 
@@ -201,7 +228,16 @@ export function updateConsumables(stateLike, now, callbacks = {}) {
         unit.consumableUse = null;
         continue;
       }
-      executeConsumableItem(stateLike, unit, nextType, now, remainingQueue, movedInGap ? (callbacks.ninjuFollowupMoveAllowance ?? ninjuFollowupMoveAllowance) : 0, callbacks);
+      executeConsumableItem(
+        stateLike,
+        unit,
+        nextType,
+        now,
+        remainingQueue,
+        movedInGap ? (callbacks.ninjuFollowupMoveAllowance ?? ninjuFollowupMoveAllowance) : 0,
+        [],
+        callbacks,
+      );
       if (unit.id === callbacks.playerUnitId) setMessage(`${unit.name}：道具續接完成。`);
     }
   }

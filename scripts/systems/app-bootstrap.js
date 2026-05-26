@@ -53,4 +53,8 @@ function startGameApp() {
   });
 }
 
-startGameApp();
+globalThis.NindouAppBootstrap = {
+  bindGameEvents,
+  setupRoomUi,
+  startGameApp,
+};

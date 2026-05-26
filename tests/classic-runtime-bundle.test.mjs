@@ -1,0 +1,42 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+
+const repoRoot = path.resolve(process.cwd());
+const bundlePath = path.join(repoRoot, "scripts/generated/classic-runtime.bundle.js");
+
+test("classic runtime bundle exists and has wrapper markers", () => {
+  assert.equal(fs.existsSync(bundlePath), true);
+  const source = fs.readFileSync(bundlePath, "utf8");
+  assert.equal(source.includes("// AUTO-GENERATED FILE."), true);
+  assert.equal(source.includes("(function () {"), true);
+  assert.equal(source.includes("const scriptSources = ["), true);
+  assert.equal(source.includes("runInlineClassicScript"), true);
+  assert.equal(source.includes("scripts/data/render-tuning.js"), false);
+  assert.equal(source.includes("scripts/systems/grid.js"), false);
+  assert.equal(source.includes("scripts/systems/state-helpers.js"), false);
+  assert.equal(source.includes("scripts/systems/consumables.js"), false);
+  assert.equal(source.includes("scripts/systems/audio.js"), false);
+  assert.equal(source.includes("scripts/systems/asset-loader.js"), false);
+  assert.equal(source.includes("scripts/systems/battle-runtime.js"), false);
+  assert.equal(source.includes("scripts/systems/game-flow.js"), false);
+  assert.equal(source.includes("scripts/systems/match.js"), false);
+  assert.equal(source.includes("scripts/systems/scene-renderer.js"), false);
+  assert.equal(source.includes("scripts/systems/overlay-renderer.js"), false);
+  assert.equal(source.includes("scripts/systems/effects-renderer.js"), false);
+  assert.equal(source.includes("scripts/systems/status-ui.js"), false);
+  assert.equal(source.includes("scripts/systems/battle-setup.js"), false);
+  assert.equal(source.includes("scripts/systems/combat-renderer.js"), false);
+  assert.equal(source.includes("scripts/systems/movement-renderer.js"), false);
+  assert.equal(source.includes("scripts/systems/hud-renderer.js"), false);
+  assert.equal(source.includes("scripts/systems/unit-renderer.js"), false);
+  assert.equal(source.includes("scripts/systems/battle-input.js"), false);
+  assert.equal(source.includes("scripts/systems/room-ui.js"), false);
+  assert.equal(source.includes("scripts/systems/movement.js"), false);
+  assert.equal(source.includes("scripts/systems/combat.js"), false);
+  assert.equal(source.includes("scripts/systems/ai.js"), false);
+  assert.equal(source.includes("scripts/systems/ninjutsu.js"), false);
+  assert.equal(source.includes("scripts/systems/app-bootstrap.js"), false);
+  assert.equal(source.includes("script.dataset.classicRuntimeBundleEntry"), true);
+});

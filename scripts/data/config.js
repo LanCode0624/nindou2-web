@@ -110,13 +110,13 @@ const ninjutsuRuleProfiles = {
       "postThrowNinjuLockMs": 250
     },
     "steel": {
-      "cost": 7,
+      "cost": 6,
       "castDurationMs": 1500,
       "durationMs": 15000,
       "defenseMultiplier": 2
     },
     "hotBlood": {
-      "cost": 7,
+      "cost": 6,
       "castDurationMs": 1500,
       "durationMs": 15000,
       "weaponDamageMultiplier": 2
@@ -281,15 +281,6 @@ const shinkiButtonRect = {
   "w": 65,
   "h": 30
 };
-const itemSlotStartX = 510;
-const itemSlotY = 558;
-const itemSlotW = 38;
-const itemSlotH = 34;
-const itemSlotGap = 6;
-const defaultConsumableDisableMs = 1500;
-const defaultConsumableInvincibleMs = 1500;
-const sake4MoveSkillFreeMs = 15000;
-const mapItemDropChance = 0.4;
 const mapItemDropTypes = [
   "chest",
   "vase",
@@ -303,7 +294,6 @@ const mapConsumableDropTypes = [
   "backup3",
   "sake4"
 ];
-const countdownTotalMs = 2500;
 const ui = {
   "top": 0,
   "bottomTop": 542,
@@ -462,9 +452,16 @@ const roomMapDefinitions = {
     }
   }
 };
-function roomMapDefinitionEntries() {
-  return Object.entries(roomMapDefinitions);
-}
+const itemSlotStartX = 510;
+const itemSlotY = 558;
+const itemSlotW = 38;
+const itemSlotH = 34;
+const itemSlotGap = 6;
+const defaultConsumableDisableMs = 1500;
+const defaultConsumableInvincibleMs = 1500;
+const sake4MoveSkillFreeMs = 15000;
+const mapItemDropChance = 0.4;
+const countdownTotalMs = 2500;
 const soulCombatGainSteps = 5.4;
 const soulDeathGainSteps = 27;
 const ninjuChainGap = 500;
@@ -490,6 +487,9 @@ const ARRIVE_FRAME_MS = 65;
 const ARRIVE_TOTAL = 325;
 const PREARRIVE_FRAME_MS = 70;
 const PREARRIVE_TOTAL = 140;
+function roomMapDefinitionEntries() {
+  return Object.entries(roomMapDefinitions);
+}
 
 globalThis.NindouConfig = {
   weaponCooldownMs,

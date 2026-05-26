@@ -65,6 +65,23 @@ const state = {
   onRoomInventoryChanged: null,
 };
 
+globalThis.NindouRuntimeState = {
+  getState: () => state,
+  getGrid: () => grid,
+  getSelectedNinjuLoadout: () => selectedNinjuLoadout,
+  setSelectedNinjuLoadout: (loadout) => {
+    selectedNinjuLoadout = Array.isArray(loadout) ? [...loadout] : selectedNinjuLoadout;
+  },
+  getEditNinjuDraft: () => editNinjuDraft,
+  setEditNinjuDraft: (draft) => {
+    editNinjuDraft = Array.isArray(draft) ? [...draft] : editNinjuDraft;
+  },
+  getEditNinjuSlotIndex: () => editNinjuSlotIndex,
+  setEditNinjuSlotIndex: (index) => {
+    if (Number.isInteger(index)) editNinjuSlotIndex = index;
+  },
+};
+
 const ninjuLoadoutStorageKey = "nindou2.ninjuLoadout";
 let selectedNinjuLoadout = loadSavedNinjuLoadout();
 let editNinjuDraft = [...selectedNinjuLoadout];
