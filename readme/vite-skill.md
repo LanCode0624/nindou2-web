@@ -107,7 +107,7 @@ Classic scripts 暫時會暴露 bridge 供 module probe 比對：
 - `scripts/systems/grid.js -> globalThis.NindouGrid`
 - `scripts/systems/audio.js -> globalThis.NindouAudio`
 - `scripts/systems/match.js -> globalThis.NindouMatch`
-- `scripts/systems/consumables.js -> globalThis.NindouConsumables`
+- `scripts/systems/consumables.module.mjs -> install-consumables-globals.module.mjs -> globalThis.NindouConsumables`
 - `scripts/systems/movement.js -> globalThis.NindouMovement`
 - `scripts/bootstrap/install-ai-globals.module.mjs -> globalThis.NindouAi`
 - `scripts/bootstrap/install-combat-globals.module.mjs -> globalThis.NindouCombat`
@@ -614,8 +614,8 @@ map 資料日常流程：
 ## 2026-05-25 Consumables runtime switched to module install
 
 - Added `scripts/bootstrap/install-consumables-globals.module.mjs` and wired it in `scripts/runtime-bootstrap.module.mjs`.
-- `scripts/classic-runtime-manifest.module.mjs` no longer includes `scripts/systems/consumables.js` in `CLASSIC_RUNTIME_SCRIPT_PATHS`.
-- Added `tests/install-consumables-globals.test.mjs`; bundle expectation in `tests/classic-runtime-bundle.test.mjs` now asserts `consumables.js` is absent from the generated classic bundle.
+- `scripts/classic-runtime-manifest.module.mjs` no longer includes a legacy consumables script in `CLASSIC_RUNTIME_SCRIPT_PATHS`.
+- Added `tests/install-consumables-globals.test.mjs`; bundle expectation in `tests/classic-runtime-bundle.test.mjs` now asserts no consumables classic script is bundled.
 
 ## 2026-05-25 Movement/AI/Combat installer groundwork
 
