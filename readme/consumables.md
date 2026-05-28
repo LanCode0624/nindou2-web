@@ -146,7 +146,7 @@
 - 圖示檔：[`assets/consumables/10.png`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/assets/consumables/10.png)
 - 使用動畫：[`assets/consumables/magic_water`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/assets/consumables/magic_water)
 - 效果和神酒一樣：補滿技，並在 15 秒內讓移動不消耗技。
-- 額外效果：同一個 15 秒期間內，攻擊與防禦都變為 2 倍；外層金色光圈同樣是點擊後延遲 1.5 秒才顯示。live code 實作為 `magicWaterUntil` 生效時武器傷害乘 2、受到的傷害再除以 2。
+- 額外效果：同一個 15 秒期間內，攻擊與防禦都變為 2 倍；不會和熱血、鋼鐵疊乘，所以攻防倍率最多仍是 2 倍。外層紫色光圈同樣是點擊後延遲 1.5 秒才顯示。live code 實作為 `magicWaterUntil` 生效時與熱血/鋼鐵取最大倍率。
 - 魔水使用後同樣套用 consumable 預設：使用後僵直 `1.5` 秒，同時無敵 `1.5` 秒。
 - 魔水使用成功時播放共通 `click_item.ogg`，並額外播放專用 [`assets/sounds/ninja/status/sp_up.ogg`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/assets/sounds/ninja/status/sp_up.ogg)。
 

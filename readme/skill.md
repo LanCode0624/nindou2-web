@@ -77,7 +77,7 @@ npm run build
 目前重要架構狀態：
 
 - 本機開發優先用 Vite：在 repo 內執行 `npm run dev` 後開 `http://127.0.0.1:5173/index.html`。
-- 日常雙擊遊玩用 repo 根目錄的 `啟動遊戲.cmd`，它會在 `http://127.0.0.1:5174/index.html` 啟動 `scripts/tools/serve-game.mjs` 輕量靜態 server，不走 Vite 冷啟動。
+- 日常雙擊遊玩用 repo 根目錄的 `啟動遊戲.cmd`，它會在背景啟動 `http://127.0.0.1:5174/index.html` 的 `scripts/tools/serve-game.mjs` 輕量靜態 server，不走 Vite 冷啟動，正常啟動後只顯示瀏覽器遊戲頁。
 - `index.html` 已收斂為單一 `type="module"` entry（`scripts/main.module.js`）。
 - runtime 目前由 `scripts/runtime-bootstrap.module.mjs` 依序安裝 module globals；`scripts/classic-runtime-manifest.module.mjs` 的 runtime script 清單目前是空陣列。
 - `scripts/load-classic-runtime.module.mjs` 保留相容入口；manifest 為空時回傳 `mode: "none"`，不再載入 classic bundle。
