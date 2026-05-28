@@ -117,9 +117,9 @@ export const itemSlotGap = 6;
 export const defaultConsumableDisableMs = 1500;
 export const defaultConsumableInvincibleMs = 1500;
 export const sake4MoveSkillFreeMs = 15000;
-export const mapItemDropChance = 0.4;
-export const mapItemDropTypes = ["chest", "vase", "barrel", "hay"];
-export const mapGoldDropTypes = ["hay"];
+export const mapItemDropChance = 1;
+export const mapItemDropTypes = ["chest", "vase"];
+export const mapGoldDropTypes = ["hay", "barrel", "flower", "stump"];
 export const mapConsumableDropTypes = ["backup3", "sake4"];
 export const countdownTotalMs = 2500;
 export const ui = {
@@ -338,13 +338,13 @@ export const attackNinjuOutcomeTables = {
     { chance: 0.2, damage: 100, headEffect: "wildfireMiddleHitHead" },
   ],
   death: [
-    { chance: 0.0, damage: 9999, headEffect: "flashHitHead" },
-    { chance: 0.0, damage: 9999, headEffect: "deathMiddleHitHead" },
-    { chance: 0.0, damage: 9999, headEffect: "deathBigHitHead" },
-    { chance: 0.08, damage: 9999, headEffect: "deathNinjuSuccess" },
+    { chance: 0.0, damage: 99999, headEffect: "flashHitHead" },
+    { chance: 0.0, damage: 99999, headEffect: "deathMiddleHitHead" },
+    { chance: 0.0, damage: 99999, headEffect: "deathBigHitHead" },
+    { chance: 0.1, damage: 99999, headEffect: "deathNinjuSuccess" },
   ],
   freeze: [
-    { chance: 0.35, damage: 50, headEffect: "flashHitHead", hitDisableMs: 10000 },
+    { chance: 0.35, damage: 50, headEffect: "deathNinjuSuccess", hitDisableMs: 10000 },
   ],
 };
 

@@ -255,7 +255,7 @@ Vite/module runtime 安裝 rule-mode globals 時，也不要直接讀 `target.st
 | 類型        | 路徑                                                         |
 | ----------- | ------------------------------------------------------------ |
 | 角色 sprite | `assets/characters/{idle,move,charge,use-ninju,parts}/`    |
-| 武器動畫    | `assets/weapon/{folder}/{direction}_{hand\|attack}/{n}.png` |
+| 武器動畫    | `assets/weapon/{folder}/{direction}_{hand\|attack}/{n}.webp` |
 | 忍術動畫    | `assets/ninju/`                                            |
 | 音效        | `assets/sounds/sfx/`                                       |
 | 房間 UI     | `assets/room/`                                             |
@@ -276,7 +276,7 @@ weapon8 -> assets/sounds/weapon/8.ogg
 
 素材改名補充規則：
 
-- 如果素材檔名本身無法直接看出方向，例如只剩流水號、`Symbol xxxx.png`、或要靠排序/尺寸/資料夾結構推斷 `left/right/up/down`，不要直接批次改名。
+- 如果素材檔名本身無法直接看出方向，例如只剩流水號、`Symbol xxxx.webp`、或要靠排序/尺寸/資料夾結構推斷 `left/right/up/down`，不要直接批次改名。
 - 先把目前辨識結果明確列給使用者確認；確認後才能動手改。
 - 只有方向非常明確、且不需要主觀判讀時，才可直接改名。
 

@@ -25,6 +25,7 @@ export function installNinjutsuGlobals(target = globalThis) {
       if (unit.ninju.phase === "active") {
         if (currentNow - unit.ninju.startedAt < unit.ninju.duration) continue;
         refreshStatusNinju(unit, unit.ninju.type, currentNow);
+        applyNinjuPendingConsumableEffects(unit, currentNow);
         const queuedNinjutsu = queuedNinjuActions(unit.ninju);
 
         if (queuedNinjutsu.length > 0) {
@@ -42,6 +43,7 @@ export function installNinjutsuGlobals(target = globalThis) {
             gapMoves: 0,
             pendingMoneyDart: unit.ninju.pendingMoneyDart,
             pendingConsumables: unit.ninju.pendingConsumables,
+            pendingConsumableEffects: [],
           };
           if (unit.id === target.playerUnitId) target.setMessage?.(`${unit.name}：忍術連段空檔中。`);
         } else if (unit.ninju.pendingMoneyDart) {
@@ -54,6 +56,7 @@ export function installNinjutsuGlobals(target = globalThis) {
             queue: 0,
             gapMoves: 0,
             pendingConsumables: unit.ninju.pendingConsumables,
+            pendingConsumableEffects: [],
           };
           if (unit.id === target.playerUnitId) target.setMessage?.(`${unit.name}：錢鏢接段空檔中。`);
         } else if (unit.ninju.pendingConsumables?.length) {
@@ -108,7 +111,7 @@ export function installNinjutsuGlobals(target = globalThis) {
     setQueuedNinjuActions(unit.ninju, actions);
   }
 
-  function startStatusNinjuActive(unit, action, currentNow, pendingNinjutsu = [], pendingMoneyDart = false, pendingConsumables = []) {
+  function startStatusNinjuActive(unit, action, currentNow, pendingNinjutsu = [], pendingMoneyDart = false, pendingConsumables = [], pendingConsumableEffects = []) {
     const type = action.type;
     unit.ninju = {
       type,
@@ -121,6 +124,7 @@ export function installNinjutsuGlobals(target = globalThis) {
       attackNinjuLevel: action.attackNinjuLevel || 0,
       pendingMoneyDart,
       pendingConsumables,
+      pendingConsumableEffects,
     };
     setQueuedNinjuActions(unit.ninju, pendingNinjutsu);
     playStatusNinjuSound(type);
@@ -204,7 +208,7 @@ export function installNinjutsuGlobals(target = globalThis) {
       return;
     }
 
-    unit.skill -= skillCost;
+    unit.skill = Math.max(0, unit.skill - skillCost);
     const currentNow = now(target);
     const action = ninjuActionEntry(type, attackNinjuLevel);
 
@@ -274,6 +278,22 @@ export function installNinjutsuGlobals(target = globalThis) {
       target.playSound?.("useNinju");
       target.clearDragState?.();
       target.setMessage?.(`${unit.name}：錢鏢已排到連段空檔。`);
+      return;
+    }
+    if (unit.consumableUse && !unit.ninju) {
+      if (unit.consumableUse.pendingMoneyDart || unit.consumableUse.nextType === "moneyDart") {
+        target.setMessage?.(`${unit.name} 已排入錢鏢。`);
+        return;
+      }
+      unit.skill -= rule.cost;
+      if (unit.consumableUse.phase === "gap") {
+        unit.consumableUse.nextType = "moneyDart";
+      } else {
+        unit.consumableUse.pendingMoneyDart = true;
+      }
+      target.playSound?.("useNinju");
+      target.clearDragState?.();
+      target.setMessage?.(`${unit.name} 已排入錢鏢，等待道具動作結束。`);
       return;
     }
     unit.skill -= rule.cost;
@@ -367,6 +387,13 @@ export function installNinjutsuGlobals(target = globalThis) {
     return Boolean(unit?.consumableUse?.phase === "active");
   }
 
+  function applyNinjuPendingConsumableEffects(unit, currentNow) {
+    const effects = unit?.ninju?.pendingConsumableEffects || [];
+    for (const effect of effects) {
+      target.applyPendingConsumableEffect?.(unit, effect, currentNow);
+    }
+  }
+
   function canUnitMoveNow(unit) {
     if (unit.moneyDart) return false;
     if (isUnitCastingNinju(unit)) return Boolean(unit.ninju && unit.ninju.chainMoves > 0);
@@ -402,6 +429,10 @@ export function installNinjutsuGlobals(target = globalThis) {
     return Boolean(unit && unit.hotBloodUntil && now(target) < unit.hotBloodUntil);
   }
 
+  function isMagicWaterActive(unit) {
+    return Boolean(unit && unit.magicWaterUntil && now(target) < unit.magicWaterUntil);
+  }
+
   function refreshStatusNinju(unit, type, currentNow = now(target)) {
     if (isAttackNinjuType(type)) {
       triggerAttackNinju(unit, type, unit.ninju?.attackNinjuLevel || 0, currentNow);
@@ -435,33 +466,69 @@ export function installNinjutsuGlobals(target = globalThis) {
     }
   }
 
-  function triggerAttackNinju(caster, type, attackNinjuLevel, currentNow = now(target)) {
-    const config = target.attackNinjuConfigs?.[type];
+  function triggerAttackNinju(caster, type, attackNinjuLevel, now = performance.now()) {
+    const config = attackNinjuConfigs[type];
     const rule = attackNinjuRule(type);
     const targets = attackNinjuTargets(caster, attackNinjuLevel);
-    if (targets.length > 0 && config?.hitSound) target.playSound?.(config.hitSound);
-    for (const enemy of targets) {
+    
+    // === 關鍵修改：自訂雙音效延遲播放邏輯 ===
+    if (targets.length > 0 && config?.hitSound) {
+      if (typeof config.hitSound === "object") {
+        // 延遲播放第一個音效
+        setTimeout(() => {
+          if (config.hitSound.sound1) playSound(config.hitSound.sound1);
+        }, (config.hitSound.delay1 || 0) * 1000);
+
+        // 延遲播放第二個音效
+        setTimeout(() => {
+          if (config.hitSound.sound2) playSound(config.hitSound.sound2);
+        }, (config.hitSound.delay2 || 0) * 1000);
+      } else {
+        // 如果是一般字串，維持原本的立刻播放
+        playSound(config.hitSound);
+      }
+    }
+
+    // === 以下為您原本的所有後續遊戲邏輯，完整保留 ===
+    for (const target of targets) {
       const outcome = attackNinjuOutcome(type, rule);
       const hit = Boolean(outcome);
       const disableMs = hit ? (outcome.hitDisableMs || rule.hitDisableMs) : rule.missDisableMs;
-      enemy.disabledUntil = currentNow + disableMs;
-      enemy.invincibleUntil = enemy.disabledUntil;
-      enemy.moneyDart = null;
-      enemy.hitFlash = hit ? 0.65 : 0.25;
-      target.cancelDragIfPressed?.(enemy);
-      if (typeof target.addNinjuDamageEffect === "function") {
-        target.addNinjuDamageEffect(type, enemy, currentNow, hit && config?.holdHitLastFrame ? disableMs : (hit ? 1500 : 0), config?.holdHitLastFrame ? { frameDuration: 1500 } : {});
+      target.disabledUntil = now + disableMs;
+      target.invincibleUntil = target.disabledUntil;
+      target.moneyDart = null;
+      target.hitFlash = hit ? 0.65 : 0.25;
+      cancelDragIfPressed(target);
+      if (typeof addNinjuDamageEffect === "function") {
+        addNinjuDamageEffect(type, target, now, hit && config?.holdHitLastFrame ? disableMs : (hit ? 1500 : 0), config?.holdHitLastFrame ? { frameDuration: 1500 } : {});
         if (hit) {
-          if (config?.hitBodyEffect !== null) target.addNinjuDamageEffect(config?.hitBodyEffect || "flashHit", enemy, currentNow + 1500, 2000);
-          target.addNinjuDamageEffect(outcome.headEffect || "flashHitHead", enemy, currentNow + 1500, 2000);
-          if (config?.breakEffect) target.addNinjuDamageEffect(config.breakEffect, enemy, currentNow + disableMs, 350);
+          if (config?.hitBodyEffect !== null) addNinjuDamageEffect(config?.hitBodyEffect || "flashHit", target, now + 1500, 2000);
+          addNinjuDamageEffect(outcome.headEffect || "flashHitHead", target, now + 1500, 2000, { frameDuration: 2000 });
+
+          if (config?.breakEffect) addNinjuDamageEffect(config.breakEffect, target, now + disableMs, 350);
         } else {
-          target.addNinjuDamageEffect("flashMiss", enemy, currentNow + 1500, 1000);
+          addNinjuDamageEffect("flashMiss", target, now + 1500, 1000);
+  		
         }
       }
-      if (hit) target.damageUnit?.(enemy, outcome.damage, `${caster.name} hit ${enemy.name} with ${config?.label || type}`, true, caster);
-    }
-  }
+  	if (hit) {
+  	      const delay = config?.damageDelayMs || 0; // 如果沒設定，預設就是 0 毫秒 (立刻扣血)
+  	      
+  	      if (delay > 0) {
+  	        // 使用 setTimeout 讓系統在 X 毫秒後才執行 damageUnit 扣血
+  	        setTimeout(() => {
+  	          // ⚠️ 安全檢查：扣血前先確認目標是不是還在場上/活著（選填，依你遊戲邏輯而定）
+  	          if (target && target.alive) {
+  	            damageUnit(target, outcome.damage, `${caster.name} hit ${target.name} with ${config?.label || type}`, true, caster);
+  	          }
+  	        }, delay);
+  	      } else {
+  	        // 如果 delay 是 0，就維持原本的立刻扣血
+  	        damageUnit(target, outcome.damage, `${caster.name} hit ${target.name} with ${config?.label || type}`, true, caster);
+  	      }
+  	    }
+  	  }
+  	}
 
   function attackNinjuOutcome(type, rule) {
     const outcomes = target.attackNinjuConfigs?.[type]?.outcomes;
@@ -571,6 +638,7 @@ export function installNinjutsuGlobals(target = globalThis) {
       appearanceKey: caster.appearanceKey || "default",
       steelUntil: caster.steelUntil || 0,
       hotBloodUntil: caster.hotBloodUntil || 0,
+      magicWaterUntil: caster.magicWaterUntil || 0,
       buffAuraType: caster.buffAuraType || "",
       facing: "down",
       createdAt: currentNow,
@@ -626,40 +694,86 @@ export function installNinjutsuGlobals(target = globalThis) {
   }
 
   function defendedDamage(unit, baseDamage) {
-    return isSteelDefenseActive(unit) ? baseDamage / steelRule().defenseMultiplier : baseDamage;
-  }
+      const steelMultiplier = isSteelDefenseActive(unit) ? steelRule().defenseMultiplier : 1;
+      const magicWaterMultiplier = isMagicWaterActive(unit) ? 2 : 1;
+      return baseDamage / Math.min(2, Math.max(steelMultiplier, magicWaterMultiplier));
+    }
 
-  function playStatusEnergyUpSequence() {
-    const first = target.playSound?.("statusEnergyUp1");
-    if (!first) return;
-    const onFirstEnded = () => {
-      first.removeEventListener("ended", onFirstEnded);
-      target.playSound?.("statusEnergyUp2");
-    };
-    first.addEventListener("ended", onFirstEnded);
-  }
+    function playStatusEnergyUpSequence() {
+      const first = target.playSound?.("statusEnergyUp1");
+      if (!first) return;
+      const onFirstEnded = () => {
+        first.removeEventListener("ended", onFirstEnded);
+        target.playSound?.("statusEnergyUp2");
+      };
+      first.addEventListener("ended", onFirstEnded);
+    }
 
-  function playStatusNinjuSound(type) {
-    if (isAttackNinjuType(type)) {
-      const sound = target.attackNinjuConfigs?.[type]?.castSound;
-      if (sound) target.playSound?.(sound);
-      return;
+	// >>> 【支援無限多組音效、延遲與音量的升級版輔助函數】 <<<
+	  function playMultipleSounds(soundConfig) {
+	    if (soundConfig && typeof soundConfig === "object") {
+	      // 1. 物件格式：自動遞增檢查 sound1, sound2, sound3, sound4, sound5...
+	      if (!Array.isArray(soundConfig)) {
+	        let i = 1;
+	        // 只要 sound1、sound2... 還存在，迴圈就會一直跑下去
+	        while (soundConfig[`sound${i}`]) {
+	          const soundName = soundConfig[`sound${i}`];
+	          const delaySec = soundConfig[`delay${i}`] || 0;
+	          const volumeVal = soundConfig[`volume${i}`]; // 抓取音量 volume1, volume2...
+
+	          setTimeout(() => {
+	            const audioInstance = target.playSound?.(soundName);
+	            
+	            // 處理音量：如果底層返回了音效物件，且有設定音量，就調整它
+	            if (audioInstance && typeof volumeVal === "1") {
+	              audioInstance.volume = volumeVal;
+	            }
+	          }, delaySec * 1000);
+
+	          i++; // 變成檢查下一組 (例如 i 從 1 變成 2，再變成 3...)
+	        }
+	      } 
+	      // 2. 陣列格式：如果是用 [ {sound:...} ] 的寫法
+	      else {
+	        soundConfig.forEach(item => {
+	          if (item.sound) {
+	            setTimeout(() => {
+	              const audioInstance = target.playSound?.(item.sound);
+	              if (audioInstance && typeof item.volume === "number") {
+	                audioInstance.volume = item.volume;
+	              }
+	            }, (item.delay || 0) * 1000);
+	          }
+	        });
+	      }
+	    } else if (soundConfig) {
+	      // 如果原本設定檔只是普通字串 (單一音效)，維持立刻播放
+	      target.playSound?.(soundConfig);
+	    }
+	  }
+
+    // >>> 【修改原本的 playStatusNinjuSound】 <<<
+    function playStatusNinjuSound(type) {
+      if (isAttackNinjuType(type)) {
+        const sound = target.attackNinjuConfigs?.[type]?.castSound;
+        if (sound) playMultipleSounds(sound); // 這裡修改成呼叫多音效函數
+        return;
+      }
+      if (isSpecialNinjuType(type)) {
+        const sound = target.specialNinjuConfigs?.[type]?.castSound;
+        if (sound) playMultipleSounds(sound); // 這裡修改成呼叫多音效函數
+        return;
+      }
+      if (type === "genki") {
+        target.playSound?.("regenHpSmall");
+        return;
+      }
+      if (type === "kakki" || type === "shinki") {
+        target.playSound?.("regenHpLarge");
+        return;
+      }
+      playStatusEnergyUpSequence();
     }
-    if (isSpecialNinjuType(type)) {
-      const sound = target.specialNinjuConfigs?.[type]?.castSound;
-      if (sound) target.playSound?.(sound);
-      return;
-    }
-    if (type === "genki") {
-      target.playSound?.("regenHpSmall");
-      return;
-    }
-    if (type === "kakki" || type === "shinki") {
-      target.playSound?.("regenHpLarge");
-      return;
-    }
-    playStatusEnergyUpSequence();
-  }
 
   const steelRule = () => target.steelRule();
   const hotBloodRule = () => target.hotBloodRule();
@@ -705,6 +819,7 @@ export function installNinjutsuGlobals(target = globalThis) {
     isUnitInNinjuGap,
     isSteelDefenseActive,
     isHotBloodActive,
+    isMagicWaterActive,
     refreshStatusNinju,
     triggerAttackNinju,
     attackNinjuOutcome,
@@ -742,6 +857,7 @@ export function installNinjutsuGlobals(target = globalThis) {
     isUnitInvincible,
     isSteelDefenseActive,
     isHotBloodActive,
+    isMagicWaterActive,
     consumeAttackNinjuSoulLevel,
     statusNinjuRule,
   };

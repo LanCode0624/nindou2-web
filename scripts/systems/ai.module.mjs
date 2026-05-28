@@ -16,6 +16,8 @@ export const aiProfiles = {
     steelUseChance: 0,
     moneyDartReadyChance: 0,
     moneyDartThrowChance: 0,
+	deathSound: "death6",
+	deathVolume: 1.0
   },
   ai_red: {
     reactionMultiplier: 0.35,
@@ -27,6 +29,8 @@ export const aiProfiles = {
     steelUseChance: 0,
     moneyDartReadyChance: 0,
     moneyDartThrowChance: 0,
+	deathSound: "death3",
+	deathVolume: 1.0
   },
   ai_tachi_master: {
     reactionMultiplier: 0.75,

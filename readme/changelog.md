@@ -58,7 +58,7 @@
 
 - 新外觀 key：`scripts/data/assets.js -> lookDefinitions.zhaohuo`，房間文案在 `scripts/data/locales.js -> zhaohuoLookOption`。
 - 目前已接入 `assets/characters/ai/{idle,arrive,use_ninju,dart_shoot}/趙活_*`。
-- `趙活_dart` 目前檔名還是 `1.png ~ 4.png`，方向未確認，所以 `moneyDartReadySet` 暫時回退到預設 `b`，不要自行猜方向。
+- `趙活_dart` 目前檔名還是 `1.webp ~ 4.webp`，方向未確認，所以 `moneyDartReadySet` 暫時回退到預設 `b`，不要自行猜方向。
 - `趙活_prearrive` 目錄已存在，但這一輪未完成方向命名與引用；`moveSet` 暫時沿用預設 `blue` 的 prearrive，arrive 則使用 `趙活_arrive`。
 - `趙活` 外觀不畫眼睛：`drawEyes: false`，`roomAvatarEyeSrc: null`。
 

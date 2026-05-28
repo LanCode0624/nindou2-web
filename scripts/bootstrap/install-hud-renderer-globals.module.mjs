@@ -133,12 +133,14 @@ export function installHudRendererGlobals(target = globalThis) {
   const itemIconByType = (type) => {
     if (type === "backup3") return target.images.backup3Item;
     if (type === "sake4") return target.images.sake4Item;
+    if (type === "magicWater") return target.images.magicWaterItem;
     return null;
   };
 
   const itemIconSourceByType = (type) => {
     if (type === "backup3") return target.imageSources.backup3Item;
     if (type === "sake4") return target.imageSources.sake4Item;
+    if (type === "magicWater") return target.imageSources.magicWaterItem;
     return "";
   };
 
@@ -298,7 +300,7 @@ export function installHudRendererGlobals(target = globalThis) {
     const h = 66;
     const barY = y + 44;
     const barH = 7;
-    const tickXs = [61, 101, 154, 214, 275];
+    const tickXs = [52, 101, 154, 214, 272];
     const unit = target.selectedHudUnit();
     const soulSteps = Math.min(target.soulStepsPerLevel * target.soulMaxLevel, Math.max(0, unit?.soulSteps || 0));
     const totalProgress = soulSteps / (target.soulStepsPerLevel * target.soulMaxLevel);
