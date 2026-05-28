@@ -262,6 +262,7 @@ export const frameSourceCatalog = {
   regenHpLarge: Array.from({ length: 24 }, (_, index) => `assets/ninju/status/regen_hp_l/${String(index + 1).padStart(2, "0")}.webp`),
   consumableRegenSp: Array.from({ length: 16 }, (_, index) => `assets/consumables/regen_sp/${String(index + 1).padStart(2, "0")}.webp`),
   consumableMagicWater: Array.from({ length: 40 }, (_, index) => `assets/consumables/magic_water/${index + 1}.webp`),
+  consumableMagicWaterEffect: Array.from({ length: 40 }, (_, index) => `assets/consumables/magic_water/effect__${index + 1}.webp`),
   smallThunderSummon: Array.from({ length: 25 }, (_, index) => `assets/ninju/status/summon/small_thunder/${String(index + 1).padStart(2, "0")}.webp`),
   smallThunderDamaged: Array.from({ length: 36 }, (_, index) => `assets/ninju/status/damaged/small_thunder/${index + 1}.webp`),
   smallFireSummon: Array.from({ length: 23 }, (_, index) => `assets/ninju/status/summon/small_fire/F/${String(index + 1).padStart(2, "0")}.webp`),

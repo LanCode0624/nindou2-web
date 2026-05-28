@@ -67,6 +67,7 @@ export function installAssetGlobals(target = globalThis) {
   const regenHpLargeFrameSources = frameSourceCatalog.regenHpLarge;
   const consumableRegenSpFrameSources = frameSourceCatalog.consumableRegenSp;
   const consumableMagicWaterFrameSources = frameSourceCatalog.consumableMagicWater;
+  const consumableMagicWaterEffectFrameSources = frameSourceCatalog.consumableMagicWaterEffect;
   const smallThunderSummonFrameSources = frameSourceCatalog.smallThunderSummon;
   const smallThunderDamagedFrameSources = frameSourceCatalog.smallThunderDamaged;
   const smallFireSummonFrameSources = frameSourceCatalog.smallFireSummon;
@@ -101,6 +102,7 @@ export function installAssetGlobals(target = globalThis) {
   const regenHpLargeFrames = [];
   const consumableRegenSpFrames = [];
   const consumableMagicWaterFrames = [];
+  const consumableMagicWaterEffectFrames = [];
   const smallThunderSummonFrames = [];
   const smallThunderDamagedFrames = [];
   const smallFireSummonFrames = [];
@@ -283,6 +285,7 @@ export function installAssetGlobals(target = globalThis) {
     regenHpLargeFrameSources,
     consumableRegenSpFrameSources,
     consumableMagicWaterFrameSources,
+    consumableMagicWaterEffectFrameSources,
     smallThunderSummonFrameSources,
     smallThunderDamagedFrameSources,
     smallFireSummonFrameSources,
@@ -316,6 +319,7 @@ export function installAssetGlobals(target = globalThis) {
     regenHpLargeFrames,
     consumableRegenSpFrames,
     consumableMagicWaterFrames,
+    consumableMagicWaterEffectFrames,
     smallThunderSummonFrames,
     smallThunderDamagedFrames,
     smallFireSummonFrames,

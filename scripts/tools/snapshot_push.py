@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 
-DEFAULT_BRANCH = "codex/add-magic-water-consumable-tuning"
+DEFAULT_BRANCH = "新增魔水-調整神酒-魔水體感-預設道具有5神水5魔水"
 DEFAULT_REMOTE = "origin"
 DEFAULT_MESSAGE = "Snapshot current consumable tuning version"
 

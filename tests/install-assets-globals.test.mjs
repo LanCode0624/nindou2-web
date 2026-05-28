@@ -34,9 +34,14 @@ test("installAssetGlobals wires asset globals and compatibility object", () => {
   assert.equal(Array.isArray(target.defUpFrames), true);
   assert.equal(Array.isArray(target.consumableMagicWaterFrameSources), true);
   assert.equal(Array.isArray(target.consumableMagicWaterFrames), true);
+  assert.equal(Array.isArray(target.consumableMagicWaterEffectFrameSources), true);
+  assert.equal(Array.isArray(target.consumableMagicWaterEffectFrames), true);
   assert.equal(target.consumableMagicWaterFrameSources.length, 40);
   assert.equal(target.consumableMagicWaterFrameSources[0], "assets/consumables/magic_water/1.webp");
   assert.equal(target.consumableMagicWaterFrameSources[39], "assets/consumables/magic_water/40.webp");
+  assert.equal(target.consumableMagicWaterEffectFrameSources.length, 40);
+  assert.equal(target.consumableMagicWaterEffectFrameSources[0], "assets/consumables/magic_water/effect__1.webp");
+  assert.equal(target.consumableMagicWaterEffectFrameSources[39], "assets/consumables/magic_water/effect__40.webp");
   assert.equal(typeof target.attackNinjuConfigs, "object");
   assert.equal(typeof target.NindouAssets, "object");
   assert.equal(target.NindouAssets.soundSources, target.soundSources);

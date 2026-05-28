@@ -37,6 +37,8 @@ test("installAssetLoaderGlobals wires image loaders and compatibility object", a
     consumableRegenSpFrames: [],
     consumableMagicWaterFrameSources: Array.from({ length: 40 }, (_, index) => `assets/consumables/magic_water/${index + 1}.webp`),
     consumableMagicWaterFrames: [],
+    consumableMagicWaterEffectFrameSources: Array.from({ length: 40 }, (_, index) => `assets/consumables/magic_water/effect__${index + 1}.webp`),
+    consumableMagicWaterEffectFrames: [],
     smallThunderSummonFrameSources: [],
     smallThunderSummonFrames: [],
     smallThunderDamagedFrameSources: [],
@@ -116,4 +118,7 @@ test("installAssetLoaderGlobals wires image loaders and compatibility object", a
   assert.equal(target.consumableMagicWaterFrames.length, 40);
   assert.equal(target.consumableMagicWaterFrames[0].src, "assets/consumables/magic_water/1.webp");
   assert.equal(target.consumableMagicWaterFrames[39].src, "assets/consumables/magic_water/40.webp");
+  assert.equal(target.consumableMagicWaterEffectFrames.length, 40);
+  assert.equal(target.consumableMagicWaterEffectFrames[0].src, "assets/consumables/magic_water/effect__1.webp");
+  assert.equal(target.consumableMagicWaterEffectFrames[39].src, "assets/consumables/magic_water/effect__40.webp");
 });

@@ -165,7 +165,7 @@ export function applySake4MoveSkillFree(unit, now, options = {}) {
   unit.moveSkillFreeUntil = Math.max(unit.moveSkillFreeUntil || 0, now + durationMs);
   unit.buffAuraType = options.buffAuraType ?? "sake4";
   if (!unit.buffAuraVisibleAt || unit.buffAuraVisibleAt > now) {
-    unit.buffAuraVisibleAt = now + (options.defaultConsumableDisableMs ?? defaultConsumableDisableMs);
+    unit.buffAuraVisibleAt = now;
   }
 }
 

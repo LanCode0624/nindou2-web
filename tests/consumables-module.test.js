@@ -165,6 +165,32 @@ test("queued 神酒 waits for its execution before restoring skill and movement-
   assert.deepEqual(stateLike.consumableEffects, []);
 });
 
+test("神酒 golden aura appears when the 1.5-second item timing applies", async () => {
+  const consumableModule = await loadConsumableModule();
+  const unit = {
+    id: "blue1",
+    name: "青1",
+    controlMode: "player",
+    alive: true,
+    skill: 4,
+    skillMax: 18,
+    items: { sake4: 1 },
+    itemSlots: ["sake4"],
+  };
+  const stateLike = { units: [unit], roomItemSlots: ["sake4"], consumableEffects: [] };
+
+  assert.equal(consumableModule.requestConsumableUse(stateLike, unit, "sake4", 0, { now: 2000 }), true);
+
+  assert.equal(unit.buffAuraVisibleAt, undefined);
+
+  consumableModule.updateConsumables(stateLike, 3500);
+
+  assert.equal(unit.skill, 18);
+  assert.equal(unit.moveSkillFreeUntil, 18500);
+  assert.equal(unit.buffAuraType, "sake4");
+  assert.equal(unit.buffAuraVisibleAt, 3500);
+});
+
 test("魔水 restores skill, grants 15-second buff, and uses magic-water effect frames", async () => {
   const consumableModule = await loadConsumableModule();
   const sounds = [];
@@ -214,6 +240,6 @@ test("魔水 restores skill, grants 15-second buff, and uses magic-water effect 
   assert.equal(unit.moveSkillFreeUntil, 18500);
   assert.equal(unit.magicWaterUntil, 18500);
   assert.equal(unit.buffAuraType, "magicWater");
-  assert.equal(unit.buffAuraVisibleAt, 5000);
+  assert.equal(unit.buffAuraVisibleAt, 3500);
   assert.equal(messages.at(-1), "青1 使用魔水，技量已回滿，15 秒內移動不消耗技，攻擊與防禦變為 2 倍。");
 });

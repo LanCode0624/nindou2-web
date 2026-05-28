@@ -17,6 +17,7 @@ test("installEffectsRendererGlobals wires ninjutsu effect helpers", () => {
   const ctx = createContext(calls);
   const frame = { id: "frame" };
   const magicWaterFrames = Array.from({ length: 40 }, (_, index) => ({ id: `magic-water-frame-${index + 1}` }));
+  const magicWaterEffectFrames = Array.from({ length: 40 }, (_, index) => ({ id: `magic-water-effect-frame-${index + 1}` }));
   const magicWaterFrameDurationMs = 1500 / magicWaterFrames.length;
   const unit = { id: 1, alive: true, x: 2, y: 3, ninju: { type: "genki", startedAt: 1000, duration: 1000 } };
   const state = {
@@ -36,6 +37,7 @@ test("installEffectsRendererGlobals wires ninjutsu effect helpers", () => {
     regenHpLargeFrames: [frame],
     consumableRegenSpFrames: [frame],
     consumableMagicWaterFrames: magicWaterFrames,
+    consumableMagicWaterEffectFrames: magicWaterEffectFrames,
     defUpFrames: [frame],
     atkUpFrames: [frame],
     cloneNinjuFrames: [frame],
@@ -67,10 +69,13 @@ test("installEffectsRendererGlobals wires ninjutsu effect helpers", () => {
   assert.equal(calls.some((call) => Array.isArray(call) && call[0] === "drawImage"), true);
 
   const drawnMagicWaterFrameIds = [];
+  const drawnMagicWaterEffectFrameIds = [];
   for (let index = 0; index < magicWaterFrames.length; index++) {
     target.drawConsumableEffects(1000 + index * magicWaterFrameDurationMs);
-    const consumableDraw = calls.findLast((call) => Array.isArray(call) && call[0] === "drawImage");
-    drawnMagicWaterFrameIds.push(consumableDraw[1].id);
+    const consumableDraws = calls.filter((call) => Array.isArray(call) && call[0] === "drawImage").slice(-2);
+    drawnMagicWaterFrameIds.push(consumableDraws[0][1].id);
+    drawnMagicWaterEffectFrameIds.push(consumableDraws[1][1].id);
   }
   assert.deepEqual(drawnMagicWaterFrameIds, magicWaterFrames.map((frame) => frame.id));
+  assert.deepEqual(drawnMagicWaterEffectFrameIds, magicWaterEffectFrames.map((frame) => frame.id));
 });

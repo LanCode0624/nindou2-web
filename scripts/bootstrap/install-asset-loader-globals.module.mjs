@@ -57,6 +57,7 @@ export function installAssetLoaderGlobals(target = globalThis) {
       [target.regenHpLargeFrameSources, target.regenHpLargeFrames],
       [target.consumableRegenSpFrameSources, target.consumableRegenSpFrames],
       [target.consumableMagicWaterFrameSources, target.consumableMagicWaterFrames],
+      [target.consumableMagicWaterEffectFrameSources, target.consumableMagicWaterEffectFrames],
       [target.smallThunderSummonFrameSources, target.smallThunderSummonFrames],
       [target.smallThunderDamagedFrameSources, target.smallThunderDamagedFrames],
       [target.smallFireSummonFrameSources, target.smallFireSummonFrames],

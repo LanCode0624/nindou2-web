@@ -19,6 +19,12 @@ export function installEffectsRendererGlobals(target = globalThis) {
     return [];
   };
 
+  const consumableEffectFrameGroups = (type) => {
+    const frames = consumableEffectFrames(type);
+    if (type === "magic_water") return [frames, target.consumableMagicWaterEffectFrames || []];
+    return [frames];
+  };
+
   const ninjuCastFrames = (type, unit = null) => {
     if (type === "clone") {
       if (unit?.controlMode === "ai_red" || unit?.appearanceKey === "red") return target.cloneRedNinjuFrames;
@@ -71,7 +77,8 @@ export function installEffectsRendererGlobals(target = globalThis) {
     for (let i = state.consumableEffects.length - 1; i >= 0; i--) {
       const effect = state.consumableEffects[i];
       const elapsed = currentNow - effect.startedAt;
-      const frames = consumableEffectFrames(effect.type);
+      const frameGroups = consumableEffectFrameGroups(effect.type);
+      const frames = frameGroups.find((group) => group.length > 0) || [];
       if (elapsed >= effect.duration || frames.length === 0) {
         state.consumableEffects.splice(i, 1);
         continue;
@@ -84,12 +91,13 @@ export function installEffectsRendererGlobals(target = globalThis) {
       const frameIndex = effect.frameDurationMs
         ? Math.floor(elapsed / effect.frameDurationMs)
         : Math.floor(Math.min(0.999, elapsed / effect.duration) * frames.length);
-      const frame = frames[frameIndex];
-      if (!frame) continue;
       const p = target.unitPosition(unit);
       ctx.save();
       ctx.globalAlpha = 0.9;
-      ctx.drawImage(frame, p.x - 46, p.y - 68, 92, 92);
+      for (const group of frameGroups) {
+        const frame = group[frameIndex];
+        if (frame) ctx.drawImage(frame, p.x - 46, p.y - 68, 92, 92);
+      }
       ctx.restore();
     }
   };
@@ -215,6 +223,7 @@ export function installEffectsRendererGlobals(target = globalThis) {
     drawNinjuEffects,
     drawConsumableEffects,
     consumableEffectFrames,
+    consumableEffectFrameGroups,
     ninjuCastFrames,
     drawNinjuDamageEffects,
     ninjuDamageFrames,
@@ -226,6 +235,7 @@ export function installEffectsRendererGlobals(target = globalThis) {
     drawNinjuEffects,
     drawConsumableEffects,
     consumableEffectFrames,
+    consumableEffectFrameGroups,
     ninjuCastFrames,
     drawNinjuDamageEffects,
     ninjuDamageFrames,

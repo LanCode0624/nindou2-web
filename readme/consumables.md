@@ -38,7 +38,7 @@
 - 動畫資料夾：[`assets/consumables/regen_sp`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/assets/consumables/regen_sp)
 - 目前內容是 `01.webp` 到 `16.webp` 共 16 張序列。
 - 神水與神酒使用時會播放這組動畫，live code 以 `consumableRegenSpFrameSources` / `consumableRegenSpFrames` 載入，並由 `startConsumableUseEffect()` 建立 1.5 秒效果。
-- 魔水使用時改播 `assets/consumables/magic_water`，live code 以 `consumableMagicWaterFrameSources` / `consumableMagicWaterFrames` 載入。
+- 魔水使用時會同時播兩組 `assets/consumables/magic_water` 動畫：保留 `1.webp` 到 `40.webp`，並疊加 `effect__1.webp` 到 `effect__40.webp`。live code 以 `consumableMagicWaterFrameSources` / `consumableMagicWaterFrames` 與 `consumableMagicWaterEffectFrameSources` / `consumableMagicWaterEffectFrames` 載入。
 - `regen_sp` 不是所有 consumable 的預設使用動畫。
 
 ### 其他可見相關素材
@@ -133,7 +133,7 @@
 
 - 使用動畫與音效先觸發，實際補技與神酒 BUFF 在使用滿 1.5 秒時套用；若接忍術，忍術會先扣技，時間到 1.5 秒才補滿並套用 BUFF。
 - 神酒 BUFF 生效後 15 秒內，移動不消耗技。
-- 使用後 15 秒內，角色會套用類似鋼鐵的角色輪廓罩光，但顏色是金黃色；點擊後先延遲 1.5 秒才顯示。live code 以 `buffAuraType: "sake4"`、`moveSkillFreeUntil`、`buffAuraVisibleAt` 控制顯示。
+- 使用後 15 秒內，角色會套用類似鋼鐵的角色輪廓罩光，但顏色是金黃色；點擊後等待道具 1.5 秒生效時顯示。live code 以 `buffAuraType: "sake4"`、`moveSkillFreeUntil`、`buffAuraVisibleAt` 控制顯示。
 - 神酒使用後播放 `assets/consumables/regen_sp` 動畫。
 - 使用一次消耗 1 格神酒。
 - 連點多個神酒或和神水混用時，後續道具會排隊，等前一個道具 1.5 秒僵直結束並經過可移動空檔後才觸發。
@@ -145,9 +145,9 @@
 - 內部 key：`magicWater`
 - 使用者名稱：`魔水`
 - 圖示檔：[`assets/consumables/10.webp`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/assets/consumables/10.webp)
-- 使用動畫：[`assets/consumables/magic_water`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/assets/consumables/magic_water)
+- 使用動畫：[`assets/consumables/magic_water`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/assets/consumables/magic_water)，同時疊加 `1.webp` 到 `40.webp` 與 `effect__1.webp` 到 `effect__40.webp`。
 - 效果和神酒一樣：補滿技，並在 15 秒內讓移動不消耗技；實際補技與 BUFF 在使用滿 1.5 秒時套用，若接忍術，忍術會先扣技，時間到 1.5 秒才補滿並套用 BUFF。
-- 額外效果：同一個 15 秒期間內，攻擊與防禦都變為 2 倍；不會和熱血、鋼鐵疊乘，所以攻防倍率最多仍是 2 倍。外層紫色光圈會在 BUFF 套用後再延遲 1.5 秒顯示。live code 實作為 `magicWaterUntil` 生效時與熱血/鋼鐵取最大倍率。
+- 額外效果：同一個 15 秒期間內，攻擊與防禦都變為 2 倍；不會和熱血、鋼鐵疊乘，所以攻防倍率最多仍是 2 倍。外層紫色光圈會在點擊後等待道具 1.5 秒生效時顯示。live code 實作為 `magicWaterUntil` 生效時與熱血/鋼鐵取最大倍率。
 - 魔水使用後同樣套用 consumable 預設：使用後僵直 `1.5` 秒，同時無敵 `1.5` 秒。
 - 魔水使用成功時播放共通 `click_item.ogg`，並額外播放專用 [`assets/sounds/ninja/status/sp_up.ogg`](C:/Users/lane6/Documents/Codex/忍豆風雲2單機版/assets/sounds/ninja/status/sp_up.ogg)。
 
